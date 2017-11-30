@@ -1,0 +1,51 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:w="urn:import:nl.yogh.gwt.wui.widget"
+  xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
+  <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
+  <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:style>
+    .applicationView {
+    margin-top: 20px;
+    }
+    .navigationPanel {
+    margin-right: 10px;
+    max-width: 700px;
+    }
+    .title {
+    margin: 0px 20px;
+    cursor: pointer;
+    user-select: none;
+    }
+    .title:hover {
+    color: #ff8c3b;
+    }
+    .title:active {
+    color: #ffd8bd;
+    }
+    .notificationAbsolute {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    }
+    .themeSwitcher {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    }
+  </ui:style>
+  <g:FlowPanel styleName="{res.css.grow} {style.applicationView} {res.css.globalMaxWidth}">
+    <g:FlowPanel styleName="{res.css.flex} {res.css.distribute} {res.css.wrap} {res.css.wrapMargins}">
+      <w:HeadingWidget n="1" text="{i18n.siteTitle}" ui:field="landingHeading" styleName="{style.title}" />
+      <g:FlowPanel styleName="{res.css.flex} {res.css.grow} {res.css.alignCenter} {style.navigationPanel}">
+        <c:PlaceNavigation ui:field="placeNavigation" />
+      </g:FlowPanel>
+    </g:FlowPanel>
+    <g:FlowPanel styleName="{res.css.globalMaxWidth}">
+      <w:HeadingWidget n="1" ui:field="placeTitle" styleName="{res.css.pageTitle}" />
+      <g:SimplePanel ui:field="contentPanel" styleName="{res.css.flex} {res.css.grow}" />
+    </g:FlowPanel>
+    <p:NotificationPanel styleName="{style.notificationAbsolute}" ui:field="notificationPanel" />
+    <c:ThemeSwitcher styleName="{style.themeSwitcher}" title="Switch theme" />
+  </g:FlowPanel>
+</ui:UiBinder>
+ 

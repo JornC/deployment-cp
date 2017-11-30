@@ -1,0 +1,37 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:w="urn:import:nl.yogh.gwt.wui.widget"
+  xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
+  <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
+  <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:style type="nl.yogh.aerius.wui.builder.component.PlaceNavigation.CustomStyle">
+    .button {
+    margin: 0px 10px;
+    border: 2px solid transparent;
+    outline: none;
+    transition: border 0.1s ease-out;
+    color: white;
+    font-family: "MavenProLight-300";
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+    flex-grow: 1;
+    }
+    .buttons {
+    margin-top: -10px;
+    margin-bottom: -10px;
+    }
+    .buttons > * {
+    margin-top:
+    10px !important;
+    margin-bottom: 10px !important;
+    }
+    .button:hover {
+    border: 2px solid #bbb;
+    }
+    .button:active {
+    border: 2px solid white;
+    }
+  </ui:style>
+  <g:FlowPanel styleName="{res.css.flex} {res.css.grow} {res.css.wrap} {style.buttons}" ui:field="panel" />
+</ui:UiBinder>
+ 

@@ -1,0 +1,132 @@
+.bodyDark {
+background: #333 !important;
+color: #ccc;
+}
+.bodyLight {
+background: #ddd !important;
+color: #333;
+}
+
+html {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 12pt;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	outline: 0;
+	transition: background 0.2s ease-out, color 0.2s ease-out;
+}
+h1 {
+    font-size: 2em;
+    margin: 15px 0px 5px;
+}
+h2 {
+    font-size: 1.6em;
+    font-weight: 300;
+    margin: 10px 0px;
+}
+
+html, body {
+	margin: 0px;
+	min-height: 100%;
+}
+
+.glassPanel {
+	animation: animateGlass 0.25s ease-out 0s 1 normal forwards;
+}
+
+.removeGlassPanel {
+	animation: animateGlass 0.15s ease-out 0s 1 normal backwards;
+}
+
+/* An absolute minimum height for the application, any smaller than this makes it ridiculous so a scrollbar is warranted. */
+.rootLayoutPanel {
+	/*min-height: 500px;*/
+}
+
+.globalMaxWidth {
+    max-width: 100%;
+}
+
+.mainPanel {
+	width: 1060px;
+}
+
+.pageTitle {
+    padding: 20px;
+    margin: 0px;
+    text-align: center;
+    margin-top: 20px;
+    transition: all 0.2s ease-out;
+}
+
+.elementMargin {
+	margin-bottom: 15px;
+}
+
+.flex {
+	display: flex;
+}
+
+.flex>* {
+	min-width: 0;
+	min-height: 0;
+}
+
+.columns {
+	flex-direction: column;
+}
+
+.justify {
+	justify-content: center;
+}
+
+.alignCenter {
+	align-items: center;
+}
+
+.distribute {
+	justify-content: space-between;
+}
+.around {
+	justify-content: space-around;
+}
+.line {
+    border-top: 1px solid #888;
+}
+
+.grow {
+	flex-grow: 1;
+}
+
+.noShrink {
+	flex-shrink: 0;
+}
+
+.rowReverse {
+	flex-direction: row-reverse;
+}
+.wrap {
+	flex-wrap: wrap;
+}
+.wrapMargins {
+	margin-top: -10px;
+}
+.wrapMargins > * {
+	margin-top: 10px !important;
+}
+.clickableBackground {
+    transition: background 0.15s ease-out;
+}
+.clickableBackground:hover {
+    background: rgba(0,0,0,0.1);
+}
+.clickableBackground:active {
+    background: rgba(0,0,0,0.12);
+}
+.focus {
+    background: rgba(0,0,0,0.12) !important;
+}
+
+input[type=text] {
+	padding: 10px;
+}

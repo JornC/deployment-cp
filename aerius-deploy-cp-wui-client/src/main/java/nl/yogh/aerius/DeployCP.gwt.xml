@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.8.0//EN" "http://gwtproject.org/doctype/2.8.0/gwt-module.dtd">
+<module rename-to="application">
+  <!-- GWT module inherits -->
+  <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.i18n.I18N" />
+  <inherits name='com.google.gwt.place.Place' />
+  <inherits name='com.google.web.bindery.event.Event' />
+  <inherits name="com.google.gwt.logging.Logging" />
+  <inherits name='com.google.gwt.http.HTTP' />
+
+  <!-- Other module inherits -->
+  <inherits name="com.google.gwt.inject.Inject" />
+  <inherits name='com.google.web.bindery.event.EventBinder' />
+
+  <!-- Application module inherits -->
+  <inherits name='nl.yogh.gwt.Common' />
+  <inherits name='nl.yogh.aerius.BuilderShared' />
+
+  <!-- GSS related config -->
+  <set-configuration-property name="CssResource.enableGss" value="true" />
+  <set-configuration-property name="CssResource.conversionMode" value="strict" />
+  <set-configuration-property name="CssResource.gssDefaultInUiBinder" value="true" />
+
+  <!-- Specify the app entry point class. -->
+  <entry-point class='nl.yogh.aerius.wui.Bootstrap' />
+
+  <!-- Enable server site logging -->
+  <set-property name="gwt.logging.enabled" value="TRUE" />
+  <set-property name="gwt.logging.logLevel" value="INFO" />
+  <set-property name="gwt.logging.consoleHandler" value="ENABLED" />
+  <set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
+  <set-property name="compiler.stackMode" value="emulated" />
+  <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true" />
+  <set-configuration-property name="compiler.emulatedStack.recordFileNames" value="true" />
+
+  <define-configuration-property name="application.ginModules" is-multi-valued="true" />
+  <extend-configuration-property name="application.ginModules" value="nl.yogh.aerius.wui.builder.BuilderClientModule" />
+
+  <source path="wui" />
+</module>

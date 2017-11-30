@@ -1,0 +1,29 @@
+/* Font MavenProLight */
+@font-face {
+    font-family: 'MavenProLight-200';
+    src: url('MavenProLight-200.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'MavenProLight-300';
+    src: url('MavenProLight-300.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@font-face {
+	 font-family: 'BTC';
+	 src: url('BTC.ttf') format('truetype');
+	 font-weight: normal;
+	 font-style: normal;
+}
+
+h1, h3, h4, h5 {
+  font-family:'MavenProLight-200',Arial, Sans-Serif;
+}
+
+h2 {
+  font-family:'MavenProLight-300',Arial, Sans-Serif;
+}
