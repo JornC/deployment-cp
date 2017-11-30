@@ -35,7 +35,7 @@
         <executions>
           <execution>
             <configuration>
-              <servicePattern>**/deploy/**/*Service.java</servicePattern>
+              <servicePattern>**/builder/**/*Service.java</servicePattern>
             </configuration>
             <goals>
               <goal>generateAsync</goal>

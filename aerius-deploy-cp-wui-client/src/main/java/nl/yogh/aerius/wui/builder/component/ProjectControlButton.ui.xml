@@ -1,0 +1,10 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:w="urn:import:nl.yogh.gwt.wui.widget"
+  xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
+  <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
+  <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:style>
+  </ui:style>
+  <g:Label ui:field="textField" />
+</ui:UiBinder>
+ 
