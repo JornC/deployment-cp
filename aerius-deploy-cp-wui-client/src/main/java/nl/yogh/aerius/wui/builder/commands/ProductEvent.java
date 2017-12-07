@@ -1,17 +1,10 @@
 package nl.yogh.aerius.wui.builder.commands;
 
-import nl.yogh.aerius.builder.domain.ProductType;
+import nl.yogh.aerius.builder.domain.ProductInfo;
 import nl.yogh.gwt.wui.event.SimpleGenericEvent;
 
-public class ProductEvent extends SimpleGenericEvent<ProductType> {
-  private final String hash;
-
-  public ProductEvent(final ProductType type, final String hash) {
+public class ProductEvent extends SimpleGenericEvent<ProductInfo> {
+  public ProductEvent(final ProductInfo type) {
     super(type);
-    this.hash = hash;
-  }
-
-  public String getHash() {
-    return hash;
   }
 }

@@ -11,7 +11,9 @@ public enum ProductType {
 
   CONNECT(ServiceType.CONNECT, ServiceType.CONNECT_DATABASE),
 
-  MELDING(ServiceType.MELDING);
+  MELDING(ServiceType.MELDING),
+
+  TESTS(ServiceType.SELENIUM);
 
   private final ServiceType[] serviceTypes;
 

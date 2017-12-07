@@ -13,5 +13,7 @@ public enum ServiceType {
 
   CONNECT, CONNECT_DATABASE,
 
-  MELDING;
+  MELDING,
+
+  SELENIUM;
 }

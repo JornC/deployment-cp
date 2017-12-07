@@ -3,7 +3,6 @@ package nl.yogh.aerius.wui.builder.component;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 
@@ -16,8 +15,6 @@ public class PullRequestControlPanel extends FieldedEventComposite {
   interface PullRequestControlPanelUiBinder extends UiBinder<Widget, PullRequestControlPanel> {}
 
   @UiField(provided = true) PullRequestInfo pull;
-
-  @UiField FlowPanel productPanel;
 
   public PullRequestControlPanel(final EventBus eventBus, final PullRequestInfo pull) {
     super(eventBus);

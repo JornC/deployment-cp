@@ -3,6 +3,8 @@
   xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
   <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:with field='type' type='nl.yogh.aerius.builder.domain.ProductType' />
+  <ui:with field='hash' type='java.lang.String' />
   <ui:style type="nl.yogh.aerius.wui.builder.component.ProjectControlButton.CustomStyle">
     .button {
     flex-shrink: 0;
@@ -10,34 +12,103 @@
     border: 4px solid rgba(125,125,125,0.2);
     padding: 15px 5px;
     cursor: pointer;
-    transition: border 0.1s ease-out, background 0.1s ease-out;
+    transition: border 0.1s ease-out, background 0.1s ease-out, box-shadow 0.1s ease-out;
     user-select: none;
     min-width: 110px;
-    }
-    .button:hover {
-    border-color: rgba(18,171,0,0.5);
-    background: rgba(18,171,0,0.3);
     }
     .button div {
     text-align: center;
     }
-    .button:hover div:first-child {
+    .highlight .nameLabel, .button:hover .nameLabel {
     visibility: hidden;
     height: 0px;
     }
     
-    .running:hover div:last-child:after {
-    content: 'SUSPEND';
+    .running {
+    border-color: rgba(18,171,0,0.5);
+    background: rgba(18,171,0,0.3);
     }
-    .suspended:hover div:last-child:after {
-    content: 'START";
+    .running.highlight, .running:hover {
+    border-color: rgba(18,171,0,0.7);
+    background: rgba(18,171,0,0.5);
     }
-    .unbuilt:hover div:last-child:after {
-    content: 'DEPLOY';
+    .running:active {
+    border-color: rgba(18,171,0,0.9);
+    background: rgba(18,171,0,0.7);
+    }
+    .running.highlight .statusLabel:after, .running:hover .statusLabel:after {
+    content: "SUSPEND";
+    }
+    
+    .suspended {
+    border-color: rgba(19, 120, 179,0.5);
+    background: rgba(19, 120, 179,0.3);
+    }
+    .suspended.highlight, .suspended:hover {
+    border-color: rgba(19, 120, 179,0.7);
+    background: rgba(19, 120, 179,0.5);
+    }
+    .suspended:active {
+    border-color: rgba(19, 120, 179,0.9);
+    background: rgba(19, 120, 179,0.7);
+    }
+    .suspended.highlight .statusLabel:after, .suspended:hover .statusLabel:after {
+    content: "DEPLOY";
+    }
+    
+    .unbuilt {
+    border-color: rgba(255,255,59,0.5);
+    background: rgba(234,228,12,0.3);
+    }
+    .unbuilt.highlight, .unbuilt:hover {
+    border-color: rgba(255,255,59,0.7);
+    background: rgba(234,228,12,0.5);
+    }
+    .unbuilt:active {
+    border-color: rgba(255,255,59,0.9);
+    background: rgba(234,228,12,0.7);
+    }
+    .unbuilt.highlight .statusLabel:after, .unbuilt:hover .statusLabel:after {
+    content: "COMPILE";
+    }
+    .disabled {
+    pointer-events: none;
+    border-color: rgba(120,120,120,0.5);
+    background: rgba(120,120,120,0.3);
+    }
+    
+    .hash {
+    font-size: 0.7em;
+    font-style: italic;
+    }
+    
+    .highlight {
+    box-shadow: 0px 0px 0px 6px rgba(125,125,125,0.7);
+    }
+    
+    .busy {
+    pointer-events: none;
+    box-shadow: 0px 0px 0px 8px rgba(125,125,125,1);
+    animation: blink 1.0s ease-in-out infinite;
+    }
+    .busy .nameLabel {
+    visibility: hidden;
+    height: 0px;
+    }
+    .busy .statusLabel:after {
+    content: "Working...";
+    }
+    @keyframes blink {
+    0% { box-shadow: 0px 0px 0px 6px rgba(125,125,125,1); }
+    50% { box-shadow: 0px 0px 0px 2px rgba(125,125,125,1); }
+    100% { box-shadow: 0px 0px 0px 6px rgba(125,125,125,1); }
     }
   </ui:style>
   <g:FlowPanel ui:field="panel" styleName="{style.button}">
-    <g:Label ui:field="textField" />
-    <g:Label />
+    <g:FlowPanel>
+      <g:Label text="{type.name}" styleName="{style.nameLabel}" />
+      <g:Label styleName="{style.statusLabel}" />
+    </g:FlowPanel>
+    <g:Label text="{hash}" styleName="{style.hash}" />
   </g:FlowPanel>
 </ui:UiBinder>

@@ -1,6 +1,7 @@
 package nl.yogh.aerius.builder.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -10,6 +11,8 @@ public class PullRequestInfo implements Serializable, IsSerializable {
   private String idx;
   private String title;
   private String author;
+
+  private HashMap<ProductType, ProductInfo> products;
 
   public static PullRequestInfo create() {
     return new PullRequestInfo();
@@ -39,6 +42,15 @@ public class PullRequestInfo implements Serializable, IsSerializable {
 
   public PullRequestInfo author(final String author) {
     this.author = author;
+    return this;
+  }
+
+  public HashMap<ProductType, ProductInfo> products() {
+    return products;
+  }
+
+  public PullRequestInfo products(final HashMap<ProductType, ProductInfo> products) {
+    this.products = products;
     return this;
   }
 }

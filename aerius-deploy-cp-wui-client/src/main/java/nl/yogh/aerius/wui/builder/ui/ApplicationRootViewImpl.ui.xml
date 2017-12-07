@@ -44,7 +44,7 @@
       <w:HeadingWidget n="1" ui:field="placeTitle" styleName="{res.css.pageTitle}" />
       <g:SimplePanel ui:field="contentPanel" styleName="{res.css.flex} {res.css.grow}" />
     </g:FlowPanel>
-    <w:NotificationPanel styleName="{style.notificationAbsolute}" ui:field="notificationPanel" />
+    <p:NotificationPanel styleName="{style.notificationAbsolute}" ui:field="notificationPanel" />
     <c:ThemeSwitcher styleName="{style.themeSwitcher}" title="Switch theme" />
   </g:FlowPanel>
 </ui:UiBinder>

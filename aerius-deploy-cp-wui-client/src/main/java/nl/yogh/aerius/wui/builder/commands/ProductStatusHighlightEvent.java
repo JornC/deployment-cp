@@ -1,9 +1,16 @@
 package nl.yogh.aerius.wui.builder.commands;
 
-import nl.yogh.aerius.builder.domain.ProductType;
+import nl.yogh.aerius.builder.domain.ProductInfo;
 
 public class ProductStatusHighlightEvent extends ProductEvent {
-  public ProductStatusHighlightEvent(final ProductType type, final String hash) {
-    super(type, hash);
+  private final boolean highlight;
+
+  public ProductStatusHighlightEvent(final ProductInfo info, final boolean highlight) {
+    super(info);
+    this.highlight = highlight;
+  }
+
+  public boolean isHighlight() {
+    return highlight;
   }
 }

@@ -7,6 +7,8 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
 import nl.yogh.aerius.builder.service.PullRequestServiceAsync;
+import nl.yogh.aerius.wui.builder.commands.ProductActionCommand;
+import nl.yogh.aerius.wui.builder.commands.ProductStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalActivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalDeactivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalEvent;
@@ -30,6 +32,11 @@ public class PullRetrievalDaemonImpl implements PullRetrievalDaemon {
   @EventHandler
   public void onPullRequestRetrievalActivationCommand(final PullRequestRetrievalActivationCommand c) {
     service.getPullRequests(r -> eventBus.fireEvent(new PullRequestRetrievalEvent(r)));
+  }
+
+  @EventHandler
+  public void onProductActionCommand(final ProductActionCommand c) {
+    service.doAction(c.getAction(), c.getType(), c.getValue(), r -> eventBus.fireEvent(new ProductStatusInfoChangedEvent(r)));
   }
 
   @EventHandler

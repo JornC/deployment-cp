@@ -17,8 +17,7 @@
     }
     .by {
     margin: 0px 5px;
-    color:
-    #888;
+    color: #888;
     }
     .label {
     font-weight: bold;
@@ -34,13 +33,14 @@
         <g:Label text="by" styleName="{style.by}" />
         <g:Label text="{pull.author}" />
       </g:FlowPanel>
-      <g:FlowPanel ui:field="productPanel" styleName="{res.css.flex} {res.css.wrap} {res.css.distribute}">
+      <g:FlowPanel styleName="{res.css.flex} {res.css.wrap} {res.css.distribute}">
         <c:ProjectControlButton type="{CALCULATOR}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{WORKERS}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{SCENARIO}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{REGISTER}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{CONNECT}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{MELDING}" pull="{pull}" eventBus="{eventBus}" />
+        <c:ProjectControlButton type="{TESTS}" pull="{pull}" eventBus="{eventBus}" />
       </g:FlowPanel>
     </g:FlowPanel>
   </g:FlowPanel>

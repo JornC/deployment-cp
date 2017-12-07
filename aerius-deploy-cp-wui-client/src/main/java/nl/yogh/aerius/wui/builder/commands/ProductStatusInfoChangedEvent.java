@@ -1,9 +1,9 @@
 package nl.yogh.aerius.wui.builder.commands;
 
-import nl.yogh.aerius.builder.domain.ProductType;
+import nl.yogh.aerius.builder.domain.ProductInfo;
 
 public class ProductStatusInfoChangedEvent extends ProductEvent {
-  public ProductStatusInfoChangedEvent(final ProductType type, final String hash) {
-    super(type, hash);
+  public ProductStatusInfoChangedEvent(final ProductInfo info) {
+    super(info);
   }
 }
