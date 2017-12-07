@@ -1,35 +1,8 @@
 package nl.yogh.aerius.wui.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import nl.yogh.aerius.wui.builder.place.ContainerPlace;
-import nl.yogh.aerius.wui.builder.place.LandingPlace;
-import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
-
 public class ColorUtil {
   private static final float BRIGHTNESS = 0.8F;
   private static final float SAtURATION = 0.8F;
-  private static Map<Class<?>, String> fontColors = new HashMap<>();
-  private static Map<Class<?>, String> backgroundColors = new HashMap<>();
-
-  static {
-    fontColors.put(LandingPlace.class, "ffd8bd");
-    fontColors.put(ContainerPlace.class, "c8e1fb");
-    fontColors.put(PullRequestPlace.class, "a2f398");
-
-    backgroundColors.put(LandingPlace.class, "ff8c3b");
-    backgroundColors.put(ContainerPlace.class, "1378b3");
-    backgroundColors.put(PullRequestPlace.class, "12ab00");
-  }
-
-  public static String getPlaceFontColor(final Class<?> clazz) {
-    return "#" + fontColors.get(clazz);
-  }
-
-  public static String getPlaceBackgroundColor(final Class<?> clazz) {
-    return "#" + backgroundColors.get(clazz);
-  }
 
   public static int HSBtoRGB(final float hue, final float saturation, final float brightness) {
     int r = 0, g = 0, b = 0;

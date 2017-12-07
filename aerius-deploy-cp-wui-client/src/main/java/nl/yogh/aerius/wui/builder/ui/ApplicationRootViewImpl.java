@@ -17,12 +17,12 @@ import nl.yogh.aerius.wui.ApplicationRootView;
 import nl.yogh.aerius.wui.builder.component.PlaceNavigation;
 import nl.yogh.aerius.wui.builder.place.LandingPlace;
 import nl.yogh.aerius.wui.i18n.M;
-import nl.yogh.aerius.wui.util.ColorUtil;
-import nl.yogh.aerius.wui.widget.NotificationPanel;
+import nl.yogh.aerius.wui.resources.R;
 import nl.yogh.gwt.wui.event.PlaceChangeEvent;
 import nl.yogh.gwt.wui.place.PlaceController;
 import nl.yogh.gwt.wui.widget.EventComposite;
 import nl.yogh.gwt.wui.widget.HeadingWidget;
+import nl.yogh.gwt.wui.widget.NotificationPanel;
 
 public class ApplicationRootViewImpl extends EventComposite implements ApplicationRootView {
   private static final ApplicationRootViewImplUiBinder UI_BINDER = GWT.create(ApplicationRootViewImplUiBinder.class);
@@ -37,7 +37,7 @@ public class ApplicationRootViewImpl extends EventComposite implements Applicati
 
   @UiField SimplePanel contentPanel;
 
-  @UiField NotificationPanel notificationPanel;
+  @UiField(provided = true) NotificationPanel notificationPanel;
 
   @SuppressWarnings("rawtypes") @UiField(provided = true) PlaceNavigation placeNavigation;
 
@@ -45,7 +45,9 @@ public class ApplicationRootViewImpl extends EventComposite implements Applicati
 
   @Inject
   @SuppressWarnings("rawtypes")
-  public ApplicationRootViewImpl(final EventBus eventBus, final PlaceNavigation placeNavigation, final PlaceController placeController) {
+  public ApplicationRootViewImpl(final EventBus eventBus, final NotificationPanel notificationPanel, final PlaceNavigation placeNavigation,
+      final PlaceController placeController) {
+    this.notificationPanel = notificationPanel;
     this.placeNavigation = placeNavigation;
     this.placeController = placeController;
 
@@ -57,11 +59,11 @@ public class ApplicationRootViewImpl extends EventComposite implements Applicati
 
   @EventHandler
   public void onPlaceChange(final PlaceChangeEvent e) {
-    final Class<?> clazz = e.getValue().getClass();
+    final String clazz = e.getValue().getClass().getSimpleName();
 
-    placeTitle.setText(M.messages().placeTitle(clazz.getSimpleName()));
-    placeTitle.getElement().getStyle().setBackgroundColor(ColorUtil.getPlaceBackgroundColor(clazz));
-    placeTitle.getElement().getStyle().setColor(ColorUtil.getPlaceFontColor(clazz));
+    placeTitle.setText(M.messages().placeTitle(clazz));
+    placeTitle.getElement().getStyle().setBackgroundColor(R.colors().placeBackgroundColor(clazz));
+    placeTitle.getElement().getStyle().setColor(R.colors().placeFontColor(clazz));
   }
 
   @UiHandler("landingHeading")

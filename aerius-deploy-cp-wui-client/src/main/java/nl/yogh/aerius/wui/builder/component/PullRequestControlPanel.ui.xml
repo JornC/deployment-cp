@@ -3,6 +3,9 @@
   xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
   <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:with field='pull' type='nl.yogh.aerius.builder.domain.PullRequestInfo' />
+  <ui:with field='eventBus' type='com.google.web.bindery.event.shared.EventBus' />
+  <ui:import field='nl.yogh.aerius.builder.domain.ProductType.*' />
   <ui:style>
     .panel {
     padding: 10px;
@@ -13,20 +16,9 @@
     margin-left: 15px;
     }
     .by {
-    margin: 0px 15px;
-    }
-    .button {
-    flex-shrink: 0;
-    margin: 10px;
-    border: 4px solid rgba(125,125,125,0.2);
-    padding: 15px 5px;
-    cursor: pointer;
-    transition: border 0.1s
-    ease-out;
-    user-select: none;
-    }
-    .button:hover {
-    border-color: rgba(125,125,125,0.5);
+    margin: 0px 5px;
+    color:
+    #888;
     }
     .label {
     font-weight: bold;
@@ -35,23 +27,20 @@
     }
   </ui:style>
   <g:FlowPanel styleName="{res.css.flex} {style.panel} {res.css.alignCenter}">
-    <g:Label ui:field="idxField" styleName="{style.label} {res.css.noShrink}" />
+    <g:Label styleName="{style.label} {res.css.noShrink}" text="#{pull.idx}" />
     <g:FlowPanel>
-      <g:FlowPanel styleName="{style.metaText}">
-        <g:Label ui:field="titleField" text="Pull request title can be quite long." styleName="" />
+      <g:FlowPanel styleName="{res.css.flex} {style.metaText}">
+        <g:Label text="{pull.title}" />
         <g:Label text="by" styleName="{style.by}" />
-        <g:Label ui:field="authorName" text="Pull request title can be quite long." styleName="" />
+        <g:Label text="{pull.author}" />
       </g:FlowPanel>
-      <g:FlowPanel styleName="{res.css.flex} {res.css.wrap} {res.css.distribute}">
-        <c:ProjectControlButton text="CALCULATOR" styleName="{style.button}" />
-        <c:ProjectControlButton text="SCENARIO" styleName="{style.button}" />
-        <c:ProjectControlButton text="DATABASE" styleName="{style.button}" />
-        <c:ProjectControlButton text="GEOSERVER" styleName="{style.button}" />
-        <c:ProjectControlButton text="TASKMANAGER" styleName="{style.button}" />
-        <c:ProjectControlButton text="OPS WORKERS" styleName="{style.button}" />
-        <c:ProjectControlButton text="REGISTER" styleName="{style.button}" />
-        <c:ProjectControlButton text="MELDING" styleName="{style.button}" />
-        <c:ProjectControlButton text="TESTS" styleName="{style.button}" />
+      <g:FlowPanel ui:field="productPanel" styleName="{res.css.flex} {res.css.wrap} {res.css.distribute}">
+        <c:ProjectControlButton type="{CALCULATOR}" pull="{pull}" eventBus="{eventBus}" />
+        <c:ProjectControlButton type="{WORKERS}" pull="{pull}" eventBus="{eventBus}" />
+        <c:ProjectControlButton type="{SCENARIO}" pull="{pull}" eventBus="{eventBus}" />
+        <c:ProjectControlButton type="{REGISTER}" pull="{pull}" eventBus="{eventBus}" />
+        <c:ProjectControlButton type="{CONNECT}" pull="{pull}" eventBus="{eventBus}" />
+        <c:ProjectControlButton type="{MELDING}" pull="{pull}" eventBus="{eventBus}" />
       </g:FlowPanel>
     </g:FlowPanel>
   </g:FlowPanel>

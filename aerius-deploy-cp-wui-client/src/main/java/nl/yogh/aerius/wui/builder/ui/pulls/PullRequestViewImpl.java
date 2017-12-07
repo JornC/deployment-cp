@@ -34,7 +34,7 @@ public class PullRequestViewImpl extends EventComposite implements PullRequestVi
   @EventHandler
   public void onPullRequestRetrievalEvent(final PullRequestRetrievalEvent e) {
     for (final PullRequestInfo info : e.getValue()) {
-      pullRequestPanel.add(new PullRequestControlPanel(info));
+      pullRequestPanel.add(new PullRequestControlPanel(eventBus, info));
     }
   }
 

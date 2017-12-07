@@ -7,37 +7,38 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class PullRequestInfo implements Serializable, IsSerializable {
   private static final long serialVersionUID = 3354703304031517914L;
 
-  private int pullRequestIdx;
+  private String idx;
   private String title;
-  private String authorName;
+  private String author;
 
-  public PullRequestInfo() {}
-
-  public PullRequestInfo(final int pullRequestIdx) {
-    this.pullRequestIdx = pullRequestIdx;
+  public static PullRequestInfo create() {
+    return new PullRequestInfo();
   }
 
-  public int getPullRequestIdx() {
-    return pullRequestIdx;
+  public String idx() {
+    return idx;
   }
 
-  public void setPullRequestIdx(final int pullRequestIdx) {
-    this.pullRequestIdx = pullRequestIdx;
+  public PullRequestInfo idx(final String idx) {
+    this.idx = idx;
+    return this;
   }
 
-  public String getTitle() {
+  public String title() {
     return title;
   }
 
-  public void setTitle(final String title) {
+  public PullRequestInfo title(final String title) {
     this.title = title;
+    return this;
   }
 
-  public String getAuthorName() {
-    return authorName;
+  public String author() {
+    return author;
   }
 
-  public void setAuthorName(String authorName) {
-    this.authorName = authorName;
+  public PullRequestInfo author(final String author) {
+    this.author = author;
+    return this;
   }
 }

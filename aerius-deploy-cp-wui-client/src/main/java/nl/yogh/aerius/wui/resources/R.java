@@ -67,6 +67,8 @@ public final class R {
 
   private static final ApplicationResource RESOURCES = GWT.create(ApplicationResource.class);
 
+  private static final ApplicationColors COLORS = GWT.create(ApplicationColors.class);
+
   // Don't instantiate directly, use the static fields.
   private R() {}
 
@@ -82,6 +84,10 @@ public final class R {
    */
   public static ApplicationCssResource css() {
     return RESOURCES.css();
+  }
+
+  public static ApplicationColors colors() {
+    return COLORS;
   }
 
   /**

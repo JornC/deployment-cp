@@ -8,7 +8,6 @@ import nl.yogh.aerius.wui.builder.ui.pulls.PullRequestView.Presenter;
 import nl.yogh.gwt.wui.activity.EventActivity;
 
 public class PullRequestActivity extends EventActivity<Presenter, PullRequestView> implements Presenter {
-
   @Inject
   public PullRequestActivity(final PullRequestView view) {
     super(view);

@@ -15,6 +15,7 @@ public class PullRetrievalDaemonImpl implements PullRetrievalDaemon {
   interface PullRetrievalDaemonImplEventBinder extends EventBinder<PullRetrievalDaemonImpl> {}
 
   private final PullRetrievalDaemonImplEventBinder eventBinder = GWT.create(PullRetrievalDaemonImplEventBinder.class);
+
   private final PullRequestServiceAsync service;
   private final EventBus eventBus;
 
