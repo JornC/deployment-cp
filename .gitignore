@@ -9,6 +9,9 @@
 .project
 .classpath
 
+# Logging #
+*/logback.xml
+
 # Build folders #
 target/
 bin/

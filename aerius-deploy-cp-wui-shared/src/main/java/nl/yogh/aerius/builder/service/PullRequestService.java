@@ -8,10 +8,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import nl.yogh.aerius.builder.domain.ProductInfo;
 import nl.yogh.aerius.builder.domain.ProductType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.exception.ApplicationException;
 
 @RemoteServiceRelativePath(ServiceURLConstants.PULL_REQUEST_GWT_PATH)
 public interface PullRequestService extends RemoteService {
-  ArrayList<PullRequestInfo> getPullRequests();
+  ArrayList<PullRequestInfo> getPullRequests() throws ApplicationException;
 
-  ProductInfo doAction(ProductDeploymentAction action, ProductType type, ProductInfo info);
+  ArrayList<ProductInfo> getUpdates(long since) throws ApplicationException;
+
+  ProductInfo doAction(final ProductType type, ProductDeploymentAction action, ProductInfo info) throws ApplicationException;
 }

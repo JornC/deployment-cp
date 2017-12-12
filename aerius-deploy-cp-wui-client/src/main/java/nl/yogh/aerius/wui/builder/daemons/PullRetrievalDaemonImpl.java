@@ -36,7 +36,7 @@ public class PullRetrievalDaemonImpl implements PullRetrievalDaemon {
 
   @EventHandler
   public void onProductActionCommand(final ProductActionCommand c) {
-    service.doAction(c.getAction(), c.getType(), c.getValue(), r -> eventBus.fireEvent(new ProductStatusInfoChangedEvent(r)));
+    service.doAction(c.getType(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new ProductStatusInfoChangedEvent(r)));
   }
 
   @EventHandler

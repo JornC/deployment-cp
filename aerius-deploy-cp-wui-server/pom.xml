@@ -60,6 +60,11 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.12</version>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.github</groupId>
+      <artifactId>org.eclipse.egit.github.core</artifactId>
+      <version>2.1.5</version>
+    </dependency>
   </dependencies>
 
   <build>

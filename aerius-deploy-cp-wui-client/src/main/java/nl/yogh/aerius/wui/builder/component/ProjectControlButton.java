@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -49,6 +50,7 @@ public class ProjectControlButton extends EventComposite {
 
   @UiField CustomStyle style;
 
+  @UiField SimplePanel container;
   @UiField FlowPanel panel;
 
   private String activeStatus;
@@ -56,23 +58,39 @@ public class ProjectControlButton extends EventComposite {
   @UiField(provided = true) ProductType type;
   @UiField(provided = true) String hash;
 
+  private boolean busy;
+
+  private boolean disabled;
   private final ProductInfo info;
 
   @UiConstructor
   public ProjectControlButton(final ProductType type, final PullRequestInfo pull) {
-    this.info = pull.products().get(type);
-
+    this.info = pull.products() == null ? null : pull.products().get(type);
     this.type = type;
-    this.hash = info == null ? "N/A" : info.hash();
 
-    initWidget(UI_BINDER.createAndBindUi(this));
-
+    handlePull(pull);
     handleProductInfo(info);
 
-    panel.addDomHandler(e -> eventBus.fireEvent(new ProductStatusHighlightEvent(info, true)), MouseOverEvent.getType());
-    panel.addDomHandler(e -> eventBus.fireEvent(new ProductStatusHighlightEvent(info, false)), MouseOutEvent.getType());
+    panel.addDomHandler(e -> fireHightlight(true), MouseOverEvent.getType());
+    panel.addDomHandler(e -> fireHightlight(false), MouseOutEvent.getType());
 
     panel.addDomHandler(e -> eventBus.fireEvent(new ProductActionCommand(info, type, determineAction(info.status()))), ClickEvent.getType());
+  }
+
+  private void fireHightlight(final boolean highlight) {
+    if (disabled || info == null) {
+      return;
+    }
+
+    eventBus.fireEvent(new ProductStatusHighlightEvent(info, highlight));
+  }
+
+  private void handlePull(final PullRequestInfo pull) {
+    this.disabled = pull.isBusy();
+
+    this.hash = info == null || disabled ? "N/A" : info.hash();
+
+    initWidget(UI_BINDER.createAndBindUi(this));
   }
 
   @Override
@@ -84,6 +102,10 @@ public class ProjectControlButton extends EventComposite {
 
   @EventHandler
   public void onProductStatusHighlightEvent(final ProductStatusHighlightEvent e) {
+    if (busy) {
+      return;
+    }
+
     if (e.getValue().hash().equals(hash)) {
       highlight(e.isHighlight());
     }
@@ -91,6 +113,10 @@ public class ProjectControlButton extends EventComposite {
 
   @EventHandler
   public void onProductStatusInfoChangedEvent(final ProductStatusInfoChangedEvent e) {
+    if (disabled) {
+      return;
+    }
+
     final ProductInfo info = e.getValue();
 
     if (!info.hash().equals(hash)) {
@@ -106,15 +132,17 @@ public class ProjectControlButton extends EventComposite {
   }
 
   private void setBusy(final boolean busy) {
+    this.busy = busy;
+
     if (busy) {
       highlight(false);
     }
 
-    setStyleName(style.busy(), busy);
+    container.setStyleName(style.busy(), busy);
   }
 
   private void highlight(final boolean highlight) {
-    setStyleName(style.highlight(), highlight);
+    panel.setStyleName(style.highlight(), highlight);
   }
 
   private void handleProductInfo(final ProductInfo info) {
@@ -127,7 +155,7 @@ public class ProjectControlButton extends EventComposite {
   }
 
   private void setStatus(final ServiceStatus status) {
-    if (status == null) {
+    if (status == null || disabled) {
       setDisabled();
       return;
     }
@@ -166,10 +194,10 @@ public class ProjectControlButton extends EventComposite {
 
   private void setActiveStatus(final String status) {
     if (activeStatus != null) {
-      removeStyleName(activeStatus);
+      panel.removeStyleName(activeStatus);
     }
 
-    addStyleName(status);
+    panel.addStyleName(status);
     activeStatus = status;
   }
 }
