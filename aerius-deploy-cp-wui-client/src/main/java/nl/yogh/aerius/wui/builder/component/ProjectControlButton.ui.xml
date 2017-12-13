@@ -10,10 +10,9 @@
     flex-shrink: 0;
     margin: 10px;
     border: 4px solid rgba(125,125,125,0.2);
-    padding: 15px 5px;
+    padding: 10px 5px;
     cursor: pointer;
-    transition:
-    border 0.1s ease-out, background 0.1s ease-out, box-shadow 0.1s ease-out;
+    transition: all 0.1s ease-out;
     user-select: none;
     min-width: 110px;
     }
@@ -88,7 +87,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 50px;
+    max-width: 90px;
     }
 
     .highlight {
@@ -116,6 +115,10 @@
     50% { box-shadow: 0px 0px 0px 2px rgba(125,125,125,1); }
     100% { box-shadow: 0px 0px 0px 6px rgba(125,125,125,1); }
     }
+    .services {
+    font-size: 0.7em;
+    font-style: italic;
+    }
   </ui:style>
   <g:SimplePanel ui:field="container" styleName="{res.css.flex} {res.css.justify}">
     <g:FlowPanel ui:field="panel" styleName="{style.button} {res.css.flex} {res.css.alignCenter} {res.css.columns} {style.panel}">
@@ -124,6 +127,8 @@
         <g:Label styleName="{style.statusLabel}" />
       </g:FlowPanel>
       <g:Label text="{hash}" title="{hash}" styleName="{style.hash}" />
+      <g:Label ui:field="services" styleName="{style.services}" />
+      <g:Label ui:field="status" styleName="{style.services}" />
     </g:FlowPanel>
   </g:SimplePanel>
 </ui:UiBinder>

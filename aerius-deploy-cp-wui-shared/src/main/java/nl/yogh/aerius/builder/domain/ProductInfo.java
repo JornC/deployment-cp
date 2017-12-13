@@ -1,6 +1,7 @@
 package nl.yogh.aerius.builder.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -11,6 +12,10 @@ public class ProductInfo implements Serializable, IsSerializable {
 
   private ServiceStatus status;
   private String hash;
+
+  private ArrayList<ServiceInfo> services;
+
+  public ProductInfo() {}
 
   public static ProductInfo create() {
     return new ProductInfo();
@@ -40,6 +45,15 @@ public class ProductInfo implements Serializable, IsSerializable {
 
   public ProductInfo busy(final boolean busy) {
     this.busy = busy;
+    return this;
+  }
+
+  public ArrayList<ServiceInfo> services() {
+    return services;
+  }
+
+  public ProductInfo services(final ArrayList<ServiceInfo> services) {
+    this.services = services;
     return this;
   }
 

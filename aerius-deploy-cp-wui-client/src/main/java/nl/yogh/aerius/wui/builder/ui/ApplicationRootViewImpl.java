@@ -18,11 +18,11 @@ import nl.yogh.aerius.wui.builder.component.PlaceNavigation;
 import nl.yogh.aerius.wui.builder.place.LandingPlace;
 import nl.yogh.aerius.wui.i18n.M;
 import nl.yogh.aerius.wui.resources.R;
-import nl.yogh.aerius.wui.widget.NotificationPanel;
 import nl.yogh.gwt.wui.event.PlaceChangeEvent;
 import nl.yogh.gwt.wui.place.PlaceController;
 import nl.yogh.gwt.wui.widget.EventComposite;
 import nl.yogh.gwt.wui.widget.HeadingWidget;
+import nl.yogh.gwt.wui.widget.NotificationPanel;
 
 public class ApplicationRootViewImpl extends EventComposite implements ApplicationRootView {
   private static final ApplicationRootViewImplUiBinder UI_BINDER = GWT.create(ApplicationRootViewImplUiBinder.class);

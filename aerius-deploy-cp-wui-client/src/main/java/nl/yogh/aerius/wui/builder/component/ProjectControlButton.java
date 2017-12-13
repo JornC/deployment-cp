@@ -1,5 +1,7 @@
 package nl.yogh.aerius.wui.builder.component;
 
+import java.util.stream.Collectors;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -9,6 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
@@ -28,7 +31,7 @@ import nl.yogh.gwt.wui.widget.EventComposite;
 public class ProjectControlButton extends EventComposite {
   interface ProjectControlButtonEventBinder extends EventBinder<ProjectControlButton> {}
 
-  private final ProjectControlButtonEventBinder eventBinder = GWT.create(ProjectControlButtonEventBinder.class);
+  private final ProjectControlButtonEventBinder EVENT_BINDER = GWT.create(ProjectControlButtonEventBinder.class);
 
   interface ProjectControlButtonUiBinder extends UiBinder<Widget, ProjectControlButton> {}
 
@@ -58,6 +61,9 @@ public class ProjectControlButton extends EventComposite {
   @UiField(provided = true) ProductType type;
   @UiField(provided = true) String hash;
 
+  @UiField Label services;
+  @UiField Label status;
+
   private boolean busy;
 
   private boolean disabled;
@@ -69,15 +75,15 @@ public class ProjectControlButton extends EventComposite {
     this.type = type;
 
     handlePull(pull);
-    handleProductInfo(info);
+    handleInfo(info);
 
-    panel.addDomHandler(e -> fireHightlight(true), MouseOverEvent.getType());
-    panel.addDomHandler(e -> fireHightlight(false), MouseOutEvent.getType());
+    panel.addDomHandler(e -> fireHighlight(true), MouseOverEvent.getType());
+    panel.addDomHandler(e -> fireHighlight(false), MouseOutEvent.getType());
 
     panel.addDomHandler(e -> eventBus.fireEvent(new ProductActionCommand(info, type, determineAction(info.status()))), ClickEvent.getType());
   }
 
-  private void fireHightlight(final boolean highlight) {
+  private void fireHighlight(final boolean highlight) {
     if (disabled || info == null) {
       return;
     }
@@ -97,7 +103,7 @@ public class ProjectControlButton extends EventComposite {
   public void setEventBus(final EventBus eventBus) {
     super.setEventBus(eventBus);
 
-    eventBinder.bindEventHandlers(this, eventBus);
+    EVENT_BINDER.bindEventHandlers(this, eventBus);
   }
 
   @EventHandler
@@ -106,9 +112,54 @@ public class ProjectControlButton extends EventComposite {
       return;
     }
 
-    if (e.getValue().hash().equals(hash)) {
+    if (matches(e.getValue())) {
       highlight(e.isHighlight());
+      setDynamicServices(e.getValue(), e.isHighlight());
     }
+  }
+
+  private void setDynamicServices(final ProductInfo value, final boolean highlight) {
+    if (highlight) {
+      setMatchCount(value);
+    } else {
+      setServiceCount();
+    }
+  }
+
+  private void setServiceCount() {
+    services.setText("services: " + getServiceCount());
+  }
+
+  private void setStatusCount() {
+    status.setText("compiled: " + getBuiltOrRunningCount());
+  }
+
+  private void setMatchCount(final ProductInfo value) {
+    final long matchCount = getMatchCount(value);
+
+    services.setText("matches: " + matchCount + "/" + getServiceCount());
+  }
+
+  private int getServiceCount() {
+    return info == null || info.services() == null ? 0 : info.services().size();
+  }
+
+  private long getBuiltOrRunningCount() {
+    return info == null || info.services() == null ? 0
+        : info.services().stream().filter(e -> e.status() == ServiceStatus.RUNNING || e.status() == ServiceStatus.SUSPENDED).count();
+  }
+
+  private boolean matches(final ProductInfo value) {
+    return getMatchCount(value) > 0;
+  }
+
+  private long getMatchCount(final ProductInfo value) {
+    if (info == null || info.services() == null) {
+      return 0;
+    }
+
+    return value.services().stream().map(e -> e.hash())
+        .filter(s -> info.services().stream().map(e -> e.hash()).collect(Collectors.toSet()).contains(s)).count();
   }
 
   @EventHandler
@@ -127,8 +178,15 @@ public class ProjectControlButton extends EventComposite {
   }
 
   private void handleInfo(final ProductInfo info) {
+    if (info == null) {
+      setDisabled();
+      return;
+    }
+
     setStatus(info.status());
     setBusy(info.busy());
+    setServiceCount();
+    setStatusCount();
   }
 
   private void setBusy(final boolean busy) {
@@ -143,15 +201,6 @@ public class ProjectControlButton extends EventComposite {
 
   private void highlight(final boolean highlight) {
     panel.setStyleName(style.highlight(), highlight);
-  }
-
-  private void handleProductInfo(final ProductInfo info) {
-    if (info == null) {
-      setDisabled();
-      return;
-    }
-
-    setStatus(info.status());
   }
 
   private void setStatus(final ServiceStatus status) {

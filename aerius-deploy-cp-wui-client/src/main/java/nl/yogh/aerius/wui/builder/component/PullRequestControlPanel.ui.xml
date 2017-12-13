@@ -72,7 +72,6 @@
         <c:ProjectControlButton type="{REGISTER}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{CONNECT}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{MELDING}" pull="{pull}" eventBus="{eventBus}" />
-        <c:ProjectControlButton type="{TESTS}" pull="{pull}" eventBus="{eventBus}" />
       </g:FlowPanel>
     </g:FlowPanel>
   </g:FlowPanel>

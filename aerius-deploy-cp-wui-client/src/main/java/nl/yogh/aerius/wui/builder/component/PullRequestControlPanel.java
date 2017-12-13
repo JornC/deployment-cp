@@ -49,4 +49,8 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
   private void setBusy(final boolean busy) {
     panel.setStyleName(style.busy(), busy);
   }
+
+  public PullRequestInfo getPull() {
+    return pull;
+  }
 }

@@ -14,9 +14,10 @@ public class PullRequestMaintenanceFactory {
   public static void init(final Properties properties) {
     synchronized (PullRequestMaintenanceFactory.class) {
       if (maintenanceWorker == null) {
-        final String oauthToken = getPropertyRequired(properties, "deployment.cp.oath.token");
+        final String baseDir = getPropertyRequired(properties, "deployment.git.repo.dir");
+        final String oAuthToken = getPropertyRequired(properties, "deployment.cp.oath.token");
 
-        maintenanceWorker = new PullRequestMaintenanceWorker(oauthToken);
+        maintenanceWorker = new PullRequestMaintenanceWorker(baseDir, oAuthToken);
       }
     }
 
