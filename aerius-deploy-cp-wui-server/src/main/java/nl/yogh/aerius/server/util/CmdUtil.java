@@ -26,6 +26,11 @@ public class CmdUtil {
     public int getCode() {
       return code;
     }
+
+    @Override
+    public String toString() {
+      return "ProcessExitException [code=" + code + "]";
+    }
   }
 
   public static ArrayList<String> cmd(final String dir, final String cmd) throws IOException, InterruptedException, ProcessExitException {

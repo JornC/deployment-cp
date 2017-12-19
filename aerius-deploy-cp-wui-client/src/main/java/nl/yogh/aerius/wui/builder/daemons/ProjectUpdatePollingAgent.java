@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import com.google.web.bindery.event.shared.EventBus;
 
-import nl.yogh.aerius.builder.domain.ProductInfo;
+import nl.yogh.aerius.builder.domain.ProjectInfo;
 
-public abstract class ProductUpdatePollingAgent extends PollingAgent<ArrayList<ProductInfo>> implements ProductUpdateDaemon {
+public abstract class ProjectUpdatePollingAgent extends PollingAgent<ArrayList<ProjectInfo>> implements ProjectUpdateDaemon {
   private static final int PULL_REPEAT_DELAY = 1000;
 
   protected final EventBus eventBus;
 
-  public ProductUpdatePollingAgent(final EventBus eventBus) {
+  public ProjectUpdatePollingAgent(final EventBus eventBus) {
     this.eventBus = eventBus;
   }
 

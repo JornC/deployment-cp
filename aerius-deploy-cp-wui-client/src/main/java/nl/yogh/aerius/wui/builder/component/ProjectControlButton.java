@@ -21,15 +21,15 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
-import nl.yogh.aerius.builder.domain.ProductInfo;
-import nl.yogh.aerius.builder.domain.ProductType;
+import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
-import nl.yogh.aerius.builder.service.ProductDeploymentAction;
-import nl.yogh.aerius.wui.builder.commands.ProductActionCommand;
-import nl.yogh.aerius.wui.builder.commands.ProductStatusHighlightEvent;
-import nl.yogh.aerius.wui.builder.commands.ProductStatusInfoChangedEvent;
+import nl.yogh.aerius.builder.service.ProjectDeploymentAction;
+import nl.yogh.aerius.wui.builder.commands.ProjectActionCommand;
+import nl.yogh.aerius.wui.builder.commands.ProjectStatusHighlightEvent;
+import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.commands.ServiceStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.daemons.RequestServicesEvent;
 import nl.yogh.gwt.wui.widget.EventComposite;
@@ -64,7 +64,7 @@ public class ProjectControlButton extends EventComposite {
 
   private String activeStatus;
 
-  @UiField(provided = true) ProductType type;
+  @UiField(provided = true) ProjectType type;
   @UiField(provided = true) String hash;
 
   @UiField Label serviceField;
@@ -75,13 +75,13 @@ public class ProjectControlButton extends EventComposite {
   private boolean busy;
 
   private boolean disabled;
-  private ProductInfo info;
+  private ProjectInfo info;
 
   private HandlerRegistration eventRegistration;
 
   @UiConstructor
-  public ProjectControlButton(final ProductType type, final PullRequestInfo pull) {
-    this.info = pull.products() == null ? null : pull.products().get(type);
+  public ProjectControlButton(final ProjectType type, final PullRequestInfo pull) {
+    this.info = pull.projects() == null ? null : pull.projects().get(type);
     this.type = type;
 
     handlePull(pull);
@@ -90,7 +90,8 @@ public class ProjectControlButton extends EventComposite {
     panel.addDomHandler(e -> fireHighlight(true), MouseOverEvent.getType());
     panel.addDomHandler(e -> fireHighlight(false), MouseOutEvent.getType());
 
-    panel.addDomHandler(e -> eventBus.fireEvent(new ProductActionCommand(info, type, determineAction(info.status()))), ClickEvent.getType());
+    panel.addDomHandler(e -> eventBus.fireEvent(new ProjectActionCommand(pull.idx(), info, type, determineAction(info.status()))),
+        ClickEvent.getType());
   }
 
   private void fireHighlight(final boolean highlight) {
@@ -98,7 +99,7 @@ public class ProjectControlButton extends EventComposite {
       return;
     }
 
-    eventBus.fireEvent(new ProductStatusHighlightEvent(info, highlight));
+    eventBus.fireEvent(new ProjectStatusHighlightEvent(info, highlight));
   }
 
   private void handlePull(final PullRequestInfo pull) {
@@ -109,7 +110,7 @@ public class ProjectControlButton extends EventComposite {
     initWidget(UI_BINDER.createAndBindUi(this));
   }
 
-  private void handleInfo(final ProductInfo info) {
+  private void handleInfo(final ProjectInfo info) {
     if (info == null) {
       setDisabled();
       return;
@@ -154,7 +155,7 @@ public class ProjectControlButton extends EventComposite {
   }
 
   @EventHandler
-  public void onProductStatusHighlightEvent(final ProductStatusHighlightEvent e) {
+  public void onProductStatusHighlightEvent(final ProjectStatusHighlightEvent e) {
     if (busy) {
       return;
     }
@@ -165,7 +166,7 @@ public class ProjectControlButton extends EventComposite {
     }
   }
 
-  private void setDynamicServices(final ProductInfo value, final boolean highlight) {
+  private void setDynamicServices(final ProjectInfo value, final boolean highlight) {
     if (highlight) {
       setMatchCount(value);
     } else {
@@ -177,7 +178,7 @@ public class ProjectControlButton extends EventComposite {
     serviceField.setText("services: " + getServiceCount());
   }
 
-  private void setMatchCount(final ProductInfo value) {
+  private void setMatchCount(final ProjectInfo value) {
     final long matchCount = getMatchCount(value);
 
     serviceField.setText("matches: " + matchCount + "/" + getServiceCount());
@@ -192,11 +193,11 @@ public class ProjectControlButton extends EventComposite {
         .valueOf(serviceMap.values().stream().filter(e -> e.status() == ServiceStatus.DEPLOYED || e.status() == ServiceStatus.SUSPENDED).count());
   }
 
-  private boolean matches(final ProductInfo value) {
+  private boolean matches(final ProjectInfo value) {
     return getMatchCount(value) > 0;
   }
 
-  private long getMatchCount(final ProductInfo value) {
+  private long getMatchCount(final ProjectInfo value) {
     if (info == null || info.services() == null) {
       return 0;
     }
@@ -224,12 +225,12 @@ public class ProjectControlButton extends EventComposite {
   }
 
   @EventHandler
-  public void onProductStatusInfoChangedEvent(final ProductStatusInfoChangedEvent e) {
+  public void onProductStatusInfoChangedEvent(final ProjectStatusInfoChangedEvent e) {
     if (disabled) {
       return;
     }
 
-    final ProductInfo info = e.getValue();
+    final ProjectInfo info = e.getValue();
 
     if (!info.hash().equals(hash)) {
       return;
@@ -274,15 +275,15 @@ public class ProjectControlButton extends EventComposite {
     }
   }
 
-  private static ProductDeploymentAction determineAction(final ServiceStatus status) {
+  private static ProjectDeploymentAction determineAction(final ServiceStatus status) {
     switch (status) {
     case DEPLOYED:
-      return ProductDeploymentAction.SUSPEND;
+      return ProjectDeploymentAction.SUSPEND;
     case SUSPENDED:
-      return ProductDeploymentAction.DEPLOY;
+      return ProjectDeploymentAction.DEPLOY;
     default:
     case UNBUILT:
-      return ProductDeploymentAction.BUILD;
+      return ProjectDeploymentAction.BUILD;
     }
   }
 

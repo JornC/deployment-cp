@@ -14,7 +14,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
 import nl.yogh.aerius.server.worker.jobs.PullRequestUpdateJob;
 
@@ -25,30 +27,73 @@ public class PullRequestMaintenanceWorker {
    * The pull request update interval, in minutes.
    */
   private static final int UPDATE_INTERVAL = 15;
+  /**
+   * Project update interval, in minutes.
+   */
+  private static final int PROJECT_UPDATE_INTERVAL = 15;
 
   private final AERIUSGithubHook githubHook;
 
   private final ConcurrentMap<Integer, PullRequestInfo> pulls = new ConcurrentHashMap<>();
 
-  private final ExecutorService pullRequestUpdateExecutor;
+  private final ExecutorService pullRequestLocalUpdateExecutor;
 
   /**
    * TODO This can be phased away when we've got a notification hook.
    */
-  private final ScheduledExecutorService periodicUpdateExecutor;
+  private final ScheduledExecutorService pullRequestUpdateExecutor;
+
+  private final ScheduledExecutorService projectUpdateExecutor;
 
   private static Comparator<PullRequestInfo> byReverseIdx = (a, b) -> -Integer.compare(Integer.parseInt(a.idx()), Integer.parseInt(b.idx()));
 
   private final String baseDir;
 
-  public PullRequestMaintenanceWorker(final String baseDir, final String oAuthToken) {
+  private long lastProjectUpdate;
+
+  public PullRequestMaintenanceWorker(final String baseDir, final String oAuthToken, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
     this.baseDir = baseDir;
-    pullRequestUpdateExecutor = Executors.newSingleThreadExecutor();
+    pullRequestLocalUpdateExecutor = Executors.newSingleThreadExecutor();
 
     githubHook = new AERIUSGithubHook(oAuthToken);
 
-    periodicUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
-    periodicUpdateExecutor.scheduleWithFixedDelay(() -> updatePullRequestsFromGithub(), 0, UPDATE_INTERVAL, TimeUnit.MINUTES);
+    pullRequestUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
+    pullRequestUpdateExecutor.scheduleWithFixedDelay(() -> updatePullRequestsFromGithub(), 0, UPDATE_INTERVAL, TimeUnit.MINUTES);
+
+    projectUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
+    projectUpdateExecutor.scheduleWithFixedDelay(() -> updateProjects(projectUpdates), PROJECT_UPDATE_INTERVAL, PROJECT_UPDATE_INTERVAL,
+        TimeUnit.SECONDS);
+  }
+
+  private void updateProjects(final TimestampedMultiMap<ProjectInfo> projectUpdates) {
+    final long startTime = System.currentTimeMillis();
+
+    final ArrayList<ProjectInfo> updates = projectUpdates.getUpdates(lastProjectUpdate);
+
+    LOG.debug("Started synchronizing {} projects.", updates.size());
+
+    try {
+      for (final ProjectInfo project : updates) {
+        for (final PullRequestInfo pull : pulls.values()) {
+          if (pull.projects() == null || pull.projects().isEmpty()) {
+            continue;
+          }
+
+          pull.projects().values().stream().filter(p -> p.hash().equals(project.hash())).forEach(p -> update(p, project));
+        }
+      }
+    } catch (final Exception e) {
+      LOG.error("Error while updating a project", e);
+    }
+
+    lastProjectUpdate = System.currentTimeMillis();
+
+    LOG.debug("Synchronized {} projects in {}ms.", updates.size(), lastProjectUpdate - startTime);
+  }
+
+  private void update(final ProjectInfo target, final ProjectInfo source) {
+    target.status(source.status());
+    target.busy(source.busy());
   }
 
   private void updatePullRequestsFromGithub() {
@@ -66,25 +111,24 @@ public class PullRequestMaintenanceWorker {
   }
 
   private void schedulePullRequestUpdate(final PullRequestInfo info) {
-    pullRequestUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(baseDir, info, pulls)));
+    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(baseDir, info, pulls)));
   }
 
   public void shutdown() {
+    pullRequestLocalUpdateExecutor.shutdownNow();
     pullRequestUpdateExecutor.shutdownNow();
-    periodicUpdateExecutor.shutdownNow();
+    projectUpdateExecutor.shutdownNow();
   }
 
   public ArrayList<PullRequestInfo> getPullRequests() {
     ArrayList<PullRequestInfo> lst;
-    synchronized (pulls) {
-      lst = new ArrayList<PullRequestInfo>(pulls.values());
-    }
+    lst = new ArrayList<PullRequestInfo>(pulls.values());
 
     lst.sort(byReverseIdx);
     return lst;
   }
 
-  public static void main(final String[] args) {
-    new PullRequestMaintenanceWorker(args[0], args[1]);
+  public long getLastUpdate() {
+    return lastProjectUpdate;
   }
 }

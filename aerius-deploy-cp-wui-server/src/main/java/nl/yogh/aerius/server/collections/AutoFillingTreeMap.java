@@ -15,6 +15,5 @@ public abstract class AutoFillingTreeMap<K, V> extends TreeMap<K, V> {
     }
 
     return super.get(key);
-
   }
 }

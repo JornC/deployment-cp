@@ -1,5 +1,5 @@
 package nl.yogh.aerius.builder.service;
 
-public enum ProductDeploymentAction {
+public enum ProjectDeploymentAction {
   SUSPEND, DEPLOY, BUILD, DESTROY;
 }

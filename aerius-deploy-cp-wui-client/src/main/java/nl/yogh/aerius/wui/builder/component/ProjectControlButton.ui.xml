@@ -3,7 +3,7 @@
   xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
   <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
-  <ui:with field='type' type='nl.yogh.aerius.builder.domain.ProductType' />
+  <ui:with field='type' type='nl.yogh.aerius.builder.domain.ProjectType' />
   <ui:with field='hash' type='java.lang.String' />
   <ui:style type="nl.yogh.aerius.wui.builder.component.ProjectControlButton.CustomStyle">
     .button {

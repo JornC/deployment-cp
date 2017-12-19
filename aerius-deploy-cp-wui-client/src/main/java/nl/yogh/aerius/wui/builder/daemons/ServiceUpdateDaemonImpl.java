@@ -31,16 +31,22 @@ public class ServiceUpdateDaemonImpl extends ServiceUpdatePollingAgent {
     EVENT_BINDER.bindEventHandlers(this, eventBus);
   }
 
+  public void start(final long lastUpdate) {
+    super.start();
+  }
+
   @Override
   protected void fetch(final AsyncCallback<ArrayList<ServiceInfo>> callback) {
-    GWT.log("Asking service updates since: " + lastUpdate);
     service.getServiceUpdates(lastUpdate, callback);
     lastUpdate = new Date().getTime();
   }
 
   @Override
   protected void handleResult(final ArrayList<ServiceInfo> result) {
-    GWT.log("Got service updates: " + result.size());
+    if (!result.isEmpty()) {
+      GWT.log("Got service updates: " + result.size());
+    }
+
     for (final ServiceInfo info : result) {
       eventBus.fireEvent(new ServiceStatusInfoChangedEvent(info));
     }

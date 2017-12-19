@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ProductInfo implements Serializable, IsSerializable, HasHash {
+public class ProjectInfo implements Serializable, IsSerializable, HasHash {
   private static final long serialVersionUID = -4108120027600006619L;
 
   private boolean busy;
@@ -15,17 +15,17 @@ public class ProductInfo implements Serializable, IsSerializable, HasHash {
 
   private ArrayList<String> services;
 
-  public ProductInfo() {}
+  public ProjectInfo() {}
 
-  public static ProductInfo create() {
-    return new ProductInfo();
+  public static ProjectInfo create() {
+    return new ProjectInfo();
   }
 
   public ServiceStatus status() {
     return status;
   }
 
-  public ProductInfo status(final ServiceStatus status) {
+  public ProjectInfo status(final ServiceStatus status) {
     this.status = status;
     return this;
   }
@@ -35,7 +35,7 @@ public class ProductInfo implements Serializable, IsSerializable, HasHash {
     return hash;
   }
 
-  public ProductInfo hash(final String hash) {
+  public ProjectInfo hash(final String hash) {
     this.hash = hash;
     return this;
   }
@@ -44,7 +44,7 @@ public class ProductInfo implements Serializable, IsSerializable, HasHash {
     return busy;
   }
 
-  public ProductInfo busy(final boolean busy) {
+  public ProjectInfo busy(final boolean busy) {
     this.busy = busy;
     return this;
   }
@@ -53,7 +53,7 @@ public class ProductInfo implements Serializable, IsSerializable, HasHash {
     return services;
   }
 
-  public ProductInfo services(final ArrayList<String> services) {
+  public ProjectInfo services(final ArrayList<String> services) {
     this.services = services;
     return this;
   }

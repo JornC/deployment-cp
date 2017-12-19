@@ -62,6 +62,9 @@ public class AERIUSGithubHook {
 
   private void update(final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
     info.incomplete(true);
-    pulls.put(idx, info);
+
+    synchronized (pulls) {
+      pulls.put(idx, info);
+    }
   }
 }

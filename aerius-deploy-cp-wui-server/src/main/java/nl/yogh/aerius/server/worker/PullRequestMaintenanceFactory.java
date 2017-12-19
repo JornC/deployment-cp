@@ -6,18 +6,21 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.server.startup.TimestampedMultiMap;
+
 public class PullRequestMaintenanceFactory {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestMaintenanceFactory.class);
 
   private static PullRequestMaintenanceWorker maintenanceWorker;
 
-  public static void init(final Properties properties) {
+  public static void init(final Properties properties, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
     synchronized (PullRequestMaintenanceFactory.class) {
       if (maintenanceWorker == null) {
         final String baseDir = getPropertyRequired(properties, "deployment.git.repo.dir");
         final String oAuthToken = getPropertyRequired(properties, "deployment.cp.oath.token");
 
-        maintenanceWorker = new PullRequestMaintenanceWorker(baseDir, oAuthToken);
+        maintenanceWorker = new PullRequestMaintenanceWorker(baseDir, oAuthToken, projectUpdates);
       }
     }
 

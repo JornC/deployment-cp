@@ -1,6 +1,6 @@
 package nl.yogh.aerius.builder.domain;
 
-public enum ProductType {
+public enum ProjectType {
   CALCULATOR(ServiceType.CALCULATOR_WUI, ServiceType.CALCULATOR_DATABASE, ServiceType.SCENARIO_BASE_GEOSERVER),
 
   REGISTER(ServiceType.REGISTER_WUI, ServiceType.REGISTER_DATABASE, ServiceType.REGISTER_GEOSERVER),
@@ -15,7 +15,7 @@ public enum ProductType {
 
   private final ServiceType[] serviceTypes;
 
-  private ProductType(final ServiceType... serviceTypes) {
+  private ProjectType(final ServiceType... serviceTypes) {
     this.serviceTypes = serviceTypes;
   }
 

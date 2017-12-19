@@ -5,7 +5,7 @@
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
   <ui:with field='pull' type='nl.yogh.aerius.builder.domain.PullRequestInfo' />
   <ui:with field='eventBus' type='com.google.web.bindery.event.shared.EventBus' />
-  <ui:import field='nl.yogh.aerius.builder.domain.ProductType.*' />
+  <ui:import field='nl.yogh.aerius.builder.domain.ProjectType.*' />
   <ui:style type="nl.yogh.aerius.wui.builder.component.PullRequestControlPanel.CustomStyle">
     .panel {
     padding: 10px;

@@ -23,9 +23,6 @@ import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.server.worker.PullRequestDeploymentFactory;
-import nl.yogh.aerius.server.worker.PullRequestMaintenanceFactory;
-
 /**
  * Listener that is run during startup of application and can be used to initialize static variables.
  */
@@ -37,8 +34,7 @@ public class StartupContextListener implements ServletContextListener {
   public void contextInitialized(final ServletContextEvent event) {
     LOG.info("Initializing context..");
 
-    PullRequestMaintenanceFactory.init(System.getProperties());
-    PullRequestDeploymentFactory.init(System.getProperties());
+    ApplicationFactory.init(System.getProperties());
 
     LOG.info("Context initialized.");
   }
@@ -47,8 +43,7 @@ public class StartupContextListener implements ServletContextListener {
   public void contextDestroyed(final ServletContextEvent event) {
     LOG.info("Shutting down context..");
 
-    PullRequestMaintenanceFactory.shutdown();
-    PullRequestDeploymentFactory.shutdown();
+    ApplicationFactory.shutdown();
 
     LOG.info("Context shut down.");
   }

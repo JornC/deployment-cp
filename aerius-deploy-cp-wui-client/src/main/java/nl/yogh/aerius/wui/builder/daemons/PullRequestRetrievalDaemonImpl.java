@@ -13,26 +13,26 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 
 import nl.yogh.aerius.builder.domain.HasHash;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
-import nl.yogh.aerius.builder.domain.ProductInfo;
+import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.service.PullRequestServiceAsync;
-import nl.yogh.aerius.wui.builder.commands.ProductActionCommand;
-import nl.yogh.aerius.wui.builder.commands.ProductStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.builder.commands.ProjectActionCommand;
+import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalEvent;
 
 public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingAgent {
-  interface PullRetrievalDaemonImplEventBinder extends EventBinder<PullRequestRetrievalDaemonImpl> {}
+  interface PullRetrievalRetrievalDaemonImplEventBinder extends EventBinder<PullRequestRetrievalDaemonImpl> {}
 
-  private final PullRetrievalDaemonImplEventBinder EVENT_BINDER = GWT.create(PullRetrievalDaemonImplEventBinder.class);
+  private final PullRetrievalRetrievalDaemonImplEventBinder EVENT_BINDER = GWT.create(PullRetrievalRetrievalDaemonImplEventBinder.class);
 
   private final PullRequestServiceAsync service;
 
   @Inject ServiceUpdateDaemon serviceUpdateDaemon;
 
-  @Inject ProductUpdateDaemon productUpdateDaemon;
+  @Inject ProjectUpdateDaemon productUpdateDaemon;
 
-  private ArrayList<ProductInfo> products;
+  private ArrayList<ProjectInfo> products;
   private ArrayList<ServiceInfo> services;
 
   @Inject
@@ -89,13 +89,13 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
     return findObjects(value, services);
   }
 
-  private ProductInfo findProduct(final String value) {
+  private ProjectInfo findProduct(final String value) {
     return findObject(value, products);
   }
 
   @EventHandler
-  public void onProductActionCommand(final ProductActionCommand c) {
-    service.doAction(c.getType(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new ProductStatusInfoChangedEvent(r)));
+  public void onProductActionCommand(final ProjectActionCommand c) {
+    service.doAction(c.getIdx(), c.getType(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new ProjectStatusInfoChangedEvent(r)));
   }
 
   @Override

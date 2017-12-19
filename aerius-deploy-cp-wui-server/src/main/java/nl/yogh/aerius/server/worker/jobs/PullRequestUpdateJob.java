@@ -2,19 +2,21 @@ package nl.yogh.aerius.server.worker.jobs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProductInfo;
-import nl.yogh.aerius.builder.domain.ProductType;
+import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.domain.ServiceType;
 import nl.yogh.aerius.server.util.CmdUtil;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
-import nl.yogh.aerius.server.util.ProductTypeDirectoryUtil;
+import nl.yogh.aerius.server.util.ProjectTypeDirectoryUtil;
 
 public class PullRequestUpdateJob implements Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
@@ -38,36 +40,43 @@ public class PullRequestUpdateJob implements Runnable {
   public void run() {
     LOG.info("Update job started:  {} -> {}", info.idx(), info.hash());
 
-    final HashMap<ProductType, ProductInfo> products = fetchProductInformation();
+    final HashMap<ProjectType, ProjectInfo> projects = fetchProjectInformation();
 
     synchronized (grip) {
       info.lastUpdated(System.currentTimeMillis());
       info.busy(false);
       info.incomplete(false);
 
-      info.products(products);
+      info.projects(projects);
     }
 
     LOG.info("Update job complete: {} -> {}", info.idx(), info.hash());
   }
 
-  private HashMap<ProductType, ProductInfo> fetchProductInformation() {
+  private HashMap<ProjectType, ProjectInfo> fetchProjectInformation() {
     final String idx = info.idx();
 
     try {
-      final HashMap<ProductType, ProductInfo> products = new HashMap<>();
+      final HashMap<ProjectType, ProjectInfo> products = new HashMap<>();
 
       // Ensure you are on the correct branch.
+      try {
+        cmd("git checkout master");
+        cmd("git reset --hard origin/master");
+      } catch (final ProcessExitException e) {
+        // Eat.
+      }
+
       cmd("git fetch origin pull/%s/head:PR-%s", idx, idx);
       cmd("git checkout PR-%s", idx);
 
-      for (final ProductType type : ProductType.values()) {
-        final String dirs = ProductTypeDirectoryUtil.getProductDirectories(type);
+      for (final ProjectType type : ProjectType.values()) {
+        final Set<String> dirs = ProjectTypeDirectoryUtil.getProjectDirectories(type);
         if (dirs == null) {
           continue;
         }
 
-        final ProductInfo info = ProductInfo.create().hash(findShaSum(dirs)).status(ServiceStatus.UNBUILT);
+        final ProjectInfo info = ProjectInfo.create().hash(findShaSum(dirs)).status(ServiceStatus.UNBUILT);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("Calculating sum for ProductType {} > {}", info.hash().substring(0, 8), type.name());
@@ -84,11 +93,11 @@ public class PullRequestUpdateJob implements Runnable {
     }
   }
 
-  private ArrayList<String> findServiceHash(final ProductType type) throws IOException, InterruptedException, ProcessExitException {
+  private ArrayList<String> findServiceHash(final ProjectType type) throws IOException, InterruptedException, ProcessExitException {
     final ArrayList<String> lst = new ArrayList<>();
 
     for (final ServiceType serviceType : type.getServiceTypes()) {
-      final String sha = findShaSum(ProductTypeDirectoryUtil.getServiceDirectories(serviceType));
+      final String sha = findShaSum(ProjectTypeDirectoryUtil.getServiceDirectories(serviceType));
 
       lst.add(sha);
 
@@ -100,8 +109,16 @@ public class PullRequestUpdateJob implements Runnable {
     return lst;
   }
 
-  // ./aerius-database-common ./aerius-database-calculator
+  private String findShaSum(final Collection<String> dirs) throws IOException, InterruptedException, ProcessExitException {
+    return findShaSum(String.join(" ", dirs));
+  }
+
+  private String findShaSum(final String[] dirs) throws IOException, InterruptedException, ProcessExitException {
+    return findShaSum(String.join(" ", dirs));
+  }
+
   private String findShaSum(final String dirs) throws IOException, InterruptedException, ProcessExitException {
+    // return cmd("find %s -type f -exec sha256sum {} \\; | sha256sum", dirs).get(0);
     return cmd("find %s -type f -print0 | xargs -0 sha256sum | sha256sum | cut -d \" \" -f1", dirs).get(0);
   }
 

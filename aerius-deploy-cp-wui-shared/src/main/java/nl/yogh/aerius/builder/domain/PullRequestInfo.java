@@ -20,7 +20,7 @@ public class PullRequestInfo implements Serializable, IsSerializable {
   private String author;
   private String url;
 
-  private HashMap<ProductType, ProductInfo> products;
+  private HashMap<ProjectType, ProjectInfo> projects;
 
   public static PullRequestInfo create() {
     return new PullRequestInfo();
@@ -102,12 +102,12 @@ public class PullRequestInfo implements Serializable, IsSerializable {
     return this;
   }
 
-  public HashMap<ProductType, ProductInfo> products() {
-    return products;
+  public HashMap<ProjectType, ProjectInfo> projects() {
+    return projects;
   }
 
-  public PullRequestInfo products(final HashMap<ProductType, ProductInfo> products) {
-    this.products = products;
+  public PullRequestInfo projects(final HashMap<ProjectType, ProjectInfo> projects) {
+    this.projects = projects;
     return this;
   }
 }
