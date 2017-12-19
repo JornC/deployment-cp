@@ -20,7 +20,7 @@ public abstract class PollingAgent<T> {
     };
   }
 
-  protected void start() {
+  public void start() {
     if (!timer.isRunning()) {
       fetch();
     } else {
@@ -28,7 +28,7 @@ public abstract class PollingAgent<T> {
     }
   }
 
-  protected void stop() {
+  public void stop() {
     timer.cancel();
   }
 

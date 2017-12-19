@@ -1,6 +1,8 @@
 package nl.yogh.aerius.wui.builder.component;
 
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,17 +17,21 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.EventBus;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
 import nl.yogh.aerius.builder.domain.ProductInfo;
 import nl.yogh.aerius.builder.domain.ProductType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.service.ProductDeploymentAction;
 import nl.yogh.aerius.wui.builder.commands.ProductActionCommand;
 import nl.yogh.aerius.wui.builder.commands.ProductStatusHighlightEvent;
 import nl.yogh.aerius.wui.builder.commands.ProductStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.builder.commands.ServiceStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.builder.daemons.RequestServicesEvent;
 import nl.yogh.gwt.wui.widget.EventComposite;
 
 public class ProjectControlButton extends EventComposite {
@@ -61,13 +67,17 @@ public class ProjectControlButton extends EventComposite {
   @UiField(provided = true) ProductType type;
   @UiField(provided = true) String hash;
 
-  @UiField Label services;
-  @UiField Label status;
+  @UiField Label serviceField;
+  @UiField Label statusField;
+
+  private final Map<String, ServiceInfo> serviceMap = new HashMap<>();
 
   private boolean busy;
 
   private boolean disabled;
-  private final ProductInfo info;
+  private ProductInfo info;
+
+  private HandlerRegistration eventRegistration;
 
   @UiConstructor
   public ProjectControlButton(final ProductType type, final PullRequestInfo pull) {
@@ -99,11 +109,48 @@ public class ProjectControlButton extends EventComposite {
     initWidget(UI_BINDER.createAndBindUi(this));
   }
 
+  private void handleInfo(final ProductInfo info) {
+    if (info == null) {
+      setDisabled();
+      return;
+    }
+
+    this.info = info;
+
+    setStatus(info.status());
+    setBusy(info.busy());
+    setServiceCount();
+    setStatusCount();
+  }
+
+  @Override
+  protected void onUnload() {
+    eventRegistration.removeHandler();
+  }
+
   @Override
   public void setEventBus(final EventBus eventBus) {
     super.setEventBus(eventBus);
 
-    EVENT_BINDER.bindEventHandlers(this, eventBus);
+    eventRegistration = EVENT_BINDER.bindEventHandlers(this, eventBus);
+
+    setStatusCount();
+  }
+
+  private void updateStatusCount() {
+    eventBus.fireEvent(new RequestServicesEvent(info.services(), r -> setStatusCount(r)));
+  }
+
+  private void setStatusCount(final List<ServiceInfo> r) {
+    for (final ServiceInfo info : r) {
+      serviceMap.put(info.hash(), info);
+    }
+
+    setStatusCount();
+  }
+
+  private void setStatusCount() {
+    statusField.setText("compiled: " + getDeployedOrRunningCount());
   }
 
   @EventHandler
@@ -127,26 +174,22 @@ public class ProjectControlButton extends EventComposite {
   }
 
   private void setServiceCount() {
-    services.setText("services: " + getServiceCount());
-  }
-
-  private void setStatusCount() {
-    status.setText("compiled: " + getBuiltOrRunningCount());
+    serviceField.setText("services: " + getServiceCount());
   }
 
   private void setMatchCount(final ProductInfo value) {
     final long matchCount = getMatchCount(value);
 
-    services.setText("matches: " + matchCount + "/" + getServiceCount());
+    serviceField.setText("matches: " + matchCount + "/" + getServiceCount());
   }
 
   private int getServiceCount() {
     return info == null || info.services() == null ? 0 : info.services().size();
   }
 
-  private long getBuiltOrRunningCount() {
-    return info == null || info.services() == null ? 0
-        : info.services().stream().filter(e -> e.status() == ServiceStatus.RUNNING || e.status() == ServiceStatus.SUSPENDED).count();
+  private String getDeployedOrRunningCount() {
+    return String
+        .valueOf(serviceMap.values().stream().filter(e -> e.status() == ServiceStatus.DEPLOYED || e.status() == ServiceStatus.SUSPENDED).count());
   }
 
   private boolean matches(final ProductInfo value) {
@@ -158,8 +201,26 @@ public class ProjectControlButton extends EventComposite {
       return 0;
     }
 
-    return value.services().stream().map(e -> e.hash())
-        .filter(s -> info.services().stream().map(e -> e.hash()).collect(Collectors.toSet()).contains(s)).count();
+    int count = 0;
+    for (final String projectHash : info.services()) {
+      for (final String otherHash : value.services()) {
+        if (otherHash.equals(projectHash)) {
+          count++;
+        }
+      }
+    }
+
+    return count;
+  }
+
+  @EventHandler
+  public void onServiceStatusInfoChangedEvent(final ServiceStatusInfoChangedEvent e) {
+    if (info == null || !info.services().contains(e.getValue().hash())) {
+      return;
+    }
+
+    serviceMap.put(e.getValue().hash(), e.getValue());
+    updateStatusCount();
   }
 
   @EventHandler
@@ -175,18 +236,6 @@ public class ProjectControlButton extends EventComposite {
     }
 
     handleInfo(info);
-  }
-
-  private void handleInfo(final ProductInfo info) {
-    if (info == null) {
-      setDisabled();
-      return;
-    }
-
-    setStatus(info.status());
-    setBusy(info.busy());
-    setServiceCount();
-    setStatusCount();
   }
 
   private void setBusy(final boolean busy) {
@@ -210,7 +259,7 @@ public class ProjectControlButton extends EventComposite {
     }
 
     switch (status) {
-    case RUNNING:
+    case DEPLOYED:
       setActiveStatus(style.running());
       break;
     case SUSPENDED:
@@ -227,7 +276,7 @@ public class ProjectControlButton extends EventComposite {
 
   private static ProductDeploymentAction determineAction(final ServiceStatus status) {
     switch (status) {
-    case RUNNING:
+    case DEPLOYED:
       return ProductDeploymentAction.SUSPEND;
     case SUSPENDED:
       return ProductDeploymentAction.DEPLOY;

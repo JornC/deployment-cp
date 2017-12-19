@@ -12,6 +12,8 @@ public interface PullRequestView extends View<Presenter> {
 
   }
 
-  public void insertOrUpdatePullRequest(PullRequestInfo info);
+  public void insertPullRequest(PullRequestInfo info);
+
+  public void removePullRequest(String leftOver);
 
 }

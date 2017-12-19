@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.web.bindery.event.shared.EventBus;
 
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.wui.builder.component.PullRequestControlPanel;
@@ -31,23 +32,36 @@ public class PullRequestViewImpl extends EventComposite implements PullRequestVi
   public void setPresenter(final Presenter presenter) {}
 
   @Override
-  public void insertOrUpdatePullRequest(final PullRequestInfo info) {
+  public void insertPullRequest(final PullRequestInfo info) {
     final String idx = info.idx();
 
-    GWT.log("INSERT/UPDATE: " + idx);
+    if (eventBus == null) {
+      GWT.log("This is a bunch of bullshit!");
+    }
 
     if (!pullRequestMap.containsKey(idx)) {
       final PullRequestControlPanel newPanel = new PullRequestControlPanel(eventBus, info);
       pullRequestPanel.add(newPanel);
       pullRequestMap.put(idx, newPanel);
     } else {
-      final Widget oldPanel = pullRequestMap.get(idx);
-      final PullRequestControlPanel newPanel = new PullRequestControlPanel(eventBus, info);
-
-      final int updateIdx = pullRequestPanel.getWidgetIndex(oldPanel);
-      pullRequestPanel.remove(updateIdx);
-      pullRequestPanel.insert(newPanel, updateIdx);
-      pullRequestMap.put(idx, newPanel);
+      GWT.log("BUG!");
     }
+  }
+
+  @Override
+  public void setEventBus(final EventBus eventBus) {
+    super.setEventBus(eventBus);
+
+    GWT.log("ViewImpl got event bus!");
+  }
+
+  @Override
+  public void removePullRequest(final String hash) {
+    final PullRequestControlPanel pull = pullRequestMap.get(hash);
+    if (pull == null) {
+      return;
+    }
+
+    pull.removeFromParent();
   }
 }

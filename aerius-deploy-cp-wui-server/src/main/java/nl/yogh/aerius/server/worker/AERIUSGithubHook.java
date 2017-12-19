@@ -25,6 +25,8 @@ public class AERIUSGithubHook {
   }
 
   public void update(final Map<Integer, PullRequestInfo> pulls) throws IOException {
+    LOG.debug("Retrieving pull requests from GitHub.");
+
     final RepositoryService repoService = new RepositoryService(client);
     final Repository repository = repoService.getRepository("aerius", "AERIUS-II");
 
@@ -43,6 +45,8 @@ public class AERIUSGithubHook {
 
       checkUpdate(pulls, idx, info);
     }
+
+    LOG.debug("Retrieved {} pull requests from GitHub.", pullRequests.size());
   }
 
   public void checkUpdate(final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
-import nl.yogh.aerius.builder.domain.ServiceStatus;
+import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
+import nl.yogh.aerius.server.worker.jobs.PullRequestUpdateJob;
 
 public class PullRequestMaintenanceWorker {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestMaintenanceWorker.class);
@@ -29,8 +28,7 @@ public class PullRequestMaintenanceWorker {
 
   private final AERIUSGithubHook githubHook;
 
-  private final Map<Integer, PullRequestInfo> pulls = new TreeMap<>(byReverseIdx);
-  private final ConcurrentMap<String, ServiceStatus> services = new ConcurrentHashMap<>();
+  private final ConcurrentMap<Integer, PullRequestInfo> pulls = new ConcurrentHashMap<>();
 
   private final ExecutorService pullRequestUpdateExecutor;
 
@@ -39,7 +37,7 @@ public class PullRequestMaintenanceWorker {
    */
   private final ScheduledExecutorService periodicUpdateExecutor;
 
-  private static Comparator<Integer> byReverseIdx = (o1, o2) -> -Integer.compare(o1, o2);
+  private static Comparator<PullRequestInfo> byReverseIdx = (a, b) -> -Integer.compare(Integer.parseInt(a.idx()), Integer.parseInt(b.idx()));
 
   private final String baseDir;
 
@@ -68,7 +66,7 @@ public class PullRequestMaintenanceWorker {
   }
 
   private void schedulePullRequestUpdate(final PullRequestInfo info) {
-    pullRequestUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(baseDir, info, pulls, services)));
+    pullRequestUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(baseDir, info, pulls)));
   }
 
   public void shutdown() {
@@ -77,9 +75,13 @@ public class PullRequestMaintenanceWorker {
   }
 
   public ArrayList<PullRequestInfo> getPullRequests() {
+    ArrayList<PullRequestInfo> lst;
     synchronized (pulls) {
-      return new ArrayList<PullRequestInfo>(pulls.values());
+      lst = new ArrayList<PullRequestInfo>(pulls.values());
     }
+
+    lst.sort(byReverseIdx);
+    return lst;
   }
 
   public static void main(final String[] args) {

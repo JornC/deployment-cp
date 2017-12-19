@@ -1,7 +1,8 @@
 package nl.yogh.aerius.wui.builder.ui.pulls;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -14,6 +15,7 @@ import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalActivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalDeactivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalEvent;
+import nl.yogh.aerius.wui.builder.commands.PullRequestStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.ui.pulls.PullRequestView.Presenter;
 import nl.yogh.gwt.wui.activity.EventActivity;
 
@@ -22,8 +24,7 @@ public class PullRequestActivity extends EventActivity<Presenter, PullRequestVie
 
   private final PullRequestActivityEventBinder EVENT_BINDER = GWT.create(PullRequestActivityEventBinder.class);
 
-  private final HashMap<String, String> pullRequestContentIndex = new HashMap<>();
-  private final HashSet<String> pullRequestBusyIndex = new HashSet<>();
+  private final HashMap<String, PullRequestInfo> pullRequestContentIndex = new HashMap<>();
 
   @Inject
   public PullRequestActivity(final PullRequestView view) {
@@ -43,29 +44,25 @@ public class PullRequestActivity extends EventActivity<Presenter, PullRequestVie
   @EventHandler
   public void onPullRequestRetrievalEvent(final PullRequestRetrievalEvent e) {
     for (final PullRequestInfo info : e.getValue()) {
+      eventBus.fireEvent(new PullRequestStatusInfoChangedEvent(info));
       handlePullRequestInfo(info);
     }
+
+    final Collection<String> leftOverCol = e.getValue().stream().map(v -> v.hash()).collect(Collectors.toList());
+    leftOverCol.removeAll(pullRequestContentIndex.keySet());
+
+    for (final String leftOver : leftOverCol) {
+      view.removePullRequest(leftOver);
+    }
+
   }
 
   private void handlePullRequestInfo(final PullRequestInfo info) {
     final String idx = info.idx();
 
-    // If the PR isn't known
-    // OR If the PR has changed
-    // OR it exists in the busy index and the PR is not busy
-    // OR it does not exist in the busy index but the PR is busy
-    if (!pullRequestContentIndex.containsKey(idx)
-        || !pullRequestContentIndex.get(idx).equals(info.hash())
-        || (pullRequestBusyIndex.contains(idx) && !info.isBusy())
-        || (!pullRequestBusyIndex.contains(idx) && info.isBusy())) {
-      view.insertOrUpdatePullRequest(info);
-      pullRequestContentIndex.put(idx, info.hash());
-    }
-
-    if (info.isBusy()) {
-      pullRequestBusyIndex.add(idx);
-    } else {
-      pullRequestBusyIndex.remove(idx);
+    if (!pullRequestContentIndex.containsKey(idx)) {
+      view.insertPullRequest(info);
+      pullRequestContentIndex.put(idx, info);
     }
   }
 

@@ -9,12 +9,12 @@ import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalActivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalDeactivationCommand;
 
-public abstract class PullRetrievalPollingAgent extends PollingAgent<ArrayList<PullRequestInfo>> implements PullRetrievalDaemon {
+public abstract class PullRequestRetrievalPollingAgent extends PollingAgent<ArrayList<PullRequestInfo>> implements PullRequestRetrievalDaemon {
   private static final int PULL_REPEAT_DELAY = 1000;
 
   protected final EventBus eventBus;
 
-  public PullRetrievalPollingAgent(final EventBus eventBus) {
+  public PullRequestRetrievalPollingAgent(final EventBus eventBus) {
     this.eventBus = eventBus;
   }
 

@@ -1,4 +1,4 @@
-package nl.yogh.aerius.server.worker;
+package nl.yogh.aerius.server.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CmdHelper {
+import nl.yogh.aerius.server.worker.jobs.PullRequestUpdateJob;
+
+public class CmdUtil {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
 
   public static class ProcessExitException extends Exception {
@@ -42,10 +44,10 @@ public class CmdHelper {
 
         final int exitCode = process.waitFor();
         if (exitCode != 0) {
-          // LOG.error("ERROR ====");
+          LOG.error("ERROR ====");
           LOG.error(cmd);
-          // LOG.error("Exit code during process: " + exitCode);
-          // LOG.error("ERROR ====");
+          LOG.error("Exit code during process: " + exitCode);
+          LOG.error("ERROR ====");
           throw new ProcessExitException(exitCode);
         }
       }

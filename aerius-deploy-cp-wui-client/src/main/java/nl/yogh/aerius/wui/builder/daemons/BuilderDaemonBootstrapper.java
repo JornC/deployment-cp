@@ -7,9 +7,12 @@ import nl.yogh.gwt.wui.daemon.ExceptionDaemon;
 import nl.yogh.gwt.wui.dev.DevelopmentObserver;
 
 public class BuilderDaemonBootstrapper extends DaemonBootstrapperImpl {
+  @Inject PullRequestRetrievalDaemon pullRetrievalDaemon;
+
+  @Inject ContainerRetrievalDaemon containerRetrievalDaemon;
+
   @Inject
-  public BuilderDaemonBootstrapper(final ExceptionDaemon exceptionDaemon, final DevelopmentObserver observer,
-      final PullRetrievalDaemon pullRetrievalDaemon, final ContainerRetrievalDaemon predictionRetrievalDaemon) {
+  public BuilderDaemonBootstrapper(final ExceptionDaemon exceptionDaemon, final DevelopmentObserver observer) {
     super(exceptionDaemon, observer);
   }
 }

@@ -127,8 +127,8 @@
         <g:Label styleName="{style.statusLabel}" />
       </g:FlowPanel>
       <g:Label text="{hash}" title="{hash}" styleName="{style.hash}" />
-      <g:Label ui:field="services" styleName="{style.services}" />
-      <g:Label ui:field="status" styleName="{style.services}" />
+      <g:Label ui:field="serviceField" styleName="{style.services}" />
+      <g:Label ui:field="statusField" styleName="{style.services}" />
     </g:FlowPanel>
   </g:SimplePanel>
 </ui:UiBinder>

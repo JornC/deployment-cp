@@ -1,9 +1,8 @@
-package nl.yogh.aerius.server.worker;
+package nl.yogh.aerius.server.worker.jobs;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +10,11 @@ import org.slf4j.LoggerFactory;
 import nl.yogh.aerius.builder.domain.ProductInfo;
 import nl.yogh.aerius.builder.domain.ProductType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
-import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.domain.ServiceType;
-import nl.yogh.aerius.server.worker.CmdHelper.ProcessExitException;
+import nl.yogh.aerius.server.util.CmdUtil;
+import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
+import nl.yogh.aerius.server.util.ProductTypeDirectoryUtil;
 
 public class PullRequestUpdateJob implements Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
@@ -24,14 +24,10 @@ public class PullRequestUpdateJob implements Runnable {
 
   private final String baseDir;
 
-  private final ConcurrentMap<String, ServiceStatus> serviceStatusRepository;
-
-  public PullRequestUpdateJob(final String baseDir, final PullRequestInfo info, final Object grip,
-      final ConcurrentMap<String, ServiceStatus> serviceStatusRepository) {
+  public PullRequestUpdateJob(final String baseDir, final PullRequestInfo info, final Object grip) {
     this.baseDir = baseDir;
     this.info = info;
     this.grip = grip;
-    this.serviceStatusRepository = serviceStatusRepository;
 
     info.busy(true);
 
@@ -88,26 +84,17 @@ public class PullRequestUpdateJob implements Runnable {
     }
   }
 
-  private ArrayList<ServiceInfo> findServiceHash(final ProductType type) throws IOException, InterruptedException, ProcessExitException {
-    final ArrayList<ServiceInfo> lst = new ArrayList<>();
+  private ArrayList<String> findServiceHash(final ProductType type) throws IOException, InterruptedException, ProcessExitException {
+    final ArrayList<String> lst = new ArrayList<>();
 
     for (final ServiceType serviceType : type.getServiceTypes()) {
       final String sha = findShaSum(ProductTypeDirectoryUtil.getServiceDirectories(serviceType));
-      final ServiceInfo info = ServiceInfo.create().hash(sha).status(ServiceStatus.UNBUILT);
 
-      lst.add(info);
+      lst.add(sha);
 
       if (LOG.isDebugEnabled()) {
         LOG.debug("Calculating sum for ServiceType {} > {}", sha.substring(0, 8), serviceType.name());
       }
-
-      if (!serviceStatusRepository.containsKey(sha)) {
-        synchronized (serviceStatusRepository) {
-          serviceStatusRepository.put(sha, ServiceStatus.UNBUILT);
-        }
-      }
-
-      info.status(serviceStatusRepository.get(sha));
     }
 
     return lst;
@@ -123,6 +110,6 @@ public class PullRequestUpdateJob implements Runnable {
   }
 
   private ArrayList<String> cmd(final String cmd) throws IOException, InterruptedException, ProcessExitException {
-    return CmdHelper.cmd(baseDir, cmd);
+    return CmdUtil.cmd(baseDir, cmd);
   }
 }

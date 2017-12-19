@@ -1,4 +1,4 @@
-package nl.yogh.aerius.server.worker;
+package nl.yogh.aerius.server.worker.jobs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ public class CatchAllRunnable implements Runnable {
     try {
       delegate.run();
     } catch (final Exception e) {
-      LOG.error("Exception while running task.", e);
+      LOG.error("Exception while running task {}.", delegate.getClass().getSimpleName(), e);
     }
   }
 

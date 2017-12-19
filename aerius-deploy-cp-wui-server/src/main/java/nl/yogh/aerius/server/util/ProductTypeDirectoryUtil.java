@@ -1,4 +1,4 @@
-package nl.yogh.aerius.server.worker;
+package nl.yogh.aerius.server.util;
 
 import nl.yogh.aerius.builder.domain.ProductType;
 import nl.yogh.aerius.builder.domain.ServiceType;
