@@ -32,17 +32,21 @@
     bottom: 20px;
     left: 20px;
     }
+    .content {
+    overflow-y: scroll;
+    margin: 20px 20px;
+    }
   </ui:style>
-  <g:FlowPanel styleName="{res.css.grow} {style.applicationView} {res.css.globalMaxWidth}">
-    <g:FlowPanel styleName="{res.css.flex} {res.css.distribute} {res.css.wrap} {res.css.wrapMargins}">
+  <g:FlowPanel styleName="{res.css.flex} {res.css.columns} {res.css.grow} {style.applicationView} {res.css.globalMaxWidth}">
+    <g:FlowPanel styleName="{res.css.flex} {res.css.distribute} {res.css.wrap} {res.css.wrapMargins} {res.css.noShrink}">
       <w:HeadingWidget n="1" text="{i18n.siteTitle}" ui:field="landingHeading" styleName="{style.title}" />
       <g:FlowPanel styleName="{res.css.flex} {res.css.grow} {res.css.alignCenter} {style.navigationPanel}">
         <c:PlaceNavigation ui:field="placeNavigation" />
       </g:FlowPanel>
     </g:FlowPanel>
-    <g:FlowPanel styleName="{res.css.globalMaxWidth}">
-      <w:HeadingWidget n="1" ui:field="placeTitle" styleName="{res.css.pageTitle}" />
-      <g:SimplePanel ui:field="contentPanel" styleName="{res.css.flex} {res.css.grow}" />
+    <g:FlowPanel styleName="{res.css.globalMaxWidth} {res.css.flex} {res.css.columns}">
+      <w:HeadingWidget n="1" ui:field="placeTitle" styleName="{res.css.pageTitle} {res.css.noShrink}" />
+      <g:SimplePanel ui:field="contentPanel" styleName="{res.css.flex} {res.css.grow} {style.content}" />
     </g:FlowPanel>
     <w:NotificationPanel styleName="{style.notificationAbsolute}" ui:field="notificationPanel" />
     <c:ThemeSwitcher styleName="{style.themeSwitcher}" title="Switch theme" />

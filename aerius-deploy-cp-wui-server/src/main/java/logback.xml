@@ -6,7 +6,14 @@
     </encoder>
   </appender>
 
+  <appender name="CLIENT" class="nl.yogh.aerius.server.logging.ApplicationAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+  </appender>
+
   <root level="debug">
     <appender-ref ref="STDOUT" />
+    <appender-ref ref="CLIENT" />
   </root>
 </configuration>

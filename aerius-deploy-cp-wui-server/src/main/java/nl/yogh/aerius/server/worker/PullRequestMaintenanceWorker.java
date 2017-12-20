@@ -66,9 +66,12 @@ public class PullRequestMaintenanceWorker {
   }
 
   private void updateProjects(final TimestampedMultiMap<ProjectInfo> projectUpdates) {
-    final long startTime = System.currentTimeMillis();
-
     final ArrayList<ProjectInfo> updates = projectUpdates.getUpdates(lastProjectUpdate);
+    if (updates.isEmpty()) {
+      return;
+    }
+
+    final long startTime = System.currentTimeMillis();
 
     LOG.debug("Started synchronizing {} projects.", updates.size());
 

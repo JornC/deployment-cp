@@ -11,6 +11,8 @@ public class BuilderDaemonBootstrapper extends DaemonBootstrapperImpl {
 
   @Inject ContainerRetrievalDaemon containerRetrievalDaemon;
 
+  @Inject LogRetrievalDaemon logRetrievalDaemon;
+
   @Inject
   public BuilderDaemonBootstrapper(final ExceptionDaemon exceptionDaemon, final DevelopmentObserver observer) {
     super(exceptionDaemon, observer);

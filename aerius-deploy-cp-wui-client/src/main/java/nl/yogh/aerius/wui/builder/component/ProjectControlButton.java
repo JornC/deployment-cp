@@ -21,12 +21,12 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
+import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
-import nl.yogh.aerius.builder.service.ProjectDeploymentAction;
 import nl.yogh.aerius.wui.builder.commands.ProjectActionCommand;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusHighlightEvent;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
@@ -194,7 +194,8 @@ public class ProjectControlButton extends EventComposite {
   }
 
   private boolean matches(final ProjectInfo value) {
-    return getMatchCount(value) > 0;
+    final long matchCount = getMatchCount(value);
+    return value.status() == ServiceStatus.UNBUILT && matchCount > 0 || matchCount == value.services().size();
   }
 
   private long getMatchCount(final ProjectInfo value) {

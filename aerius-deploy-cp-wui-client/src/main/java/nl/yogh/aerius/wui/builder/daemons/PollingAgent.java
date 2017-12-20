@@ -45,15 +45,21 @@ public abstract class PollingAgent<T> {
 
       @Override
       public void onFailure(final Throwable caught) {
-        super.onFailure(caught);
         reschedule();
+
+        if (PollingAgent.this.onFailure(caught)) {
+          super.onFailure(caught);
+        }
       }
 
       private void reschedule() {
         timer.schedule(getPollRepeatDelay());
-
       }
     });
+  }
+
+  protected boolean onFailure(final Throwable caught) {
+    return true;
   }
 
   protected abstract void handleResult(final T c);

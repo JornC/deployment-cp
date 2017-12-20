@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 
 import nl.yogh.aerius.wui.builder.place.ContainerPlace;
 import nl.yogh.aerius.wui.builder.place.LandingPlace;
+import nl.yogh.aerius.wui.builder.place.LogPlace;
 import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
 import nl.yogh.gwt.wui.activity.Activity;
 import nl.yogh.gwt.wui.activity.ActivityMapper;
@@ -43,6 +44,8 @@ public class BuilderActivityMapper implements ActivityMapper {
       presenter = factory.createLandingPresenter((LandingPlace) place);
     } else if (place instanceof PullRequestPlace) {
       presenter = factory.createPullRequestPresenter((PullRequestPlace) place);
+    } else if (place instanceof LogPlace) {
+      presenter = factory.createLogPresenter((LogPlace) place);
     }
 
     return presenter;

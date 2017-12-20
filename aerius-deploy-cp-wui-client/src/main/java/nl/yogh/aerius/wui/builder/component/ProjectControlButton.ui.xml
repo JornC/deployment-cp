@@ -19,7 +19,7 @@
     .button div {
     text-align: center;
     }
-    .highlight .nameLabel, .button:hover .nameLabel {
+    .unbuilt.highlight .nameLabel, .button:hover .nameLabel {
     visibility: hidden;
     height: 0px;
     }
@@ -37,7 +37,6 @@
     border-color: rgba(18,171,0,0.9);
     background: rgba(18,171,0,0.7);
     }
-    .running.highlight .statusLabel:after,
     .running:hover .statusLabel:after {
     content: "SUSPEND";
     }
@@ -47,15 +46,14 @@
     background: rgba(19, 120, 179,0.3);
     }
     .suspended.highlight, .suspended:hover {
-    border-color: rgba(19, 120,
-    179,0.7);
+    border-color: rgba(19, 120, 179,0.7);
     background: rgba(19, 120, 179,0.5);
     }
     .suspended:active {
     border-color: rgba(19, 120, 179,0.9);
     background: rgba(19, 120, 179,0.7);
     }
-    .suspended.highlight .statusLabel:after, .suspended:hover .statusLabel:after {
+    .suspended:hover .statusLabel:after {
     content: "DEPLOY";
     }
 
@@ -71,8 +69,7 @@
     border-color: rgba(255,255,59,0.9);
     background: rgba(234,228,12,0.7);
     }
-    .unbuilt.highlight
-    .statusLabel:after, .unbuilt:hover .statusLabel:after {
+    .unbuilt.highlight .statusLabel:after, .unbuilt:hover .statusLabel:after {
     content: "COMPILE";
     }
     .disabled {

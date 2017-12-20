@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
-import nl.yogh.aerius.builder.service.ProjectDeploymentAction;
 import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
 import nl.yogh.aerius.server.worker.jobs.ProjectCompilationJob;
 import nl.yogh.aerius.server.worker.jobs.ProjectDeploymentJob;

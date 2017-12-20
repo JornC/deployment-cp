@@ -2,9 +2,11 @@ package nl.yogh.aerius.wui.builder;
 
 import nl.yogh.aerius.wui.builder.place.ContainerPlace;
 import nl.yogh.aerius.wui.builder.place.LandingPlace;
+import nl.yogh.aerius.wui.builder.place.LogPlace;
 import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
 import nl.yogh.aerius.wui.builder.ui.container.ContainerActivity;
 import nl.yogh.aerius.wui.builder.ui.landing.LandingActivity;
+import nl.yogh.aerius.wui.builder.ui.logs.LogActivity;
 import nl.yogh.aerius.wui.builder.ui.pulls.PullRequestActivity;
 
 public interface BuilderActivityFactory {
@@ -13,5 +15,7 @@ public interface BuilderActivityFactory {
   LandingActivity createLandingPresenter(LandingPlace place);
 
   PullRequestActivity createPullRequestPresenter(PullRequestPlace place);
+
+  LogActivity createLogPresenter(LogPlace place);
 
 }

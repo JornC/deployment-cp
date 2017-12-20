@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
+import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
 import nl.yogh.aerius.builder.exception.ApplicationException.Reason;
-import nl.yogh.aerius.builder.service.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.service.PullRequestService;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.worker.ProjectUpdateRepositoryFactory;
@@ -43,9 +43,8 @@ public class PullRequestServiceImpl implements PullRequestService {
     final PullRequestDeploymentWorker instance = getDeploymentInstance();
     instance.doAction(idx, type, action, info);
 
-    LOG.info("Doing [{}] -- current status: {}", action, info.status());
+    LOG.info("Doing action [{}] on {} -- current status: {}", action, info.hash(), info.status());
 
-    info.busy(true);
     return info;
   }
 

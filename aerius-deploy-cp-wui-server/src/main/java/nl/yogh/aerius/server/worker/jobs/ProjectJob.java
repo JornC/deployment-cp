@@ -46,7 +46,7 @@ public abstract class ProjectJob implements Runnable {
     updateProject(product);
   }
 
-  protected void updateProject(final ProjectInfo info) {
+  private void updateProject(final ProjectInfo info) {
     synchronized (projectUpdates) {
       projectUpdates.get(System.currentTimeMillis()).add(info);
     }

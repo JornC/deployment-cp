@@ -19,7 +19,7 @@ public class RemoteLoggingServlet extends RemoteServiceServlet implements Remote
   @Override
   public String logOnServer(final LogRecord record) {
     // The default logger reports to stderr for some insane reason.
-    LOG.info(record.getMessage());
+    LOG.debug(record.getMessage());
 
     return null;
   }

@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:w="urn:import:nl.yogh.gwt.wui.widget"
+  xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
+  <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
+  <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:with field='msg' type='nl.yogh.aerius.builder.domain.LogMessage' />
+  <ui:style>
+    .panel {
+    padding: 5px;
+    margin: 3px;
+    background-color: rgba(125,125,125,0.2);
+    }
+    .time {
+    width: 65px;
+    text-align: center;
+    }
+    .txt {
+    font-family: consolas, courier new;
+    }
+  </ui:style>
+  <g:FlowPanel styleName="{res.css.flex} {res.css.alignCenter}">
+    <g:Label ui:field="time" styleName="{style.panel} {style.time}" />
+    <g:Label text="{msg.message}" styleName="{style.panel} {style.txt} {res.css.grow}" />
+  </g:FlowPanel>
+</ui:UiBinder>

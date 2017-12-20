@@ -1,0 +1,29 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:w="urn:import:nl.yogh.gwt.wui.widget"
+  xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.trader.component">
+  <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
+  <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
+  <ui:style>
+    .container {
+    align-items: center;
+    }
+    .explain {
+    max-width: 1280px;
+    min-width: 200px;
+    margin: 0 auto;
+    padding: 20px;
+    }
+    .explain > *:nth-child(3n) > div:last-child {
+    border-left: 4px solid #844;
+    }
+    .explain > *:nth-child(3n+1) > div:last-child {
+    border-left: 4px solid #484;
+    }
+    .explain > *:nth-child(3n+2) > div:last-child {
+    border-left: 4px solid #448;
+    }
+  </ui:style>
+  <g:FlowPanel styleName="{style.container} {res.css.grow}">
+    <g:FlowPanel ui:field="logMessages" styleName="{res.css.alignCenter} {res.css.justify} {style.explain}" />
+  </g:FlowPanel>
+</ui:UiBinder>

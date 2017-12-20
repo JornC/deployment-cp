@@ -3,6 +3,7 @@ package nl.yogh.aerius.wui.builder.history;
 import com.google.gwt.core.client.GWT;
 
 import nl.yogh.aerius.wui.builder.place.ContainerPlace;
+import nl.yogh.aerius.wui.builder.place.LogPlace;
 import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
 import nl.yogh.gwt.wui.history.PlaceHistoryMapper;
 import nl.yogh.gwt.wui.place.ApplicationPlace;
@@ -10,6 +11,7 @@ import nl.yogh.gwt.wui.place.ApplicationPlace;
 public class BuilderPlaceHistoryMapper implements PlaceHistoryMapper {
   private static final String CONTAINERS = "containers";
   private static final String PULL_REQUESTS = "pulls";
+  private static final String LOGS = "logs";
 
   private static final String SEPERATOR = ":";
 
@@ -21,6 +23,8 @@ public class BuilderPlaceHistoryMapper implements PlaceHistoryMapper {
       token = CONTAINERS + SEPERATOR + new ContainerPlace.Tokenizer().getToken((ContainerPlace) value);
     } else if (value instanceof PullRequestPlace) {
       token = PULL_REQUESTS + SEPERATOR + new PullRequestPlace.Tokenizer().getToken((PullRequestPlace) value);
+    } else if (value instanceof LogPlace) {
+      token = LOGS + SEPERATOR + new LogPlace.Tokenizer().getToken((LogPlace) value);
     }
 
     return token;
@@ -40,6 +44,9 @@ public class BuilderPlaceHistoryMapper implements PlaceHistoryMapper {
       break;
     case PULL_REQUESTS:
       place = new PullRequestPlace.Tokenizer().getPlace(tokens[1]);
+      break;
+    case LOGS:
+      place = new LogPlace.Tokenizer().getPlace(tokens[1]);
       break;
     default:
       place = null;

@@ -20,6 +20,7 @@ public class CmdUtil {
     private final int code;
 
     public ProcessExitException(final int code) {
+      super("ProcessException while executing command.");
       this.code = code;
     }
 

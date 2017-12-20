@@ -63,6 +63,7 @@ public class PullRequestUpdateJob implements Runnable {
       try {
         cmd("git checkout master");
         cmd("git reset --hard origin/master");
+        cmd("git branch -D PR-%s", idx);
       } catch (final ProcessExitException e) {
         // Eat.
       }

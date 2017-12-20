@@ -12,10 +12,12 @@ public class CalculatorCompilationJob extends ProjectJob {
       final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> projects,
       final ConcurrentMap<String, ServiceInfo> services) {
     super(info, projectUpdates, serviceUpdates, projects, services);
+
+    putProject(info.busy(true));
   }
 
   @Override
   public void run() {
-    updateProject(info.busy(false));
+    putProject(info.busy(false));
   }
 }

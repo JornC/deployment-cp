@@ -18,7 +18,7 @@ public class MockProjectJob extends ProjectJob {
 
     this.status = status;
 
-    updateProject(info.busy(true));
+    putProject(info.busy(true));
   }
 
   @Override
