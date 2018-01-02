@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
 import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
@@ -38,12 +37,10 @@ public class PullRequestServiceImpl implements PullRequestService {
   }
 
   @Override
-  public ProjectInfo doAction(final String idx, final ProjectType type, final ProjectDeploymentAction action, final ProjectInfo info)
+  public ProjectInfo doAction(final String idx, final ProjectDeploymentAction action, final ProjectInfo info)
       throws ApplicationException {
     final PullRequestDeploymentWorker instance = getDeploymentInstance();
-    instance.doAction(idx, type, action, info);
-
-    LOG.info("Doing action [{}] on {} -- current status: {}", action, info.hash(), info.status());
+    instance.doAction(idx, action, info);
 
     return info;
   }

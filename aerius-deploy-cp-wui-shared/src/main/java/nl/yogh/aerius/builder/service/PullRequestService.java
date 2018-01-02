@@ -8,7 +8,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
 import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
@@ -23,5 +22,5 @@ public interface PullRequestService extends RemoteService {
 
   ArrayList<ServiceInfo> getServiceUpdates(long since) throws ApplicationException;
 
-  ProjectInfo doAction(String idx, final ProjectType type, ProjectDeploymentAction action, ProjectInfo info) throws ApplicationException;
+  ProjectInfo doAction(String idx, ProjectDeploymentAction action, ProjectInfo info) throws ApplicationException;
 }

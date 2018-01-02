@@ -3,6 +3,7 @@ package nl.yogh.aerius.wui.builder.component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,10 +24,12 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 
 import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
+import nl.yogh.aerius.builder.domain.ShallowServiceInfo;
 import nl.yogh.aerius.wui.builder.commands.ProjectActionCommand;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusHighlightEvent;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
@@ -90,7 +93,7 @@ public class ProjectControlButton extends EventComposite {
     panel.addDomHandler(e -> fireHighlight(true), MouseOverEvent.getType());
     panel.addDomHandler(e -> fireHighlight(false), MouseOutEvent.getType());
 
-    panel.addDomHandler(e -> eventBus.fireEvent(new ProjectActionCommand(pull.idx(), info, type, determineAction(info.status()))),
+    panel.addDomHandler(e -> eventBus.fireEvent(new ProjectActionCommand(pull.idx(), info, determineAction(info.status()))),
         ClickEvent.getType());
   }
 
@@ -151,7 +154,7 @@ public class ProjectControlButton extends EventComposite {
   }
 
   private void setStatusCount() {
-    statusField.setText("compiled: " + getDeployedOrRunningCount());
+    statusField.setText("compiled: " + getCompileCount());
   }
 
   @EventHandler
@@ -188,14 +191,14 @@ public class ProjectControlButton extends EventComposite {
     return info == null || info.services() == null ? 0 : info.services().size();
   }
 
-  private String getDeployedOrRunningCount() {
+  private String getCompileCount() {
     return String
-        .valueOf(serviceMap.values().stream().filter(e -> e.status() == ServiceStatus.DEPLOYED || e.status() == ServiceStatus.SUSPENDED).count());
+        .valueOf(serviceMap.values().stream().filter(e -> e.status() == ServiceStatus.BUILT).count());
   }
 
   private boolean matches(final ProjectInfo value) {
     final long matchCount = getMatchCount(value);
-    return value.status() == ServiceStatus.UNBUILT && matchCount > 0 || matchCount == value.services().size();
+    return value.status() == ProjectStatus.UNBUILT && matchCount > 0 || matchCount == value.services().size();
   }
 
   private long getMatchCount(final ProjectInfo value) {
@@ -204,9 +207,9 @@ public class ProjectControlButton extends EventComposite {
     }
 
     int count = 0;
-    for (final String projectHash : info.services()) {
-      for (final String otherHash : value.services()) {
-        if (otherHash.equals(projectHash)) {
+    for (final ShallowServiceInfo projectHash : info.services()) {
+      for (final ShallowServiceInfo otherHash : value.services()) {
+        if (otherHash.hash().equals(projectHash.hash())) {
           count++;
         }
       }
@@ -217,7 +220,7 @@ public class ProjectControlButton extends EventComposite {
 
   @EventHandler
   public void onServiceStatusInfoChangedEvent(final ServiceStatusInfoChangedEvent e) {
-    if (info == null || !info.services().contains(e.getValue().hash())) {
+    if (info == null || !info.services().stream().map(v -> v.hash()).collect(Collectors.toList()).contains(e.getValue().hash())) {
       return;
     }
 
@@ -254,7 +257,7 @@ public class ProjectControlButton extends EventComposite {
     panel.setStyleName(style.highlight(), highlight);
   }
 
-  private void setStatus(final ServiceStatus status) {
+  private void setStatus(final ProjectStatus status) {
     if (status == null || disabled) {
       setDisabled();
       return;
@@ -276,7 +279,7 @@ public class ProjectControlButton extends EventComposite {
     }
   }
 
-  private static ProjectDeploymentAction determineAction(final ServiceStatus status) {
+  private static ProjectDeploymentAction determineAction(final ProjectStatus status) {
     switch (status) {
     case DEPLOYED:
       return ProjectDeploymentAction.SUSPEND;

@@ -19,7 +19,7 @@
     }
   </ui:style>
   <g:FlowPanel styleName="{res.css.flex} {res.css.alignCenter}">
-    <g:Label ui:field="time" styleName="{style.panel} {style.time}" />
+    <g:Label ui:field="time" styleName="{style.panel} {style.time} {res.css.noShrink}" />
     <g:Label text="{msg.message}" styleName="{style.panel} {style.txt} {res.css.grow}" />
   </g:FlowPanel>
 </ui:UiBinder>

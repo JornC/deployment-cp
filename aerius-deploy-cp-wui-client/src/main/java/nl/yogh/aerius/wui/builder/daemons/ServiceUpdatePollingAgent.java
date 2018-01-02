@@ -16,6 +16,11 @@ public abstract class ServiceUpdatePollingAgent extends PollingAgent<ArrayList<S
   }
 
   @Override
+  protected boolean onFailure(final Throwable caught) {
+    return false;
+  }
+
+  @Override
   protected int getPollRepeatDelay() {
     return PULL_REPEAT_DELAY;
   }

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Example context.xml for AERIUS server applications. Copy these files 
+     to the application server project and set the correct configuration -->
+<Context>
+  <Resource
+   name="jdbc/AeriusDB" auth="Container"
+   type="javax.sql.DataSource"
+   poolPreparedStatements="true"
+   username="calculator"
+   password="calculator"
+   driverClassName="org.postgresql.Driver"
+   url="jdbc:postgresql://calculator-db/calculator"
+   maxActive="64"
+   maxIdle="16"
+   maxAge="180000" />
+</Context>
+

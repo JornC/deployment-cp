@@ -67,7 +67,6 @@
       </g:FlowPanel>
       <g:FlowPanel styleName="{res.css.flex} {res.css.wrap} {res.css.distribute} {style.buttons}">
         <c:ProjectControlButton type="{CALCULATOR}" pull="{pull}" eventBus="{eventBus}" />
-        <c:ProjectControlButton type="{WORKERS}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{SCENARIO}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{REGISTER}" pull="{pull}" eventBus="{eventBus}" />
         <c:ProjectControlButton type="{CONNECT}" pull="{pull}" eventBus="{eventBus}" />

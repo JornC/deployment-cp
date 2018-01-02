@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 
@@ -17,7 +18,7 @@ public class ProjectDeploymentJob extends MockProjectJob {
   public ProjectDeploymentJob(final ProjectInfo info, final Map<Long, List<ProjectInfo>> productUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> products,
       final ConcurrentMap<String, ServiceInfo> services) {
-    super(ServiceStatus.DEPLOYED, info, productUpdates, serviceUpdates, products, services);
+    super(ProjectStatus.DEPLOYED, ServiceStatus.BUILT, info, productUpdates, serviceUpdates, products, services);
 
     LOG.info("Deployment job created:  {}", info.hash());
   }

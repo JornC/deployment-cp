@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.worker.ProjectUpdateRepositoryFactory;
 import nl.yogh.aerius.server.worker.PullRequestDeploymentFactory;
 import nl.yogh.aerius.server.worker.PullRequestMaintenanceFactory;
@@ -17,8 +18,10 @@ public class ApplicationFactory {
     final TimestampedMultiMap<ServiceInfo> serviceUpdates = ServiceUpdateRepositoryFactory.getInstance();
     final TimestampedMultiMap<ProjectInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
 
-    PullRequestMaintenanceFactory.init(System.getProperties(), projectUpdates);
-    PullRequestDeploymentFactory.init(System.getProperties(), projectUpdates, serviceUpdates);
+    final ApplicationConfiguration cfg = new ApplicationConfiguration(System.getProperties());
+
+    PullRequestMaintenanceFactory.init(cfg, projectUpdates);
+    PullRequestDeploymentFactory.init(cfg, projectUpdates, serviceUpdates);
   }
 
   public static void shutdown() {

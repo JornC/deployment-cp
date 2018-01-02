@@ -1,26 +1,23 @@
 package nl.yogh.aerius.server.worker;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
 
 public class PullRequestMaintenanceFactory {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestMaintenanceFactory.class);
 
   private static PullRequestMaintenanceWorker maintenanceWorker;
 
-  public static void init(final Properties properties, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
+  public static void init(final ApplicationConfiguration cfg, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
     synchronized (PullRequestMaintenanceFactory.class) {
       if (maintenanceWorker == null) {
-        final String baseDir = getPropertyRequired(properties, "deployment.git.repo.dir");
-        final String oAuthToken = getPropertyRequired(properties, "deployment.cp.oath.token");
-
-        maintenanceWorker = new PullRequestMaintenanceWorker(baseDir, oAuthToken, projectUpdates);
+        maintenanceWorker = new PullRequestMaintenanceWorker(cfg, projectUpdates);
       }
     }
 
@@ -41,14 +38,5 @@ public class PullRequestMaintenanceFactory {
     }
 
     LOG.info("PullRequestMaintenanceWorker shut down.");
-  }
-
-  private static String getPropertyRequired(final Properties properties, final String key) {
-    final String prop = properties.getProperty(key);
-    if (prop == null) {
-      throw new IllegalStateException("Required property not present: " + key);
-    }
-
-    return prop;
   }
 }

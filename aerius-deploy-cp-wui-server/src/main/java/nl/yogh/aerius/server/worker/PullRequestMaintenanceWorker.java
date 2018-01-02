@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
 import nl.yogh.aerius.server.worker.jobs.PullRequestUpdateJob;
 
@@ -47,15 +48,15 @@ public class PullRequestMaintenanceWorker {
 
   private static Comparator<PullRequestInfo> byReverseIdx = (a, b) -> -Integer.compare(Integer.parseInt(a.idx()), Integer.parseInt(b.idx()));
 
-  private final String baseDir;
-
   private long lastProjectUpdate;
 
-  public PullRequestMaintenanceWorker(final String baseDir, final String oAuthToken, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
-    this.baseDir = baseDir;
+  private final ApplicationConfiguration cfg;
+
+  public PullRequestMaintenanceWorker(final ApplicationConfiguration cfg, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
+    this.cfg = cfg;
     pullRequestLocalUpdateExecutor = Executors.newSingleThreadExecutor();
 
-    githubHook = new AERIUSGithubHook(oAuthToken);
+    githubHook = new AERIUSGithubHook(cfg.getGithubOpenAuthToken());
 
     pullRequestUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
     pullRequestUpdateExecutor.scheduleWithFixedDelay(() -> updatePullRequestsFromGithub(), 0, UPDATE_INTERVAL, TimeUnit.MINUTES);
@@ -110,11 +111,11 @@ public class PullRequestMaintenanceWorker {
   }
 
   private void schedulePullRequestUpdate(final Collection<PullRequestInfo> pulls) {
-    pulls.stream().filter(PullRequestInfo::isIncomplete).forEach(v -> schedulePullRequestUpdate(v));
+    pulls.stream().sorted(byReverseIdx).filter(PullRequestInfo::isIncomplete).forEach(v -> schedulePullRequestUpdate(v));
   }
 
   private void schedulePullRequestUpdate(final PullRequestInfo info) {
-    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(baseDir, info, pulls)));
+    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(cfg, info, pulls)));
   }
 
   public void shutdown() {

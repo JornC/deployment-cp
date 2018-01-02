@@ -1,0 +1,45 @@
+FROM ubuntu:17.04
+
+ARG tomcat_major_version="9"
+ARG tomcat_minor_version="0.2"
+ARG tomcat_version=${tomcat_major_version}.${tomcat_minor_version}
+ARG tomcat_download="http://ftp.tudelft.nl/apache/tomcat/tomcat-"${tomcat_major_version}/v${tomcat_version}/bin/apache-tomcat-${tomcat_version}.tar.gz
+
+ARG prId=local
+ENV prId ${prId}
+ARG oAuthToken=local
+ENV oAuthToken ${oAuthToken}
+
+RUN apt update \
+    && apt install -y \
+    wget \
+    default-jdk \
+    maven \
+    git
+
+RUN mkdir ~/gitRepos \
+    && cd ~/gitRepos \
+    && git init \
+    && git pull https://${oAuthToken}@github.com/aerius/AERIUS-II.git \
+    && git remote add origin https://${oAuthToken}@github.com/aerius/AERIUS-II.git \
+    && mvn dependency:resolve -Pcalculator -fn
+
+RUN mkdir ~/bin \
+    && wget ${tomcat_download} -O /tmp/tomcat.tar.gz \
+    && ls /tmp \
+    && tar -xzf /tmp/tomcat.tar.gz -C ~/bin \
+    && ls ~/bin \
+    && mv ~/bin/apache-tomcat-${tomcat_version} ~/bin/tomcat \
+    && rm -rf ~/bin/tomcat/webapps/*
+
+RUN cd ~/gitRepos \
+    && git fetch origin pull/${prId}/head:PR-${prId} \
+    && git checkout PR-${prId}
+
+RUN cd ~/gitRepos/ \
+    && mvn install -Pcalculator -DskipTests
+
+RUN mv ~/gitRepos/aerius-wui-calculator-server/target/calculator##*.war ~/bin/tomcat/webapps/ROOT.war
+
+EXPOSE 8080
+CMD ["/root/bin/tomcat/bin/catalina.sh", "run"]

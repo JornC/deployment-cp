@@ -1,0 +1,8 @@
+version: '3'
+services:
+  webapp:
+    build: .
+    ports:
+     - "8080:80"
+  database:
+    image: "{{service.CALCULATOR_DATABASE.hash}}"

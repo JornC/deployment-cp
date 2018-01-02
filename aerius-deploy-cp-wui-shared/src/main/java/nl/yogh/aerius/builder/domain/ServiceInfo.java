@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ServiceInfo implements Serializable, IsSerializable, HasHash {
   private static final long serialVersionUID = -7054855770805465459L;
 
+  private ServiceType type;
   private ServiceStatus status;
   private String hash;
 
@@ -14,7 +15,10 @@ public class ServiceInfo implements Serializable, IsSerializable, HasHash {
 
   public static ServiceInfo create() {
     return new ServiceInfo();
+  }
 
+  public static ServiceInfo create(final ShallowServiceInfo service) {
+    return create().hash(service.hash()).type(service.type());
   }
 
   public ServiceStatus status() {
@@ -33,6 +37,15 @@ public class ServiceInfo implements Serializable, IsSerializable, HasHash {
 
   public ServiceInfo hash(final String hash) {
     this.hash = hash;
+    return this;
+  }
+
+  public ServiceType type() {
+    return type;
+  }
+
+  public ServiceInfo type(final ServiceType type) {
+    this.type = type;
     return this;
   }
 

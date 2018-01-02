@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
+import nl.yogh.aerius.server.util.HashUtil;
 
 public abstract class ProjectJob implements Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectJob.class);
@@ -21,8 +23,12 @@ public abstract class ProjectJob implements Runnable {
   private final Map<Long, List<ServiceInfo>> serviceUpdates;
   protected final ConcurrentMap<String, ServiceInfo> services;
 
-  public ProjectJob(final ProjectInfo info, final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
+  protected final ApplicationConfiguration cfg;
+
+  public ProjectJob(final ApplicationConfiguration cfg, final ProjectInfo info, final Map<Long, List<ProjectInfo>> projectUpdates,
+      final Map<Long, List<ServiceInfo>> serviceUpdates,
       final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
+    this.cfg = cfg;
     this.info = info;
     this.projectUpdates = projectUpdates;
     this.serviceUpdates = serviceUpdates;
@@ -51,7 +57,7 @@ public abstract class ProjectJob implements Runnable {
       projectUpdates.get(System.currentTimeMillis()).add(info);
     }
 
-    LOG.debug("Product updated. {} -> {}", info.hash(), info.status());
+    LOG.debug("Product updated. {} -> {}", HashUtil.shorten(info.hash()), info.status());
   }
 
   private void updateService(final ServiceInfo info) {
@@ -59,6 +65,6 @@ public abstract class ProjectJob implements Runnable {
       serviceUpdates.get(System.currentTimeMillis()).add(info);
     }
 
-    LOG.debug("Service updated. {} -> {}", info.hash(), info.status());
+    LOG.debug("Service updated. {} -> {}", HashUtil.shorten(info.hash()), info.status());
   }
 }

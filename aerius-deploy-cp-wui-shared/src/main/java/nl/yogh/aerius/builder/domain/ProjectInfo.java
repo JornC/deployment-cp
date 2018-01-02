@@ -10,10 +10,11 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
 
   private boolean busy;
 
-  private ServiceStatus status;
+  private ProjectType type;
+  private ProjectStatus status;
   private String hash;
 
-  private ArrayList<String> services;
+  private ArrayList<ShallowServiceInfo> services;
 
   public ProjectInfo() {}
 
@@ -21,11 +22,11 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return new ProjectInfo();
   }
 
-  public ServiceStatus status() {
+  public ProjectStatus status() {
     return status;
   }
 
-  public ProjectInfo status(final ServiceStatus status) {
+  public ProjectInfo status(final ProjectStatus status) {
     this.status = status;
     return this;
   }
@@ -49,17 +50,26 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return this;
   }
 
-  public ArrayList<String> services() {
+  public ProjectType type() {
+    return type;
+  }
+
+  public ProjectInfo type(final ProjectType type) {
+    this.type = type;
+    return this;
+  }
+
+  public ArrayList<ShallowServiceInfo> services() {
     return services;
   }
 
-  public ProjectInfo services(final ArrayList<String> services) {
+  public ProjectInfo services(final ArrayList<ShallowServiceInfo> services) {
     this.services = services;
     return this;
   }
 
   @Override
   public String toString() {
-    return "ProductInfo [busy=" + busy + ", status=" + status + ", hash=" + hash + "]";
+    return "ProductInfo [busy=" + busy + ", status=" + status + ", hash=" + hash + ", services=" + services + "]";
   }
 }

@@ -10,10 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
-import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.domain.ServiceType;
+import nl.yogh.aerius.builder.domain.ShallowServiceInfo;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.CmdUtil;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.ProjectTypeDirectoryUtil;
@@ -24,10 +26,10 @@ public class PullRequestUpdateJob implements Runnable {
   private final PullRequestInfo info;
   private final Object grip;
 
-  private final String baseDir;
+  private final ApplicationConfiguration cfg;
 
-  public PullRequestUpdateJob(final String baseDir, final PullRequestInfo info, final Object grip) {
-    this.baseDir = baseDir;
+  public PullRequestUpdateJob(final ApplicationConfiguration cfg, final PullRequestInfo info, final Object grip) {
+    this.cfg = cfg;
     this.info = info;
     this.grip = grip;
 
@@ -77,7 +79,7 @@ public class PullRequestUpdateJob implements Runnable {
           continue;
         }
 
-        final ProjectInfo info = ProjectInfo.create().hash(findShaSum(dirs)).status(ServiceStatus.UNBUILT);
+        final ProjectInfo info = ProjectInfo.create().type(type).hash(findShaSum(dirs)).status(ProjectStatus.UNBUILT);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("Calculating sum for ProductType {} > {}", info.hash().substring(0, 8), type.name());
@@ -94,13 +96,13 @@ public class PullRequestUpdateJob implements Runnable {
     }
   }
 
-  private ArrayList<String> findServiceHash(final ProjectType type) throws IOException, InterruptedException, ProcessExitException {
-    final ArrayList<String> lst = new ArrayList<>();
+  private ArrayList<ShallowServiceInfo> findServiceHash(final ProjectType type) throws IOException, InterruptedException, ProcessExitException {
+    final ArrayList<ShallowServiceInfo> lst = new ArrayList<>();
 
     for (final ServiceType serviceType : type.getServiceTypes()) {
       final String sha = findShaSum(ProjectTypeDirectoryUtil.getServiceDirectories(serviceType));
 
-      lst.add(sha);
+      lst.add(ShallowServiceInfo.create().hash(sha).type(serviceType));
 
       if (LOG.isDebugEnabled()) {
         LOG.debug("Calculating sum for ServiceType {} > {}", sha.substring(0, 8), serviceType.name());
@@ -128,6 +130,6 @@ public class PullRequestUpdateJob implements Runnable {
   }
 
   private ArrayList<String> cmd(final String cmd) throws IOException, InterruptedException, ProcessExitException {
-    return CmdUtil.cmd(baseDir, cmd);
+    return CmdUtil.cmd(cfg.getMaintenanceBaseDir(), cmd);
   }
 }

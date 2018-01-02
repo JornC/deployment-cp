@@ -31,10 +31,6 @@ public class ServiceUpdateDaemonImpl extends ServiceUpdatePollingAgent {
     EVENT_BINDER.bindEventHandlers(this, eventBus);
   }
 
-  public void start(final long lastUpdate) {
-    super.start();
-  }
-
   @Override
   protected void fetch(final AsyncCallback<ArrayList<ServiceInfo>> callback) {
     service.getServiceUpdates(lastUpdate, callback);
@@ -50,5 +46,10 @@ public class ServiceUpdateDaemonImpl extends ServiceUpdatePollingAgent {
     for (final ServiceInfo info : result) {
       eventBus.fireEvent(new ServiceStatusInfoChangedEvent(info));
     }
+  }
+
+  @Override
+  protected boolean onFailure(final Throwable caught) {
+    return false;
   }
 }

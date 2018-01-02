@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 
@@ -17,7 +18,7 @@ public class ProjectSuspensionJob extends MockProjectJob {
   public ProjectSuspensionJob(final ProjectInfo info, final Map<Long, List<ProjectInfo>> productUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> products,
       final ConcurrentMap<String, ServiceInfo> services) {
-    super(ServiceStatus.SUSPENDED, info, productUpdates, serviceUpdates, products, services);
+    super(ProjectStatus.SUSPENDED, ServiceStatus.BUILT, info, productUpdates, serviceUpdates, products, services);
 
     LOG.info("Suspension job created:  {}", info.hash());
 

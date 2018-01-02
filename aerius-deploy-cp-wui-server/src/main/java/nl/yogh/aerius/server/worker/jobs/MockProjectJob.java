@@ -5,18 +5,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
+import nl.yogh.aerius.builder.domain.ShallowServiceInfo;
 
 public class MockProjectJob extends ProjectJob {
-  private final ServiceStatus status;
+  private final ProjectStatus projectStatus;
+  private final ServiceStatus serviceStatus;
 
-  public MockProjectJob(final ServiceStatus status, final ProjectInfo info, final Map<Long, List<ProjectInfo>> projectUpdates,
-      final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> projects,
-      final ConcurrentMap<String, ServiceInfo> services) {
-    super(info, projectUpdates, serviceUpdates, projects, services);
-
-    this.status = status;
+  public MockProjectJob(final ProjectStatus projectStatus, final ServiceStatus serviceStatus, final ProjectInfo info,
+      final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
+      final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
+    super(null, info, projectUpdates, serviceUpdates, projects, services);
+    this.projectStatus = projectStatus;
+    this.serviceStatus = serviceStatus;
 
     putProject(info.busy(true));
   }
@@ -29,10 +32,10 @@ public class MockProjectJob extends ProjectJob {
       throw new RuntimeException(e);
     }
 
-    for (final String service : info.services()) {
-      putService(ServiceInfo.create().hash(service).status(status));
+    for (final ShallowServiceInfo service : info.services()) {
+      putService(ServiceInfo.create().hash(service.hash()).status(serviceStatus));
     }
 
-    putProject(info.busy(false).status(status));
+    putProject(info.busy(false).status(projectStatus));
   }
 }

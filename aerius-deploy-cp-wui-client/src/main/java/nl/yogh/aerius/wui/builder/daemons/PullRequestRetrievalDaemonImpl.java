@@ -29,7 +29,6 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
   private final PullRequestServiceAsync service;
 
   @Inject ServiceUpdateDaemon serviceUpdateDaemon;
-
   @Inject ProjectUpdateDaemon productUpdateDaemon;
 
   private ArrayList<ProjectInfo> products;
@@ -57,6 +56,8 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
 
     serviceUpdateDaemon.start();
     productUpdateDaemon.start();
+
+    super.stop();
   }
 
   @Override
@@ -82,10 +83,10 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
       e.fail();
     }
 
-    e.respond(findServices(e.getValue()));
+    e.respond(findServices(e.getValue().stream().map(v -> v.hash()).collect(Collectors.toList())));
   }
 
-  private List<ServiceInfo> findServices(final ArrayList<String> value) {
+  private List<ServiceInfo> findServices(final List<String> value) {
     return findObjects(value, services);
   }
 
@@ -95,7 +96,7 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
 
   @EventHandler
   public void onProductActionCommand(final ProjectActionCommand c) {
-    service.doAction(c.getIdx(), c.getType(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new ProjectStatusInfoChangedEvent(r)));
+    service.doAction(c.getIdx(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new ProjectStatusInfoChangedEvent(r)));
   }
 
   @Override
@@ -112,7 +113,7 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
     return objects.stream().filter(v -> v.hash().equals(value)).findFirst().orElse(null);
   }
 
-  private static <T extends HasHash> ArrayList<T> findObjects(final ArrayList<String> value, final ArrayList<T> objects) {
+  private static <T extends HasHash> ArrayList<T> findObjects(final List<String> value, final ArrayList<T> objects) {
     return objects.stream().filter(v -> value.contains(v.hash())).collect(Collectors.toCollection(ArrayList::new));
   }
 }

@@ -16,8 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
 import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
+import nl.yogh.aerius.server.util.HashUtil;
 import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
 import nl.yogh.aerius.server.worker.jobs.ProjectCompilationJob;
 import nl.yogh.aerius.server.worker.jobs.ProjectDeploymentJob;
@@ -41,7 +42,11 @@ public class PullRequestDeploymentWorker {
   private final ConcurrentMap<String, ProjectInfo> projects = new ConcurrentHashMap<>();
   private final ConcurrentMap<String, ServiceInfo> services = new ConcurrentHashMap<>();
 
-  public PullRequestDeploymentWorker(final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates) {
+  private final ApplicationConfiguration cfg;
+
+  public PullRequestDeploymentWorker(final ApplicationConfiguration cfg, final Map<Long, List<ProjectInfo>> projectUpdates,
+      final Map<Long, List<ServiceInfo>> serviceUpdates) {
+    this.cfg = cfg;
     this.projectUpdates = projectUpdates;
     this.serviceUpdates = serviceUpdates;
     clearCacheExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -67,11 +72,13 @@ public class PullRequestDeploymentWorker {
     clearCacheExecutor.shutdownNow();
   }
 
-  public void doAction(final String idx, final ProjectType type, final ProjectDeploymentAction action, final ProjectInfo info) {
+  public void doAction(final String idx, final ProjectDeploymentAction action, final ProjectInfo info) {
+    LOG.info("Doing action {} on {} -- current status: {}", action, HashUtil.shorten(info.hash()), info.status());
+
     switch (action) {
     case BUILD:
       projectCompilationExecutor
-          .submit(CatchAllRunnable.wrap(new ProjectCompilationJob(idx, type, info, projectUpdates, serviceUpdates, projects, services)));
+      .submit(CatchAllRunnable.wrap(new ProjectCompilationJob(cfg, idx, info, projectUpdates, serviceUpdates, projects, services)));
       break;
     case SUSPEND:
       projectSuspensionExecutor.submit(CatchAllRunnable.wrap(new ProjectSuspensionJob(info, projectUpdates, serviceUpdates, projects, services)));
