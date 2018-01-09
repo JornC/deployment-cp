@@ -1,6 +1,8 @@
 package nl.yogh.aerius.server.util;
 
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 public class ApplicationConfiguration {
   private final Properties properties;
@@ -21,6 +23,10 @@ public class ApplicationConfiguration {
     return getPropertyRequired(properties, "cp.staging.dir");
   }
 
+  public String getDbDataDir() {
+    return getPropertyRequired(properties, "cp.data.dbdata");
+  }
+
   private static String getPropertyRequired(final Properties properties, final String key) {
     final String prop = properties.getProperty(key);
     if (prop == null) {
@@ -28,5 +34,9 @@ public class ApplicationConfiguration {
     }
 
     return prop;
+  }
+
+  public Stream<Entry<Object, Object>> getControlPanelProperties() {
+    return properties.entrySet().stream().filter(e -> ((String) e.getKey()).startsWith("cp."));
   }
 }

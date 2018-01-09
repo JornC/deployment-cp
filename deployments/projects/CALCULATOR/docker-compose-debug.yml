@@ -1,0 +1,12 @@
+version: '3'
+services:
+  webapp:
+    image: test-wui:latest
+    ports:
+     - "8080:8080"
+    links:
+     - "database:calculator-db"
+  database:
+    image: test-db:latest
+    ports:
+     - "5432:5432"

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import nl.yogh.aerius.server.util.HashUtil;
 public class GenericCompilationJob extends ProjectJob {
   private static final Logger LOG = LoggerFactory.getLogger(GenericCompilationJob.class);
 
-  private final Map<String, String> globalReplacements = new HashMap<>();
+  private final Map<String, String> globalReplacements;
 
   public GenericCompilationJob(final ApplicationConfiguration cfg, final String idx, final ProjectInfo info,
       final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
@@ -37,8 +38,14 @@ public class GenericCompilationJob extends ProjectJob {
     super(cfg, info, projectUpdates, serviceUpdates, projects, services);
     putProject(info.busy(true));
 
-    globalReplacements.put("{{pr.id}}", idx);
-    globalReplacements.put("{{oAuth.token}}", cfg.getGithubOpenAuthToken());
+    globalReplacements = cfg.getControlPanelProperties().collect(Collectors.toMap(formatKey(), v -> (String) v.getValue()));
+    globalReplacements.put("{{cp.pr.id}}", idx);
+
+    LOG.debug("Loaded {} global replacements for compilation job.", globalReplacements.size());
+  }
+
+  private Function<Entry<Object, Object>, String> formatKey() {
+    return v -> String.format("{{%s}}", v.getKey());
   }
 
   @Override
