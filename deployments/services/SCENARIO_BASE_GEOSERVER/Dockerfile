@@ -21,9 +21,9 @@ RUN git init \
 RUN git fetch origin pull/${prId}/head:PR-${prId} \
     && git checkout PR-${prId}
 
-RUN mvn install -Pcalculator -DskipTests
+RUN mvn install -Pgeoserver-calculator -DskipTests
 
-RUN mv aerius-wui-calculator-server/target/calculator##*.war /artifact.war
+RUN mv aerius-geoserver-calculator/target/geoserver-calculator##*.war /artifact.war
 
 # Clean up the build container and start from a tomcat container, copying the artifact
 FROM tomcat:jre8-alpine
@@ -34,11 +34,12 @@ RUN apk add --update \
     unzip \
     postgresql-client
 
-COPY --from=builder /artifact.war /calculator.war
-RUN mkdir /usr/local/tomcat/webapps/calculator
-RUN unzip /calculator.war -d /usr/local/tomcat/webapps/calculator/
+COPY --from=builder /artifact.war /geoserver-calculator.war
+RUN mkdir /usr/local/tomcat/webapps/geoserver-calculator
+RUN unzip /geoserver-calculator.war -d /usr/local/tomcat/webapps/geoserver-calculator/
 
-COPY context.xml /usr/local/tomcat/webapps/calculator/META-INF/context.xml
+COPY context.xml /usr/local/tomcat/webapps/geoserver-calculator/META-INF/context.xml
+
 COPY tomcat-users.xml /usr/local/tomcat/conf/
 COPY ./wait-for-postgres.sh wait-for-postgres.sh
 

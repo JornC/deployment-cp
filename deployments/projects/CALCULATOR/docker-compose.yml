@@ -1,20 +1,13 @@
 version: '3'
 services:
   webapp:
-    build: "{{service.CALCULATOR_WUI.hash}}"
-    ports:
-     - "8080:80"
-    volumes:
-     - type: volume
-       source: context.xml
-       target: /user/local/tomcat/webapps/META-INF/context.xml
-
-
-    volumes:
-      - type: volume
-        source: mydata
-        target: /data
-        volume:
-          nocopy: true
+    image: "{{service.CALCULATOR_WUI.hash}}"
+    links:
+     - "database:calculator-db"
+    depends_on:
+     - "database"
+     - "geoserver"
   database:
     image: "{{service.CALCULATOR_DATABASE.hash}}"
+  geoserver:
+    image: "{{service.CALCULATOR_GEOSERVER.hash}}"

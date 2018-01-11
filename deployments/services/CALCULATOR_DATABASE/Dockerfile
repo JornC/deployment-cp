@@ -34,4 +34,9 @@ COPY ./AeriusSettings.User.rb /AERIUS-II/aerius-database-build/config/AeriusSett
 USER root
 RUN chown postgres /AERIUS-II/aerius-database-build/config/AeriusSettings.User.rb
 
-COPY ./build_database.sh /docker-entrypoint-initdb.d/build_database.sh
+COPY ./build_database.sh /docker-entrypoint-initdb.d/z90_build_database.sh
+RUN chown postgres /docker-entrypoint-initdb.d
+
+COPY ./modify_constants.sql /docker-entrypoint-initdb.d/z91_modify_constants.sql
+
+RUN echo "echo BUILD_DATABASE_COMPLETE" > /docker-entrypoint-initdb.d/z99_finish.sh

@@ -6,7 +6,21 @@ services:
      - "8080:8080"
     links:
      - "database:calculator-db"
+     - "geoserver:geoserver-scenariobase"
+    depends_on:
+      - "database"
+    command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
+    restart: always
   database:
-    image: test-db:latest
+    image: test-db
     ports:
      - "5432:5432"
+    restart: always
+  geoserver:
+    image: test-geoserver:latest
+    links:
+     - "database:calculator-db"
+    depends_on:
+      - "database"
+    command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
+    restart: always
