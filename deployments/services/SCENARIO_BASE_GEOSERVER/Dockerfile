@@ -26,13 +26,19 @@ RUN mvn install -Pgeoserver-calculator -DskipTests
 RUN mv aerius-geoserver-calculator/target/geoserver-calculator##*.war /artifact.war
 
 # Clean up the build container and start from a tomcat container, copying the artifact
-FROM tomcat:jre8-alpine
+FROM tomcat:9-jre8-alpine
 
 #RUN rm -rf /usr/local/tomcat/webapps/
 
 RUN apk add --update \
     unzip \
     postgresql-client
+
+#RUN apt update -y \
+#    && apt install unzip \
+#    postgresql -y
+ARG geoserverPassword=local
+ENV geoserverPassword ${geoserverPassword}
 
 COPY --from=builder /artifact.war /geoserver-calculator.war
 RUN mkdir /usr/local/tomcat/webapps/geoserver-calculator
@@ -42,5 +48,13 @@ COPY context.xml /usr/local/tomcat/webapps/geoserver-calculator/META-INF/context
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/
 COPY ./wait-for-postgres.sh wait-for-postgres.sh
+COPY manager.xml /usr/local/tomcat/conf/Catalina/localhost/
+COPY context-manager.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml
+COPY context-manager.xml /usr/local/tomcat/webapps/host-manager/META-INF/context.xml
+
+RUN mkdir -p /etc/tomcat
+RUN echo "${geoserverPassword}" > /etc/tomcat/geoserverpasswd
+
+COPY users.xml /usr/local/tomcat/webapps/geoserver-calculator/security/usergroup/default/users.xml
 
 CMD ["catalina.sh", "run"]

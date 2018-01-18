@@ -1,25 +1,22 @@
 version: '3'
 services:
   webapp:
-    image: test-wui:latest
+    image: calculator-wui:test
     ports:
-     - "8080:8080"
-    links:
-     - "database:calculator-db"
-     - "geoserver:geoserver-scenariobase"
+     - "8000:8080"
     depends_on:
       - "database"
     command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
     restart: always
   database:
-    image: test-db
+    image: calculator-db:test
     ports:
      - "5432:5432"
     restart: always
   geoserver:
-    image: test-geoserver:latest
-    links:
-     - "database:calculator-db"
+    image: calculator-geoserver:test
+    ports:
+     - "8001:8080"
     depends_on:
       - "database"
     command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
