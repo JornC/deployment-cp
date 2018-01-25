@@ -6,7 +6,7 @@
    username="calculator"
    password="calculator" 
    driverClassName="org.postgresql.Driver"
-   url="jdbc:postgresql://calculator-db/calculator"
+   url="jdbc:postgresql://database/calculator"
    maxActive="64"
    maxIdle="16"
    maxAge="180000" />

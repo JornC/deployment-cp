@@ -1,1 +1,1 @@
-docker build . -t {{service.local.hash}} --build-arg prId={{pr.id}} --build-arg oAuthToken={{oAuth.token}}
+docker build . -t calculator-wui:{{service.local.hash}} --build-arg prId={{cp.pr.id}} --build-arg oAuthToken={{cp.github.oath.token}}

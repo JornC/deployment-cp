@@ -1,22 +1,18 @@
 version: '3'
 services:
+  test:
+    image: crccheck/hello-world
   webapp:
-    image: calculator-wui:test
-    ports:
-     - "8000:8080"
+    image: localhost:5000/calculator-wui:test
     depends_on:
       - "database"
     command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
     restart: always
   database:
-    image: calculator-db:test
-    ports:
-     - "5432:5432"
+    image: localhost:5000/calculator-db:test
     restart: always
   geoserver:
-    image: calculator-geoserver:test
-    ports:
-     - "8001:8080"
+    image: localhost:5000/calculator-geoserver:test
     depends_on:
       - "database"
     command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]

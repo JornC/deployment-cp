@@ -26,7 +26,7 @@ RUN mvn install -Pcalculator -DskipTests
 RUN mv aerius-wui-calculator-server/target/calculator##*.war /artifact.war
 
 # Clean up the build container and start from a tomcat container, copying the artifact
-FROM tomcat:jre8-alpine
+FROM tomcat:9-jre8-alpine
 
 #RUN rm -rf /usr/local/tomcat/webapps/
 
@@ -39,7 +39,13 @@ RUN mkdir /usr/local/tomcat/webapps/calculator
 RUN unzip /calculator.war -d /usr/local/tomcat/webapps/calculator/
 
 COPY context.xml /usr/local/tomcat/webapps/calculator/META-INF/context.xml
-COPY tomcat-users.xml /usr/local/tomcat/conf/
 COPY ./wait-for-postgres.sh wait-for-postgres.sh
+
+COPY tomcat-users.xml /usr/local/tomcat/conf/
+COPY manager.xml /usr/local/tomcat/conf/Catalina/localhost/
+COPY context-manager.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml
+COPY context-manager.xml /usr/local/tomcat/webapps/host-manager/META-INF/context.xml
+
+EXPOSE 8009
 
 CMD ["catalina.sh", "run"]

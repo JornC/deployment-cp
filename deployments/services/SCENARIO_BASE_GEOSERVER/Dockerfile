@@ -32,7 +32,8 @@ FROM tomcat:9-jre8-alpine
 
 RUN apk add --update \
     unzip \
-    postgresql-client
+    postgresql-client \
+    ttf-dejavu
 
 #RUN apt update -y \
 #    && apt install unzip \
@@ -45,6 +46,7 @@ RUN mkdir /usr/local/tomcat/webapps/geoserver-calculator
 RUN unzip /geoserver-calculator.war -d /usr/local/tomcat/webapps/geoserver-calculator/
 
 COPY context.xml /usr/local/tomcat/webapps/geoserver-calculator/META-INF/context.xml
+COPY logging.xml /usr/local/tomcat/webapps/geoserver-calculator/data/logging.xml
 
 COPY tomcat-users.xml /usr/local/tomcat/conf/
 COPY ./wait-for-postgres.sh wait-for-postgres.sh
@@ -56,5 +58,7 @@ RUN mkdir -p /etc/tomcat
 RUN echo "${geoserverPassword}" > /etc/tomcat/geoserverpasswd
 
 COPY users.xml /usr/local/tomcat/webapps/geoserver-calculator/security/usergroup/default/users.xml
+
+EXPOSE 8009
 
 CMD ["catalina.sh", "run"]
