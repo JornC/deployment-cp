@@ -47,9 +47,4 @@ public class ServiceUpdateDaemonImpl extends ServiceUpdatePollingAgent {
       eventBus.fireEvent(new ServiceStatusInfoChangedEvent(info));
     }
   }
-
-  @Override
-  protected boolean onFailure(final Throwable caught) {
-    return false;
-  }
 }

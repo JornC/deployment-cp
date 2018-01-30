@@ -57,7 +57,7 @@ public abstract class ProjectJob implements Runnable {
       projectUpdates.get(System.currentTimeMillis()).add(info);
     }
 
-    LOG.debug("Product updated. {} -> {}", HashUtil.shorten(info.hash()), info.status());
+    LOG.debug("Product updated. {} {} -> {}", info.type(), HashUtil.shorten(info.hash()), info.status());
   }
 
   private void updateService(final ServiceInfo info) {
@@ -65,6 +65,6 @@ public abstract class ProjectJob implements Runnable {
       serviceUpdates.get(System.currentTimeMillis()).add(info);
     }
 
-    LOG.debug("Service updated. {} -> {}", HashUtil.shorten(info.hash()), info.status());
+    LOG.debug("Service updated. {} {} -> {}", info.type(), HashUtil.shorten(info.hash()), info.status());
   }
 }

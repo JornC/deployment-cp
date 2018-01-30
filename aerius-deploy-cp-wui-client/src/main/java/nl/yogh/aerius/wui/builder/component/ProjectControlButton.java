@@ -29,7 +29,6 @@ import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
-import nl.yogh.aerius.builder.domain.ShallowServiceInfo;
 import nl.yogh.aerius.wui.builder.commands.ProjectActionCommand;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusHighlightEvent;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
@@ -121,6 +120,7 @@ public class ProjectControlButton extends EventComposite {
 
     this.info = info;
 
+    setStatusCount(info.services());
     setStatus(info.status());
     setBusy(info.busy());
     setServiceCount();
@@ -207,8 +207,8 @@ public class ProjectControlButton extends EventComposite {
     }
 
     int count = 0;
-    for (final ShallowServiceInfo projectHash : info.services()) {
-      for (final ShallowServiceInfo otherHash : value.services()) {
+    for (final ServiceInfo projectHash : info.services()) {
+      for (final ServiceInfo otherHash : value.services()) {
         if (otherHash.hash().equals(projectHash.hash())) {
           count++;
         }

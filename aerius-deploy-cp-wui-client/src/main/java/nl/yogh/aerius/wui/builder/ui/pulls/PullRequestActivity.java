@@ -54,7 +54,6 @@ public class PullRequestActivity extends EventActivity<Presenter, PullRequestVie
     for (final String leftOver : leftOverCol) {
       view.removePullRequest(leftOver);
     }
-
   }
 
   private void handlePullRequestInfo(final PullRequestInfo info) {

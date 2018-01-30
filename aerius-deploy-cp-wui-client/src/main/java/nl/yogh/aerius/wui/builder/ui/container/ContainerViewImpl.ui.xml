@@ -16,10 +16,7 @@
   </ui:style>
   <g:FlowPanel styleName="{style.container} {res.css.grow}">
     <g:FlowPanel styleName="{res.css.alignCenter} {res.css.justify} {style.explain}">
-      <w:HeadingWidget n="1" text="Good morrow" />
-    </g:FlowPanel>
-    <g:FlowPanel styleName="{res.css.alignCenter} {res.css.justify} {style.explain}">
-      <g:FlowPanel ui:field="pullRequestPanel" />
+      <g:FlowPanel ui:field="panel" />
     </g:FlowPanel>
   </g:FlowPanel>
 </ui:UiBinder>

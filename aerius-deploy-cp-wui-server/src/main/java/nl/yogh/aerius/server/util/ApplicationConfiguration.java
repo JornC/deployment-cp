@@ -4,6 +4,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Stream;
 
+import nl.yogh.aerius.builder.domain.ProjectType;
+
 public class ApplicationConfiguration {
   private final Properties properties;
 
@@ -38,5 +40,9 @@ public class ApplicationConfiguration {
 
   public Stream<Entry<Object, Object>> getControlPanelProperties() {
     return properties.entrySet().stream().filter(e -> ((String) e.getKey()).startsWith("cp."));
+  }
+
+  public String getDeploymentHost(final ProjectType projectType) {
+    return getPropertyRequired(properties, String.format("cp.deployment.%s.host", projectType.name()));
   }
 }

@@ -35,10 +35,6 @@ public class PullRequestViewImpl extends EventComposite implements PullRequestVi
   public void insertPullRequest(final PullRequestInfo info) {
     final String idx = info.idx();
 
-    if (eventBus == null) {
-      GWT.log("This is a bunch of bullshit!");
-    }
-
     if (!pullRequestMap.containsKey(idx)) {
       final PullRequestControlPanel newPanel = new PullRequestControlPanel(eventBus, info);
       pullRequestPanel.add(newPanel);

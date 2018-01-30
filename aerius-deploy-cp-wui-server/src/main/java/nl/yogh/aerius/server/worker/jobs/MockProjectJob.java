@@ -8,7 +8,6 @@ import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
-import nl.yogh.aerius.builder.domain.ShallowServiceInfo;
 
 public class MockProjectJob extends ProjectJob {
   private final ProjectStatus projectStatus;
@@ -32,7 +31,7 @@ public class MockProjectJob extends ProjectJob {
       throw new RuntimeException(e);
     }
 
-    for (final ShallowServiceInfo service : info.services()) {
+    for (final ServiceInfo service : info.services()) {
       putService(ServiceInfo.create().hash(service.hash()).status(serviceStatus));
     }
 

@@ -29,6 +29,11 @@ public abstract class PullRequestRetrievalPollingAgent extends PollingAgent<Arra
   }
 
   @Override
+  protected boolean onFailure(final Throwable caught) {
+    return false;
+  }
+
+  @Override
   protected int getPollRepeatDelay() {
     return PULL_REPEAT_DELAY;
   }

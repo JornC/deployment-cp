@@ -13,8 +13,9 @@ import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ProjectType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.ServiceInfo;
+import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.domain.ServiceType;
-import nl.yogh.aerius.builder.domain.ShallowServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.CmdUtil;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
@@ -64,7 +65,15 @@ public class PullRequestUpdateJob implements Runnable {
       // Ensure you are on the correct branch.
       try {
         cmd("git checkout master");
+      } catch (final ProcessExitException e) {
+        // Eat.
+      }
+      try {
         cmd("git reset --hard origin/master");
+      } catch (final ProcessExitException e) {
+        // Eat.
+      }
+      try {
         cmd("git branch -D PR-%s", idx);
       } catch (final ProcessExitException e) {
         // Eat.
@@ -81,13 +90,25 @@ public class PullRequestUpdateJob implements Runnable {
 
         final ProjectInfo info = ProjectInfo.create().type(type).hash(findShaSum(dirs)).status(ProjectStatus.UNBUILT);
 
+        try {
+          if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx, info.hash().toLowerCase())
+              .isEmpty()) {
+            // info.status(ProjectStatus.DEPLOYED);
+          } else if (!cmd("docker ps --filter status=exited --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
+              info.hash().toLowerCase())
+              .isEmpty()) {
+            // info.status(ProjectStatus.SUSPENDED);
+          } else {}
+        } catch (final ProcessExitException e) {
+          // eat
+        }
+
         if (LOG.isDebugEnabled()) {
-          LOG.debug("Calculating sum for ProductType {} > {}", info.hash().substring(0, 8), type.name());
+          LOG.trace("Calculating sum for ProductType {} > {}", info.hash().substring(0, 8), type.name());
         }
 
         info.services(findServiceHash(type));
         products.put(type, info);
-
       }
 
       return products;
@@ -96,16 +117,26 @@ public class PullRequestUpdateJob implements Runnable {
     }
   }
 
-  private ArrayList<ShallowServiceInfo> findServiceHash(final ProjectType type) throws IOException, InterruptedException, ProcessExitException {
-    final ArrayList<ShallowServiceInfo> lst = new ArrayList<>();
+  private ArrayList<ServiceInfo> findServiceHash(final ProjectType type) throws IOException, InterruptedException, ProcessExitException {
+    final ArrayList<ServiceInfo> lst = new ArrayList<>();
 
     for (final ServiceType serviceType : type.getServiceTypes()) {
       final String sha = findShaSum(ProjectTypeDirectoryUtil.getServiceDirectories(serviceType));
 
-      lst.add(ShallowServiceInfo.create().hash(sha).type(serviceType));
+      final ServiceInfo service = ServiceInfo.create().hash(sha).type(serviceType).status(ServiceStatus.UNBUILT);
+
+      try {
+        if (!cmd("docker images -f \"label=service=%s\" --format \"{{.Tag}}\" | grep %s", serviceType.name(), service.hash()).isEmpty()) {
+          service.status(ServiceStatus.BUILT);
+        }
+      } catch (final ProcessExitException e) {
+        // eat
+      }
+
+      lst.add(service);
 
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Calculating sum for ServiceType {} > {}", sha.substring(0, 8), serviceType.name());
+        LOG.trace("Calculating sum for ServiceType {} > {}", sha.substring(0, 8), serviceType.name());
       }
     }
 

@@ -17,8 +17,8 @@ public class ServiceInfo implements Serializable, IsSerializable, HasHash {
     return new ServiceInfo();
   }
 
-  public static ServiceInfo create(final ShallowServiceInfo service) {
-    return create().hash(service.hash()).type(service.type());
+  public static ServiceInfo create(final ServiceInfo service) {
+    return create().type(service.type).status(service.status).hash(service.hash);
   }
 
   public ServiceStatus status() {

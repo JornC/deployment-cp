@@ -50,7 +50,7 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
 
   private void handlePresent(final PresentSnapshot result) {
     services = result.getServices();
-    products = result.getProducts();
+    products = result.getProjects();
 
     super.start();
 
@@ -87,6 +87,7 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
   }
 
   private List<ServiceInfo> findServices(final List<String> value) {
+    GWT.log("Finding services: " + value);
     return findObjects(value, services);
   }
 

@@ -74,7 +74,7 @@ public class PullRequestServiceImpl implements PullRequestService {
 
     final PresentSnapshot snapshot = new PresentSnapshot();
     synchronized (instance) {
-      snapshot.setProducts(instance.getProjects());
+      snapshot.setProjects(instance.getProjects());
       snapshot.setServices(instance.getServices());
       snapshot.setLastUpdate(maintainer.getLastUpdate());
     }
