@@ -3,16 +3,16 @@ services:
   test:
     image: crccheck/hello-world
   webapp:
-    image: localhost:5000/calculator-wui:test
+    image: calculator-wui:test
     depends_on:
       - "database"
     command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
     restart: always
   database:
-    image: localhost:5000/calculator-db:test
+    image: calculator-database:test
     restart: always
   geoserver:
-    image: localhost:5000/calculator-geoserver:test
+    image: calculator-geoserver:test
     depends_on:
       - "database"
     command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]

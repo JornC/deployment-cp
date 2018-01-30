@@ -1,6 +1,8 @@
-docker-compose build
-docker-compose up -d
+echo "BUILDING DOCKER COMPOSITION"
 
+docker-compose -p CALCULATOR-{{cp.pr.id}}-{{cp.pr.hash}} up -d
+
+docker ps -a
 echo "Replacing IPs.."
 
 IPGeoserver=$(docker ps -a | grep calculator-geoserver:{{service.SCENARIO_BASE_GEOSERVER.hash}} | cut -d ' ' -f 1 | xargs docker inspect | grep IPAddress | tail -1 | cut -d ':' -f 2 | cut -d '"' -f 2)

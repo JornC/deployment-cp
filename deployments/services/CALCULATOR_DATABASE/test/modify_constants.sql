@@ -4,5 +4,5 @@ UPDATE system.constants SET value = 'http://localhost:8080/calculator/aerius-geo
 UPDATE system.constants SET value = 'http://localhost:8080/calculator/aerius-geo-wms?' WHERE key = 'SHARED_WMS_PROXY_URL';
 UPDATE system.constants SET value = 'http://webapp:8080/calculator/aerius-geo-wms?' WHERE key = 'SHARED_SLD_URL';
 
-UPDATE system.layer_capabilities SET url = 'http://{{cp.pr.id}}.calculator.localhost/calculator/aerius-geo-wms?' WHERE layer_capabilities_id = '1';
-UPDATE system.layer_capabilities SET url = 'http://{{cp.pr.id}}.geoserver.localhost/geoserver-calculator/wms?' WHERE layer_capabilities_id = '4';
+UPDATE system.layer_capabilities SET url = 'http://calculator-localhost/calculator/aerius-geo-wms?' WHERE layer_capabilities_id = '1';
+UPDATE system.layer_capabilities SET url = 'http://geoserver-localhost/geoserver-calculator/wms?' WHERE layer_capabilities_id = '4';

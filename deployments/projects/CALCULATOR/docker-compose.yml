@@ -1,13 +1,17 @@
 version: '3'
 services:
   webapp:
-    image: "{{service.CALCULATOR_WUI.hash}}"
-    links:
-     - "database:calculator-db"
+    image: calculator-wui:{{service.CALCULATOR_WUI.hash}}
     depends_on:
-     - "database"
-     - "geoserver"
+      - "database"
+    command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
+    restart: always
   database:
-    image: "{{service.CALCULATOR_DATABASE.hash}}"
+    image: calculator-database:{{service.CALCULATOR_DATABASE.hash}}
+    restart: always
   geoserver:
-    image: "{{service.CALCULATOR_GEOSERVER.hash}}"
+    image: calculator-geoserver:{{service.SCENARIO_BASE_GEOSERVER.hash}}
+    depends_on:
+      - "database"
+    command: ["./wait-for-postgres.sh", "database", "catalina.sh", "run"]
+    restart: always

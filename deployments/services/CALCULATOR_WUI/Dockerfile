@@ -1,8 +1,6 @@
 # Create a mostly-cacheable builder container that builds the pull request
 FROM maven:3.5-jdk-8 as builder
 
-ARG prId=local
-ENV prId ${prId}
 ARG oAuthToken=local
 ENV oAuthToken ${oAuthToken}
 
@@ -17,6 +15,9 @@ RUN git init \
     && git pull https://${oAuthToken}@github.com/aerius/AERIUS-II.git \
     && git remote add origin https://${oAuthToken}@github.com/aerius/AERIUS-II.git \
     && mvn dependency:resolve -Pcalculator -fn
+
+ARG prId=local
+ENV prId ${prId}
 
 RUN git fetch origin pull/${prId}/head:PR-${prId} \
     && git checkout PR-${prId}
@@ -47,5 +48,7 @@ COPY context-manager.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml
 COPY context-manager.xml /usr/local/tomcat/webapps/host-manager/META-INF/context.xml
 
 EXPOSE 8009
+
+LABEL service=CALCULATOR_WUI
 
 CMD ["catalina.sh", "run"]

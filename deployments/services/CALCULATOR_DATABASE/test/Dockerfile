@@ -1,5 +1,11 @@
 FROM mdillon/postgis:9.6-alpine
 
+ARG prId=local
+ENV prId ${prId}
+
+ARG oAuthToken=local
+ENV oAuthToken ${oAuthToken}
+
 RUN apk add --update \
     git \
     ruby \
@@ -16,15 +22,9 @@ RUN chown -R postgres AERIUS-II
 USER postgres
 WORKDIR AERIUS-II
 
-ARG oAuthToken=local
-ENV oAuthToken ${oAuthToken}
-
 RUN git init \
     && git pull https://${oAuthToken}@github.com/aerius/AERIUS-II.git \
     && git remote add origin https://${oAuthToken}@github.com/aerius/AERIUS-II.git
-
-ARG prId=local
-ENV prId ${prId}
 
 RUN git fetch origin pull/${prId}/head:PR-${prId} \
     && git checkout PR-${prId}
@@ -38,7 +38,5 @@ COPY ./build_database.sh /docker-entrypoint-initdb.d/z90_build_database.sh
 RUN chown postgres /docker-entrypoint-initdb.d
 
 COPY ./modify_constants.sql /docker-entrypoint-initdb.d/z91_modify_constants.sql
-
-LABEL service=CALCULATOR_DATABASE
 
 RUN echo "echo BUILD_DATABASE_COMPLETE" > /docker-entrypoint-initdb.d/z99_finish.sh
