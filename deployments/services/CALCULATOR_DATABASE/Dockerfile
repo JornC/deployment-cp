@@ -39,6 +39,10 @@ RUN chown postgres /docker-entrypoint-initdb.d
 
 COPY ./modify_constants.sql /docker-entrypoint-initdb.d/z91_modify_constants.sql
 
-LABEL service=CALCULATOR_DATABASE
+LABEL nl.aerius.docker.service=true
+LABEL nl.aerius.docker.service.type=CALCULATOR_DATABASE
+LABEL nl.aerius.docker.service.prId={{cp.pr.id}}
+LABEL nl.aerius.docker.service.hash={{service.local.hash}}
+
 
 RUN echo "echo BUILD_DATABASE_COMPLETE" > /docker-entrypoint-initdb.d/z99_finish.sh

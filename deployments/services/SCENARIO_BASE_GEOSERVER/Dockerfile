@@ -62,6 +62,10 @@ COPY users.xml /usr/local/tomcat/webapps/geoserver-calculator/security/usergroup
 
 EXPOSE 8009
 
-LABEL service=SCENARIO_BASE_GEOSERVER
+LABEL nl.aerius.docker.service=true
+LABEL nl.aerius.docker.service.type=SCENARIO_BASE_GEOSERVER
+LABEL nl.aerius.docker.service.prId={{cp.pr.id}}
+LABEL nl.aerius.docker.service.hash={{service.local.hash}}
+
 
 CMD ["catalina.sh", "run"]

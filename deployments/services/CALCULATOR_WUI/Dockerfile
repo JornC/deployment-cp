@@ -49,6 +49,9 @@ COPY context-manager.xml /usr/local/tomcat/webapps/host-manager/META-INF/context
 
 EXPOSE 8009
 
-LABEL service=CALCULATOR_WUI
+LABEL nl.aerius.docker.service=true
+LABEL nl.aerius.docker.service.type=CALCULATOR_WUI
+LABEL nl.aerius.docker.service.prId={{cp.pr.id}}
+LABEL nl.aerius.docker.service.hash={{service.local.hash}}
 
 CMD ["catalina.sh", "run"]

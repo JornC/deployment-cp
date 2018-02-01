@@ -10,4 +10,5 @@ sed "/BUILD_DATABASE_COMPLETE/ q" <(docker logs -f {{service.local.hash}}-builde
 
 docker commit {{service.local.hash}}-builder calculator-database:{{service.local.hash}}
 docker stop {{service.local.hash}}-builder
-docker rm -vf {{service.local.hash}}-builder calculator-database-empty:{{service.local.hash}}
+docker rm -vf {{service.local.hash}}-builder
+docker rmi calculator-database-empty:{{service.local.hash}}
