@@ -15,7 +15,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 
 import nl.yogh.aerius.wui.ApplicationRootView;
 import nl.yogh.aerius.wui.builder.component.PlaceNavigation;
-import nl.yogh.aerius.wui.builder.place.LandingPlace;
+import nl.yogh.aerius.wui.builder.place.DockerPlace;
 import nl.yogh.aerius.wui.i18n.M;
 import nl.yogh.aerius.wui.resources.R;
 import nl.yogh.gwt.wui.event.PlaceChangeEvent;
@@ -68,7 +68,7 @@ public class ApplicationRootViewImpl extends EventComposite implements Applicati
 
   @UiHandler("landingHeading")
   public void onLandingClick(final ClickEvent e) {
-    placeController.goTo(new LandingPlace());
+    placeController.goTo(new DockerPlace());
   }
 
   @Override

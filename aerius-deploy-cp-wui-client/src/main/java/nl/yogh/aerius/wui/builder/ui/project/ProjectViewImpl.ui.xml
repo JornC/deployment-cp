@@ -8,15 +8,21 @@
     align-items: center;
     }
     .explain {
-    max-width: 750px;
+    max-width: 1280px;
     min-width: 200px;
     margin: 0 auto;
     padding: 20px;
     }
+    .center {
+    text-align: center;
+    }
   </ui:style>
   <g:FlowPanel styleName="{style.container} {res.css.grow}">
     <g:FlowPanel styleName="{res.css.alignCenter} {res.css.justify} {style.explain}">
-      <g:FlowPanel ui:field="panel" />
+      <w:SwitchPanel ui:field="switchPanel">
+        <g:Label text="No known projects running.." styleName="{style.center}" />
+        <g:FlowPanel ui:field="panel" styleName="{res.css.flex} {res.css.wrap}" />
+      </w:SwitchPanel>
     </g:FlowPanel>
   </g:FlowPanel>
 </ui:UiBinder>

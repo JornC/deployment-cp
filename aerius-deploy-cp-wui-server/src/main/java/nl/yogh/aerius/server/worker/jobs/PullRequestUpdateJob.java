@@ -126,7 +126,8 @@ public class PullRequestUpdateJob implements Runnable {
       final ServiceInfo service = ServiceInfo.create().hash(sha).type(serviceType).status(ServiceStatus.UNBUILT);
 
       try {
-        if (!cmd("docker images -f \"label=service=%s\" --format \"{{.Tag}}\" | grep %s", serviceType.name(), service.hash()).isEmpty()) {
+        if (!cmd("docker images -f \"label=nl.aerius.docker.service.type=%s\" -f label=nl.aerius.docker.service.hash=%s --format \"{{.Tag}}\"",
+            serviceType.name(), service.hash()).isEmpty()) {
           service.status(ServiceStatus.BUILT);
         }
       } catch (final ProcessExitException e) {

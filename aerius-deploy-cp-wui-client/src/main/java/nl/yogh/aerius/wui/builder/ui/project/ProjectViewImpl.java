@@ -1,4 +1,4 @@
-package nl.yogh.aerius.wui.builder.ui.container;
+package nl.yogh.aerius.wui.builder.ui.project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,22 +18,24 @@ import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.component.ProjectViewPanel;
 import nl.yogh.gwt.wui.widget.EventComposite;
+import nl.yogh.gwt.wui.widget.SwitchPanel;
 
-public class ContainerViewImpl extends EventComposite implements ContainerView {
-  private static final ContainerViewImplUiBinder UI_BINDER = GWT.create(ContainerViewImplUiBinder.class);
+public class ProjectViewImpl extends EventComposite implements ProjectView {
+  private static final ProjectViewImplUiBinder UI_BINDER = GWT.create(ProjectViewImplUiBinder.class);
 
-  interface ContainerViewImplUiBinder extends UiBinder<Widget, ContainerViewImpl> {}
+  interface ProjectViewImplUiBinder extends UiBinder<Widget, ProjectViewImpl> {}
 
-  interface ContainerViewImplEventBinder extends EventBinder<ContainerViewImpl> {}
+  interface ProjectViewImplEventBinder extends EventBinder<ProjectViewImpl> {}
 
-  private final ContainerViewImplEventBinder EVENT_BINDER = GWT.create(ContainerViewImplEventBinder.class);
+  private final ProjectViewImplEventBinder EVENT_BINDER = GWT.create(ProjectViewImplEventBinder.class);
 
+  @UiField SwitchPanel switchPanel;
   @UiField FlowPanel panel;
 
   private final Map<String, ProjectViewPanel> items = new HashMap<>();
 
   @Inject
-  public ContainerViewImpl() {
+  public ProjectViewImpl() {
     initWidget(UI_BINDER.createAndBindUi(this));
   }
 
@@ -63,6 +65,8 @@ public class ContainerViewImpl extends EventComposite implements ContainerView {
 
   @Override
   public void setProducts(final ArrayList<ProjectInfo> projects) {
+    switchPanel.showWidget(projects.isEmpty() ? 0 : 1);
+
     for (final ProjectInfo info : projects) {
       panel.add(new ProjectViewPanel(info));
     }

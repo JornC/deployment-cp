@@ -34,7 +34,7 @@
     }
     .content {
     overflow-y: scroll;
-    margin: 20px 20px;
+    margin: 0px 20px 20px;
     }
   </ui:style>
   <g:FlowPanel styleName="{res.css.flex} {res.css.columns} {res.css.grow} {style.applicationView} {res.css.globalMaxWidth}">

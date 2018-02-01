@@ -5,10 +5,43 @@
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
   <ui:with field='project' type='nl.yogh.aerius.builder.domain.ProjectInfo' />
   <ui:style>
+    .panel {
+    margin: 10px;
+    border: 2px solid #ccd;
+    padding: 20px;
+    transition: background 0.1s ease-out;
+    }
+    .panel:hover {
+    background-color: rgba(255,255,255,0.05);
+    }
+    .title {
+    }
+    .hash {
+    padding: 3px;
+    font-size: 0.7em;
+    font-style: italic;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 150px;
+    }
+    .url {
+    display: block;
+    padding: 10px 0px;
+    color: #ccd;
+    }
+    .url:hover {
+    color: #ff9933;
+    }
   </ui:style>
-  <g:FlowPanel ui:field="container" styleName="{res.css.flex} {res.css.justify}">
-    <g:Label text="{project.type.name}" />
-    <g:Label text="{project.url}" />
-    <g:Label text="{project.hash}" />
+  <g:FlowPanel ui:field="container" styleName="{style.panel}">
+    <g:FlowPanel styleName="{res.css.flex} {style.title}">
+      <g:Label text="{project.type.name}" />
+      <g:Label text="{project.hash}" styleName="{style.hash}" title="{project.hash}" />
+    </g:FlowPanel>
+    <w:SwitchPanel ui:field="switchPanel">
+      <g:Label text="Pending..." />
+      <g:Anchor text="{project.url}" href="{project.url}" styleName="{style.url}" target="_blank" />
+    </w:SwitchPanel>
   </g:FlowPanel>
 </ui:UiBinder>

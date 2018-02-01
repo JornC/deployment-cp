@@ -29,19 +29,19 @@ public final class ServiceURLConstants {
   public static final String JSON_DISPATCHER_SERVLET_MAPPING = MODULE_NAME + BASE_JSON_PATH + "/*";
 
   /**
-   * Container service path, relative to the base service path.
+   * Docker service path, relative to the base service path.
    */
-  public static final String CONTAINER_RELATIVE_PATH = "/containers";
+  public static final String DOCKER_RELATIVE_PATH = "/dockers";
 
   /**
-   * Container service path.
+   * Docker service path.
    */
-  public static final String CONTAINER_GWT_PATH = BASE_GWT_PATH + CONTAINER_RELATIVE_PATH;
+  public static final String DOCKER_GWT_PATH = BASE_GWT_PATH + DOCKER_RELATIVE_PATH;
 
   /**
-   * Container service path.
+   * Docker service path.
    */
-  public static final String CONTAINER_JSON_PATH = BASE_JSON_PATH + CONTAINER_RELATIVE_PATH;
+  public static final String DOCKER_JSON_PATH = BASE_JSON_PATH + DOCKER_RELATIVE_PATH;
 
   /**
    * Pull request service path, relative to the base service path.

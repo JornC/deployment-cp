@@ -13,4 +13,8 @@ public class TimestampedMultiMap<V> extends MultiMap<Long, V> {
   public ArrayList<V> getUpdates(final long since) {
     return entrySet().stream().filter(e -> e.getKey() > since).flatMap(e -> e.getValue().stream()).collect(Collectors.toCollection(ArrayList::new));
   }
+
+  public void timestamp(final V value) {
+    get(System.currentTimeMillis()).add(value);
+  }
 }

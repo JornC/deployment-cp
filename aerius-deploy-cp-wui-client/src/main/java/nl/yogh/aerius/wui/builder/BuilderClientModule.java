@@ -9,7 +9,7 @@ import nl.yogh.aerius.wui.builder.component.PlaceNavigation;
 import nl.yogh.aerius.wui.builder.daemons.BuilderDaemonBootstrapper;
 import nl.yogh.aerius.wui.builder.dev.BuilderDevelopmentObserver;
 import nl.yogh.aerius.wui.builder.history.BuilderPlaceHistoryMapper;
-import nl.yogh.aerius.wui.builder.place.LandingPlace;
+import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
 import nl.yogh.gwt.wui.activity.ActivityMapper;
 import nl.yogh.gwt.wui.daemon.DaemonBootstrapper;
 import nl.yogh.gwt.wui.dev.DevelopmentObserver;
@@ -21,7 +21,7 @@ import nl.yogh.gwt.wui.place.DefaultPlace;
 public class BuilderClientModule extends AbstractGinModule {
   @Override
   protected void configure() {
-    bind(ApplicationPlace.class).annotatedWith(DefaultPlace.class).to(LandingPlace.class);
+    bind(ApplicationPlace.class).annotatedWith(DefaultPlace.class).to(PullRequestPlace.class);
     bind(Historian.class).to(HTML5Historian.class);
 
     // Bind components
