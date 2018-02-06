@@ -24,14 +24,14 @@ import nl.yogh.aerius.server.util.ProjectTypeDirectoryUtil;
 public class PullRequestUpdateJob implements Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
 
-  private final PullRequestInfo info;
+  private final PullRequestInfo pullInfo;
   private final Object grip;
 
   private final ApplicationConfiguration cfg;
 
   public PullRequestUpdateJob(final ApplicationConfiguration cfg, final PullRequestInfo info, final Object grip) {
     this.cfg = cfg;
-    this.info = info;
+    this.pullInfo = info;
     this.grip = grip;
 
     info.busy(true);
@@ -41,23 +41,23 @@ public class PullRequestUpdateJob implements Runnable {
 
   @Override
   public void run() {
-    LOG.info("Update job started:  {} -> {}", info.idx(), info.hash());
+    LOG.info("Update job started:  {} -> {}", pullInfo.idx(), pullInfo.hash());
 
     final HashMap<ProjectType, ProjectInfo> projects = fetchProjectInformation();
 
     synchronized (grip) {
-      info.lastUpdated(System.currentTimeMillis());
-      info.busy(false);
-      info.incomplete(false);
+      pullInfo.lastUpdated(System.currentTimeMillis());
+      pullInfo.busy(false);
+      pullInfo.incomplete(false);
 
-      info.projects(projects);
+      pullInfo.projects(projects);
     }
 
-    LOG.info("Update job complete: {} -> {}", info.idx(), info.hash());
+    LOG.info("Update job complete: {} -> {}", pullInfo.idx(), pullInfo.hash());
   }
 
   private HashMap<ProjectType, ProjectInfo> fetchProjectInformation() {
-    final String idx = info.idx();
+    final String idx = pullInfo.idx();
 
     try {
       final HashMap<ProjectType, ProjectInfo> products = new HashMap<>();
@@ -88,14 +88,18 @@ public class PullRequestUpdateJob implements Runnable {
           continue;
         }
 
-        final ProjectInfo info = ProjectInfo.create().type(type).hash(findShaSum(dirs)).status(ProjectStatus.UNBUILT);
+        final ProjectInfo projectInfo = ProjectInfo.create()
+            .type(type)
+            .hash(findShaSum(dirs))
+            .buildHash(pullInfo.hash())
+            .status(ProjectStatus.UNBUILT);
 
         try {
-          if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx, info.hash().toLowerCase())
+          if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx, projectInfo.hash().toLowerCase())
               .isEmpty()) {
             // info.status(ProjectStatus.DEPLOYED);
           } else if (!cmd("docker ps --filter status=exited --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
-              info.hash().toLowerCase())
+              projectInfo.hash().toLowerCase())
               .isEmpty()) {
             // info.status(ProjectStatus.SUSPENDED);
           } else {}
@@ -104,11 +108,11 @@ public class PullRequestUpdateJob implements Runnable {
         }
 
         if (LOG.isDebugEnabled()) {
-          LOG.trace("Calculating sum for ProductType {} > {}", info.hash().substring(0, 8), type.name());
+          LOG.trace("Calculating sum for ProductType {} > {}", projectInfo.hash().substring(0, 8), type.name());
         }
 
-        info.services(findServiceHash(type));
-        products.put(type, info);
+        projectInfo.services(findServiceHash(type));
+        products.put(type, projectInfo);
       }
 
       return products;

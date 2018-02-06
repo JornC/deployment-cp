@@ -3,6 +3,7 @@ package nl.yogh.aerius.server.worker;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +17,12 @@ public class PullRequestDeploymentFactory {
 
   private static PullRequestDeploymentWorker deploymentWorker;
 
-  public static void init(final ApplicationConfiguration cfg, final Map<Long, List<ProjectInfo>> projectUpdates,
+  public static void init(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
+      final ConcurrentMap<String, ServiceInfo> services, final Map<Long, List<ProjectInfo>> projectUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates) {
     synchronized (PullRequestDeploymentFactory.class) {
       if (deploymentWorker == null) {
-        deploymentWorker = new PullRequestDeploymentWorker(cfg, projectUpdates, serviceUpdates);
+        deploymentWorker = new PullRequestDeploymentWorker(cfg, projects, services, projectUpdates, serviceUpdates);
       }
     }
 

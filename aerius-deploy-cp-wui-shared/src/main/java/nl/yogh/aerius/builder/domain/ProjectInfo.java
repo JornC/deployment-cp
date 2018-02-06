@@ -14,6 +14,8 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
   private ProjectStatus status;
   private String hash;
 
+  private String buildHash;
+
   private String url;
 
   private ArrayList<ServiceInfo> services;
@@ -40,6 +42,15 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
 
   public ProjectInfo hash(final String hash) {
     this.hash = hash;
+    return this;
+  }
+
+  public String buildHash() {
+    return buildHash;
+  }
+
+  public ProjectInfo buildHash(final String buildHash) {
+    this.buildHash = buildHash;
     return this;
   }
 

@@ -52,8 +52,12 @@ public class PullRequestMaintenanceWorker {
 
   private final ApplicationConfiguration cfg;
 
-  public PullRequestMaintenanceWorker(final ApplicationConfiguration cfg, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
+  private final ConcurrentMap<String, ProjectInfo> projects;
+
+  public PullRequestMaintenanceWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
+      final TimestampedMultiMap<ProjectInfo> projectUpdates) {
     this.cfg = cfg;
+    this.projects = projects;
     pullRequestLocalUpdateExecutor = Executors.newSingleThreadExecutor();
 
     githubHook = new AERIUSGithubHook(cfg.getGithubOpenAuthToken());
@@ -102,7 +106,7 @@ public class PullRequestMaintenanceWorker {
 
   private void updatePullRequestsFromGithub() {
     try {
-      githubHook.update(pulls);
+      githubHook.update(projects, pulls);
       schedulePullRequestUpdate(pulls.values());
     } catch (final IOException e) {
       LOG.error("Failed to initialize pull requests.", e);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,14 +38,17 @@ public class PullRequestDeploymentWorker {
   private final Map<Long, List<ProjectInfo>> projectUpdates;
   private final Map<Long, List<ServiceInfo>> serviceUpdates;
 
-  private final ConcurrentMap<String, ProjectInfo> projects = new ConcurrentHashMap<>();
-  private final ConcurrentMap<String, ServiceInfo> services = new ConcurrentHashMap<>();
+  private final ConcurrentMap<String, ProjectInfo> projects;
+  private final ConcurrentMap<String, ServiceInfo> services;
 
   private final ApplicationConfiguration cfg;
 
-  public PullRequestDeploymentWorker(final ApplicationConfiguration cfg, final Map<Long, List<ProjectInfo>> projectUpdates,
+  public PullRequestDeploymentWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
+      final ConcurrentMap<String, ServiceInfo> services, final Map<Long, List<ProjectInfo>> projectUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates) {
     this.cfg = cfg;
+    this.projects = projects;
+    this.services = services;
     this.projectUpdates = projectUpdates;
     this.serviceUpdates = serviceUpdates;
     clearCacheExecutor = Executors.newSingleThreadScheduledExecutor();

@@ -3,6 +3,8 @@ package nl.yogh.aerius.server.startup;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,9 @@ public class ApplicationFactory {
   private static final String CONFIG_PROPERTIES_NAME = "deploycp.properties";
 
   public static void init(final Properties properties) {
+    final ConcurrentMap<String, ProjectInfo> projects = new ConcurrentHashMap<>();
+    final ConcurrentMap<String, ServiceInfo> services = new ConcurrentHashMap<>();
+
     final TimestampedMultiMap<ServiceInfo> serviceUpdates = ServiceUpdateRepositoryFactory.getInstance();
     final TimestampedMultiMap<ProjectInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
 
@@ -42,8 +47,8 @@ public class ApplicationFactory {
 
     final ApplicationConfiguration cfg = new ApplicationConfiguration(props);
 
-    PullRequestMaintenanceFactory.init(cfg, projectUpdates);
-    PullRequestDeploymentFactory.init(cfg, projectUpdates, serviceUpdates);
+    PullRequestMaintenanceFactory.init(cfg, projects, services, projectUpdates);
+    PullRequestDeploymentFactory.init(cfg, projects, services, projectUpdates, serviceUpdates);
   }
 
   public static void shutdown() {
