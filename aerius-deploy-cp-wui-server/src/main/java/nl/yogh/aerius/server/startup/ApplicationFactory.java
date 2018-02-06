@@ -33,16 +33,28 @@ public class ApplicationFactory {
     final TimestampedMultiMap<ProjectInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
 
     final Properties props = new Properties(System.getProperties());
-    try {
-      final int propNum = props.size();
 
-      final InputStream stream = ApplicationFactory.class.getClassLoader().getResourceAsStream(CONFIG_PROPERTIES_NAME);
-      props.load(stream);
+    boolean success = false;
+    while (!success) {
+      try {
+        final int propNum = props.size();
 
-      LOG.info("Loaded configuration ({} variables) from file: {}", props.size() - propNum,
-          ApplicationFactory.class.getClassLoader().getResource(CONFIG_PROPERTIES_NAME).getPath().toString());
-    } catch (final IOException e) {
-      LOG.error("Could not load properties file from classpath: {} ({})", CONFIG_PROPERTIES_NAME, System.getProperty("java.class.path"), e);
+        final InputStream stream = ApplicationFactory.class.getClassLoader().getResourceAsStream(CONFIG_PROPERTIES_NAME);
+        props.load(stream);
+
+        success = true;
+        LOG.info("Loaded configuration ({} variables) from file: {}", props.size() - propNum,
+            ApplicationFactory.class.getClassLoader().getResource(CONFIG_PROPERTIES_NAME).getPath().toString());
+      } catch (final IOException | NullPointerException e) {
+        LOG.error("Could not load properties file from classpath: {} ({})", CONFIG_PROPERTIES_NAME, System.getProperty("java.class.path"), e);
+
+        try {
+          // Sleep and retry
+          Thread.sleep(15000);
+        } catch (final InterruptedException e1) {
+          throw new RuntimeException("Crapped out foh real.");
+        }
+      }
     }
 
     final ApplicationConfiguration cfg = new ApplicationConfiguration(props);
