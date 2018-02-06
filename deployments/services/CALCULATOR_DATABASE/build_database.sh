@@ -5,7 +5,7 @@ ruby /AERIUS-II/aerius-database-build/bin/SyncDBData.rb \
      --from-sftp --to-local
 
 ruby /AERIUS-II/aerius-database-build/bin/Build.rb \
-     /AERIUS-II/aerius-database-build/scripts/default.rb \
+     /AERIUS-II/aerius-database-build/scripts/test_structure.rb \
      /AERIUS-II/aerius-database-calculator/settings.rb \
      --database-name=calculator \
      --flags=QUICK
