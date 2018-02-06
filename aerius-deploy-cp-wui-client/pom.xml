@@ -74,11 +74,6 @@
         <version>2.2</version>
         <configuration>
           <packagingExcludes>WEB-INF/classes/**/*,WEB-INF/lib/**/*</packagingExcludes>
-          <webResources>
-            <resource>
-              <directory>src/main/webapp</directory>
-            </resource>
-          </webResources>
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
