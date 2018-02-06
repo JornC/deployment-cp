@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
@@ -54,10 +55,13 @@ public class PullRequestMaintenanceWorker {
 
   private final ConcurrentMap<String, ProjectInfo> projects;
 
+  private final ConcurrentMap<String, ServiceInfo> services;
+
   public PullRequestMaintenanceWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
-      final TimestampedMultiMap<ProjectInfo> projectUpdates) {
+      final TimestampedMultiMap<ProjectInfo> projectUpdates, final ConcurrentMap<String, ServiceInfo> services) {
     this.cfg = cfg;
     this.projects = projects;
+    this.services = services;
     pullRequestLocalUpdateExecutor = Executors.newSingleThreadExecutor();
 
     githubHook = new AERIUSGithubHook(cfg.getGithubOpenAuthToken());
@@ -119,7 +123,7 @@ public class PullRequestMaintenanceWorker {
   }
 
   private void schedulePullRequestUpdate(final PullRequestInfo info) {
-    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(cfg, info, pulls)));
+    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(cfg, info, pulls, projects, services)));
   }
 
   public void shutdown() {

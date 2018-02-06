@@ -23,6 +23,6 @@ echo "Replacements complete."
 
 cp site.conf /etc/apache2/sites-available/{{cp.pr.id}}.conf
 a2ensite {{cp.pr.id}}
-service apache2 reload
+sudo /etc/init.d/apache2 reload
 
 echo "Site enabled"

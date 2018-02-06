@@ -20,7 +20,7 @@ public class PullRequestMaintenanceFactory {
       final ConcurrentMap<String, ServiceInfo> services, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
     synchronized (PullRequestMaintenanceFactory.class) {
       if (maintenanceWorker == null) {
-        maintenanceWorker = new PullRequestMaintenanceWorker(cfg, projects, projectUpdates);
+        maintenanceWorker = new PullRequestMaintenanceWorker(cfg, projects, projectUpdates, services);
       }
     }
 

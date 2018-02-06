@@ -109,10 +109,9 @@ public class ProjectCompilationJob extends ProjectJob {
       cmd(dir, "./install.sh");
       return true;
     } catch (final ProcessExitException e) {
-      LOG.trace("Error during install: " + e.getOutput().get(0));
+      LOG.debug("Error during install: " + e.getOutput().get(0), e);
     } catch (IOException | InterruptedException e) {
-      LOG.trace("Unknown error during install.");
-      // eat
+      LOG.debug("Unknown error during install.", e);
     }
 
     return false;

@@ -80,10 +80,9 @@ public class ProjectDeploymentJob extends ProjectJob {
       cmd(dir, "./deploy.sh");
       return true;
     } catch (final ProcessExitException e) {
-      LOG.info("Error during deployment: " + e.getOutput().get(0));
+      LOG.debug("Error during deployment: " + e.getOutput().get(0), e);
     } catch (IOException | InterruptedException e) {
-      LOG.trace("Unknown error during deployment.");
-      // eat
+      LOG.debug("Unknown error during deployment.", e);
     }
 
     return false;

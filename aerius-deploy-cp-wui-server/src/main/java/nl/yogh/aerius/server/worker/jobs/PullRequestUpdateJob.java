@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,16 @@ public class PullRequestUpdateJob implements Runnable {
 
   private final ApplicationConfiguration cfg;
 
-  public PullRequestUpdateJob(final ApplicationConfiguration cfg, final PullRequestInfo info, final Object grip) {
+  private final ConcurrentMap<String, ProjectInfo> projects;
+  private final ConcurrentMap<String, ServiceInfo> services;
+
+  public PullRequestUpdateJob(final ApplicationConfiguration cfg, final PullRequestInfo info, final Object grip,
+      final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
     this.cfg = cfg;
     this.pullInfo = info;
     this.grip = grip;
+    this.projects = projects;
+    this.services = services;
 
     info.busy(true);
 
@@ -91,20 +98,32 @@ public class PullRequestUpdateJob implements Runnable {
         final ProjectInfo projectInfo = ProjectInfo.create()
             .type(type)
             .hash(findShaSum(dirs))
-            .buildHash(pullInfo.hash())
-            .status(ProjectStatus.UNBUILT);
+            .buildHash(pullInfo.hash());
+
+        ProjectStatus status = ProjectStatus.UNBUILT;
 
         try {
-          if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx, projectInfo.hash().toLowerCase())
-              .isEmpty()) {
-            // info.status(ProjectStatus.DEPLOYED);
+          if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
+              projectInfo.hash().toLowerCase())
+                  .isEmpty()) {
+            status = ProjectStatus.DEPLOYED;
           } else if (!cmd("docker ps --filter status=exited --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
               projectInfo.hash().toLowerCase())
-              .isEmpty()) {
-            // info.status(ProjectStatus.SUSPENDED);
+                  .isEmpty()) {
+            status = ProjectStatus.SUSPENDED;
           } else {}
         } catch (final ProcessExitException e) {
           // eat
+        }
+
+        projectInfo.status(status);
+
+        if (projects.containsKey(projectInfo.hash())) {
+          projects.get(projectInfo.hash()).status(status);
+        } else if (status == ProjectStatus.DEPLOYED) {
+          projectInfo.url(String.format(cfg.getDeploymentHost(projectInfo.type()), idx));
+          projects.put(projectInfo.hash(), projectInfo);
+
         }
 
         if (LOG.isDebugEnabled()) {
@@ -127,18 +146,22 @@ public class PullRequestUpdateJob implements Runnable {
     for (final ServiceType serviceType : type.getServiceTypes()) {
       final String sha = findShaSum(ProjectTypeDirectoryUtil.getServiceDirectories(serviceType));
 
-      final ServiceInfo service = ServiceInfo.create().hash(sha).type(serviceType).status(ServiceStatus.UNBUILT);
+      final ServiceInfo serviceInfo = ServiceInfo.create().hash(sha).type(serviceType).status(ServiceStatus.UNBUILT);
 
       try {
         if (!cmd("docker images -f \"label=nl.aerius.docker.service.type=%s\" -f label=nl.aerius.docker.service.hash=%s --format \"{{.Tag}}\"",
-            serviceType.name(), service.hash()).isEmpty()) {
-          service.status(ServiceStatus.BUILT);
+            serviceType.name(), serviceInfo.hash()).isEmpty()) {
+          serviceInfo.status(ServiceStatus.BUILT);
+
+          if (services.containsKey(serviceInfo.hash())) {
+            services.get(serviceInfo.hash()).status(ServiceStatus.BUILT);
+          }
         }
       } catch (final ProcessExitException e) {
         // eat
       }
 
-      lst.add(service);
+      lst.add(serviceInfo);
 
       if (LOG.isDebugEnabled()) {
         LOG.trace("Calculating sum for ServiceType {} > {}", sha.substring(0, 8), serviceType.name());
