@@ -25,7 +25,7 @@ import nl.yogh.aerius.server.worker.ProjectUpdateRepositoryFactory;
 import nl.yogh.aerius.server.worker.ServiceUpdateRepositoryFactory;
 
 public class DockerManagementServiceImpl extends AbstractServiceImpl implements DockerManagementService {
-  private static final Logger LOG = LoggerFactory.getLogger(PullRequestServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DockerManagementServiceImpl.class);
 
   private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -93,8 +93,6 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
       LOG.error("Error during stopAll()", e);
     }
 
-    LOG.info("Returning {} containers", containers.size());
-
     return containers;
   }
 
@@ -110,8 +108,6 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Error during stopAll()", e);
     }
-
-    LOG.info("Returning {} images", images.size());
 
     return images;
   }
@@ -189,7 +185,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
   }
 
   private ArrayList<String> cmd(final String cmd) throws IOException, InterruptedException, ProcessExitException {
-    return CmdUtil.cmdDebug("/", cmd);
-    // return CmdUtil.cmd(dir, cmd);
+    // return CmdUtil.cmdDebug("/", cmd);
+    return CmdUtil.cmd("/", cmd);
   }
 }

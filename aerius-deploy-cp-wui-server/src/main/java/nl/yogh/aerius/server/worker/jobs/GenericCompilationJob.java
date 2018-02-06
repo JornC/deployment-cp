@@ -64,7 +64,7 @@ public class GenericCompilationJob extends ProjectJob {
         .filter(v -> info.services().stream().map(vv -> vv.hash()).anyMatch(r -> r.equals(v.getKey()))).map(v -> v.getValue())
         .filter(v -> v.status() != ServiceStatus.UNBUILT).map(v -> v.type()).collect(Collectors.toList());
 
-    LOG.info("Exclusions: {}", exclusions);
+    LOG.info("Service compilation exclusions: {}", exclusions);
 
     final List<ServiceInfo> targets = info.services().stream().filter(v -> !exclusions.contains(v.type())).collect(Collectors.toList());
 
@@ -111,9 +111,11 @@ public class GenericCompilationJob extends ProjectJob {
     // Finally, run the deploy script
     final boolean success = deploy(tmpDir);
 
+    LOG.info("Project deployment result: {} for {} ({})", success ? "SUCCESS" : "FAIL", info.type(), HashUtil.shorten(info.hash()));
+
     if (success) {
       final String url = String.format(cfg.getDeploymentHost(info.type()), prId);
-      LOG.info("Deployed to: {}", url);
+      LOG.info("Deployed project to: {}", url);
       info.url(url);
     }
 
@@ -135,6 +137,8 @@ public class GenericCompilationJob extends ProjectJob {
 
     // Finally, run the install script
     final boolean success = install(tmpDir);
+
+    LOG.info("Service compilation result: {} for {} ({})", success ? "SUCCESS" : "FAIL", service.type(), HashUtil.shorten(service.hash()));
 
     return ServiceInfo.create(service).status(success ? ServiceStatus.BUILT : ServiceStatus.UNBUILT);
   }

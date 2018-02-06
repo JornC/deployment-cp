@@ -20,7 +20,7 @@ public abstract class AbstractServiceImpl {
     try {
       instance = PullRequestMaintenanceFactory.getInstance();
     } catch (final IOException e) {
-      LOG.error("IOException while retrieving pull request maintenance worker.", e);
+      LOG.error("IOException while retrieving {}.", getClass().getSimpleName(), e);
       throw new ApplicationException(Reason.INTERNAL_ERROR);
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractServiceImpl {
     try {
       instance = PullRequestDeploymentFactory.getInstance();
     } catch (final IOException e) {
-      LOG.error("IOException while retrieving pull request deployment worker.", e);
+      LOG.error("IOException while retrieving {}.", getClass().getSimpleName(), e);
       throw new ApplicationException(Reason.INTERNAL_ERROR);
     }
 
