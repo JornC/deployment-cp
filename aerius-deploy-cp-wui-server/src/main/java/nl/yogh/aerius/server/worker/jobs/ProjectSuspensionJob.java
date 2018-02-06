@@ -11,13 +11,14 @@ import nl.yogh.aerius.builder.domain.ProjectInfo;
 import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
+import nl.yogh.aerius.server.util.ApplicationConfiguration;
 
 public class ProjectSuspensionJob extends MockProjectJob {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectSuspensionJob.class);
 
-  public ProjectSuspensionJob(final ProjectInfo info, final Map<Long, List<ProjectInfo>> productUpdates,
-      final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> products,
-      final ConcurrentMap<String, ServiceInfo> services) {
+  public ProjectSuspensionJob(final ApplicationConfiguration cfg, final ProjectInfo info, final String prId,
+      final Map<Long, List<ProjectInfo>> productUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
+      final ConcurrentMap<String, ProjectInfo> products, final ConcurrentMap<String, ServiceInfo> services) {
     super(ProjectStatus.SUSPENDED, ServiceStatus.BUILT, info, productUpdates, serviceUpdates, products, services);
 
     LOG.info("Suspension job created:  {}", info.hash());

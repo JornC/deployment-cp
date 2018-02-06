@@ -16,7 +16,7 @@ public class MockProjectJob extends ProjectJob {
   public MockProjectJob(final ProjectStatus projectStatus, final ServiceStatus serviceStatus, final ProjectInfo info,
       final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
       final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
-    super(null, info, projectUpdates, serviceUpdates, projects, services);
+    super(null, info, null, projectUpdates, serviceUpdates, projects, services);
     this.projectStatus = projectStatus;
     this.serviceStatus = serviceStatus;
 

@@ -80,13 +80,15 @@ public class PullRequestDeploymentWorker {
     switch (action) {
     case BUILD:
       projectCompilationExecutor
-      .submit(CatchAllRunnable.wrap(new ProjectCompilationJob(cfg, idx, info, projectUpdates, serviceUpdates, projects, services)));
+          .submit(CatchAllRunnable.wrap(new ProjectCompilationJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
       break;
     case SUSPEND:
-      projectSuspensionExecutor.submit(CatchAllRunnable.wrap(new ProjectSuspensionJob(info, projectUpdates, serviceUpdates, projects, services)));
+      projectSuspensionExecutor
+          .submit(CatchAllRunnable.wrap(new ProjectSuspensionJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
       break;
     case DEPLOY:
-      projectDeploymentExecutor.submit(CatchAllRunnable.wrap(new ProjectDeploymentJob(info, projectUpdates, serviceUpdates, projects, services)));
+      projectDeploymentExecutor
+          .submit(CatchAllRunnable.wrap(new ProjectDeploymentJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
       break;
     case DESTROY:
     default:
