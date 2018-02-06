@@ -33,7 +33,6 @@ public class ProjectCompilationJob extends ProjectJob {
       final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
       final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, projectUpdates, serviceUpdates, projects, services);
-    putProject(info.busy(true));
   }
 
   @Override

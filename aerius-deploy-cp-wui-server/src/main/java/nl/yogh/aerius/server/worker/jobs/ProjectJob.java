@@ -51,6 +51,8 @@ public abstract class ProjectJob implements Runnable {
     globalReplacements = cfg.getControlPanelProperties().collect(Collectors.toMap(formatKey(), v -> (String) v.getValue()));
     globalReplacements.put("{{cp.pr.id}}", prId);
     globalReplacements.put("{{cp.pr.hash}}", info.hash());
+
+    putProject(info.busy(true));
   }
 
   private Function<Entry<Object, Object>, String> formatKey() {
@@ -120,7 +122,6 @@ public abstract class ProjectJob implements Runnable {
   }
 
   protected ArrayList<String> cmd(final File dir, final String cmd) throws IOException, InterruptedException, ProcessExitException {
-    // return CmdUtil.cmdDebug(dir, cmd);
     return CmdUtil.cmd(dir, cmd);
   }
 
@@ -130,7 +131,24 @@ public abstract class ProjectJob implements Runnable {
   }
 
   protected ArrayList<String> cmd(final String dir, final String cmd) throws IOException, InterruptedException, ProcessExitException {
-    // return CmdUtil.cmdDebug(dir, cmd);
     return CmdUtil.cmd(dir, cmd);
+  }
+
+  protected ArrayList<String> cmdDebug(final File dir, final String format, final String... args)
+      throws IOException, InterruptedException, ProcessExitException {
+    return cmdDebug(dir, String.format(format, (Object[]) args));
+  }
+
+  protected ArrayList<String> cmdDebug(final File dir, final String cmd) throws IOException, InterruptedException, ProcessExitException {
+    return CmdUtil.cmdDebug(dir, cmd);
+  }
+
+  protected ArrayList<String> cmdDebug(final String dir, final String format, final String... args)
+      throws IOException, InterruptedException, ProcessExitException {
+    return cmdDebug(dir, String.format(format, (Object[]) args));
+  }
+
+  protected ArrayList<String> cmdDebug(final String dir, final String cmd) throws IOException, InterruptedException, ProcessExitException {
+    return CmdUtil.cmdDebug(dir, cmd);
   }
 }

@@ -21,17 +21,12 @@ import nl.yogh.aerius.server.util.HashUtil;
 
 public class ProjectDeploymentJob extends ProjectJob {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDeploymentJob.class);
-  private final String prId;
 
   public ProjectDeploymentJob(final ApplicationConfiguration cfg, final ProjectInfo info, final String prId,
       final Map<Long, List<ProjectInfo>> productUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> products,
       final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, productUpdates, serviceUpdates, products, services);
-
-    this.prId = prId;
-
-    LOG.info("Deployment job created:  {}", info.hash());
   }
 
   @Override
@@ -39,7 +34,6 @@ public class ProjectDeploymentJob extends ProjectJob {
     LOG.info("Deployment job started:  {}", info.hash());
 
     putProject(deployProject(prId, info));
-
     LOG.info("Deployment job complete:  {}", info.hash());
   }
 
@@ -77,7 +71,7 @@ public class ProjectDeploymentJob extends ProjectJob {
 
   private boolean deploy(final File dir) {
     try {
-      cmd(dir, "./deploy.sh");
+      cmdDebug(dir, "./deploy.sh");
       return true;
     } catch (final ProcessExitException e) {
       LOG.debug("Error during deployment: " + e.getOutput().get(0), e);

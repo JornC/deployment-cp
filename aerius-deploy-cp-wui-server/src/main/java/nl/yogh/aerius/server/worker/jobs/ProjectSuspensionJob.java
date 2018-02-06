@@ -21,14 +21,11 @@ public class ProjectSuspensionJob extends ProjectJob {
       final Map<Long, List<ProjectInfo>> productUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
       final ConcurrentMap<String, ProjectInfo> products, final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, productUpdates, serviceUpdates, products, services);
-
-    LOG.info("Suspension job created:  {}", info.hash());
   }
 
   @Override
   public void run() {
     LOG.info("Suspension job started:  {}", info.hash());
-    putProject(info.busy(false));
 
     try {
       cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s | cut -d' ' -f1 | xargs docker stop",
