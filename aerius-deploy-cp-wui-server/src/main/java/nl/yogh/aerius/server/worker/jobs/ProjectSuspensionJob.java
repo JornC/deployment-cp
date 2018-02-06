@@ -28,7 +28,7 @@ public class ProjectSuspensionJob extends ProjectJob {
     LOG.info("Suspension job started:  {}", info.hash());
 
     try {
-      cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s | cut -d' ' -f1 | xargs docker stop",
+      cmd("/", "docker ps --filter status=running --format {{.Names}} | grep %s%s%s | cut -d' ' -f1 | xargs docker stop",
           info.type().name().toLowerCase(), prId, info.hash().toLowerCase());
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Failure while suspending..", e);

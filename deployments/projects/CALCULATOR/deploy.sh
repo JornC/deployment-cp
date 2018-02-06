@@ -22,7 +22,9 @@ eval $replaceGeoserver
 echo "Replacements complete."
 
 cp site.conf /etc/apache2/sites-available/{{cp.pr.id}}.conf
+a2dissite {{cp.pr.id}}
 a2ensite {{cp.pr.id}}
 sudo /etc/init.d/apache2 reload
+sudo /usr/sbin/service apache2 reload
 
 echo "Site enabled"
