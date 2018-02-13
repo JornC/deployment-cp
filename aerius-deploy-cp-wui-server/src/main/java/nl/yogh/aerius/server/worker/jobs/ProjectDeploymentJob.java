@@ -71,7 +71,7 @@ public class ProjectDeploymentJob extends CompositionJob {
 
   private boolean deploy(final File dir) {
     try {
-      cmdDebug(dir, "./deploy.sh");
+      cmd(dir, "./deploy.sh");
       return true;
     } catch (final ProcessExitException e) {
       LOG.debug("Error during deployment: " + e.getOutput().get(0), e);
