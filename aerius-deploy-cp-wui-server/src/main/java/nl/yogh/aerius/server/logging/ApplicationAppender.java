@@ -20,7 +20,7 @@ import ch.qos.logback.core.AppenderBase;
 public class ApplicationAppender extends AppenderBase<LoggingEvent> {
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationAppender.class);
 
-  private static final long CLEAN_INTERVAL = 15;
+  private static final long CLEAN_INTERVAL = 150;
   private static final long CACHE_MILLISECONDS = CLEAN_INTERVAL * 60 * 1000;
 
   private static ApplicationAppender INSTANCE;

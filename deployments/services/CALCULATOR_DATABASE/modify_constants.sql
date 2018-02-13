@@ -2,7 +2,7 @@ UPDATE system.constants SET value = 'http://geoserver:8080/geoserver-calculator/
 UPDATE system.constants SET value = 'http://geoserver:8080/geoserver-calculator/wms?' WHERE key = 'SHARED_WMS_URL';
 UPDATE system.constants SET value = 'http://localhost:8080/calculator/aerius-geo-wms?' WHERE key = 'INTERNAL_WMS_PROXY_URL';
 UPDATE system.constants SET value = 'http://localhost:8080/calculator/aerius-geo-wms?' WHERE key = 'SHARED_WMS_PROXY_URL';
-UPDATE system.constants SET value = 'http://webapp:8080/calculator/aerius-geo-wms?' WHERE key = 'SHARED_SLD_URL';
+UPDATE system.constants SET value = 'http://webapp:8080/calculator/aerius/' WHERE key = 'SHARED_SLD_URL';
 
-UPDATE system.layer_capabilities SET url = 'http://{{cp.pr.id}}.calculator.localhost/calculator/aerius-geo-wms?' WHERE layer_capabilities_id = '1';
-UPDATE system.layer_capabilities SET url = 'http://{{cp.pr.id}}.geoserver.localhost/geoserver-calculator/wms?' WHERE layer_capabilities_id = '4';
+UPDATE system.layer_capabilities SET url = 'http://{{cp.pr.id}}.calculator.{{cp.deployment.host}}/calculator/aerius-geo-wms?' WHERE layer_capabilities_id = '1';
+UPDATE system.layer_capabilities SET url = 'http://{{cp.pr.id}}.geoserver.{{cp.deployment.host}}/geoserver-calculator/wms?' WHERE layer_capabilities_id = '4';
