@@ -1,6 +1,7 @@
 package nl.yogh.aerius.builder.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -28,4 +29,6 @@ public interface DockerManagementService extends RemoteService {
   boolean stopContainer(DockerContainer container) throws ApplicationException;
 
   boolean removeContainer(DockerContainer container) throws ApplicationException;
+
+  HashMap<String, String> retrieveStats() throws ApplicationException;
 }

@@ -2,6 +2,8 @@ package nl.yogh.aerius.server.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -199,6 +201,24 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
     });
 
     return await(latch, fut);
+  }
+
+  @Override
+  public HashMap<String, String> retrieveStats() throws ApplicationException {
+    final LinkedHashMap<String, String> stats = new LinkedHashMap<>();
+
+    // Should probably be shot for this [general approach], but hey when it works..
+    try {
+      stats.put("Disk Usage", cmd("df -P -h | awk '{if ($6 == \"/\") print $0;}' | cut -d ' ' -f15").get(0));
+      stats.put("Pull requests", String.valueOf(getMaintenanceInstance().getPullRequests().size()));
+      stats.put("Projects", String.valueOf(getDeploymentInstance().getProjects().size()));
+      stats.put("Services", String.valueOf(getDeploymentInstance().getServices().size()));
+    } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
+      LOG.error("Internal error.", e);
+      throw new ApplicationException(Reason.INTERNAL_ERROR, e.getMessage());
+    }
+
+    return stats;
   }
 
   private ArrayList<String> cmd(final String format, final Object... args) throws IOException, InterruptedException, ProcessExitException {

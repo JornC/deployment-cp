@@ -123,7 +123,6 @@ public class PullRequestUpdateJob implements Runnable {
         } else if (status == ProjectStatus.DEPLOYED) {
           projectInfo.url(String.format(cfg.getDeploymentHost(projectInfo.type()), idx));
           projects.put(projectInfo.hash(), projectInfo);
-
         }
 
         if (LOG.isDebugEnabled()) {

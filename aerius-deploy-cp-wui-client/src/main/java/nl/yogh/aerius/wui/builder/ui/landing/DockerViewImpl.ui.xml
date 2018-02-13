@@ -14,7 +14,8 @@
     padding: 0px 20px;
     }
     .center {
-    text-align: center;
+    text-align:
+    center;
     }
     .button {
     margin: 5px;
@@ -25,7 +26,8 @@
     color: #ddd;
     outline: 0;
     }
-    .button:hover {
+    .button:hover
+    {
     background-color: #88a;
     border-color: #ff9933;
     }
@@ -36,12 +38,27 @@
     .bigbad {
     background-color: #a33;
     }
-    .bigbad {
+    .bigbad
+    {
     background-color: #a33;
+    }
+    .flipflop {
+      width: 75%;
+      margin: 0 auto;
+    }
+    .flipflop > *:nth-child(odd) {
+      border-left: 5px solid #1378b3;
+      background-color: #1378b30f;
+    }
+    .flipflop > *:nth-child(even) {
+      border-left: 5px solid #33ac00;
+      background-color: #33ac000f;
     }
   </ui:style>
   <g:FlowPanel styleName="{style.container} {res.css.grow}">
     <g:FlowPanel styleName="{res.css.alignCenter} {res.css.justify} {style.explain}">
+      <w:HeadingWidget n="2" text="Statistics" styleName="{style.center}" />
+      <g:FlowPanel styleName="{style.flipflop}" ui:field="statsPanel" />
       <w:HeadingWidget n="2" text="Controls" styleName="{style.center}" />
       <g:FlowPanel styleName="{res.css.flex} {res.css.justify} {res.css.alignCenter}">
         <g:Button ui:field="stopAllContainers" text="Stop all containers" styleName="{style.button}" />

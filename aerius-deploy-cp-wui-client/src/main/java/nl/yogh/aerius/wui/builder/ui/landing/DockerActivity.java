@@ -26,6 +26,7 @@ public class DockerActivity extends EventActivity<Presenter, DockerView> impleme
   protected void onStart() {
     retrieveImages();
     retrieveContainers();
+    retrieveStats();
   }
 
   @Override
@@ -35,26 +36,39 @@ public class DockerActivity extends EventActivity<Presenter, DockerView> impleme
 
   @Override
   public void stopAllContainers() {
-    service.stopAllContainers(AppAsyncCallback.create(v -> retrieveContainers()));
+    service.stopAllContainers(AppAsyncCallback.create(v -> {
+      retrieveStats();
+      retrieveContainers();
+    }));
   }
 
   @Override
   public void removeAllContainers() {
-    service.removeAllContainers(AppAsyncCallback.create(v -> retrieveContainers()));
+    service.removeAllContainers(AppAsyncCallback.create(v -> {
+      retrieveStats();
+      retrieveContainers();
+    }));
   }
 
   @Override
   public void removeAllImages() {
     if (Window.confirm("Are you sure you want to delete all images?")) {
-      service.removeAllImages(AppAsyncCallback.create(v -> retrieveImages()));
+      service.removeAllImages(AppAsyncCallback.create(v -> {
+        retrieveStats();
+        retrieveImages();
+      }));
     }
   }
 
   @Override
   public void purgeTracker() {
-    if (Window.confirm("Are you sure you want to delete all images?")) {
-      service.purgeTracker(AppAsyncCallback.create());
+    if (Window.confirm("Are you sure you want to purge the tracker?")) {
+      service.purgeTracker(AppAsyncCallback.create(v -> retrieveStats()));
     }
+  }
+
+  private void retrieveStats() {
+    service.retrieveStats(AppAsyncCallback.create(view::setStats));
   }
 
   private void retrieveContainers() {

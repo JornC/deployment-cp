@@ -62,6 +62,11 @@ public abstract class ProjectJob implements Runnable {
   protected void putService(final ServiceInfo service) {
     synchronized (services) {
       services.put(service.hash(), service);
+
+      info.services().stream().filter(v -> v.hash().equals(service.hash())).findFirst().ifPresent(v -> {
+        v.status(service.status());
+        updateProject(info);
+      });
     }
 
     updateService(service);

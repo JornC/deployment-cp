@@ -1,6 +1,7 @@
 package nl.yogh.aerius.wui.builder.ui.landing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import com.google.inject.ImplementedBy;
@@ -31,4 +32,6 @@ public interface DockerView extends View<Presenter> {
   void setImages(ArrayList<DockerImage> images);
 
   void setContainers(ArrayList<DockerContainer> containers);
+
+  void setStats(HashMap<String, String> stats);
 }
