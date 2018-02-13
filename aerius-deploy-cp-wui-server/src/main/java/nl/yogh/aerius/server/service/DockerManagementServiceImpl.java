@@ -209,7 +209,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
 
     // Should probably be shot for this [general approach], but hey when it works..
     try {
-      stats.put("Disk Usage", cmd("df -P -h | awk '{if ($6 == \"/\") print $0;}' | cut -d ' ' -f15").get(0));
+      stats.put("Disk Usage", cmd("df -h --output=target,pcent | grep ^/[[:space:]] | rev | cut -d ' ' -f 1 | rev").get(0));
       stats.put("Pull requests", String.valueOf(getMaintenanceInstance().getPullRequests().size()));
       stats.put("Projects", String.valueOf(getDeploymentInstance().getProjects().size()));
       stats.put("Services", String.valueOf(getDeploymentInstance().getServices().size()));
