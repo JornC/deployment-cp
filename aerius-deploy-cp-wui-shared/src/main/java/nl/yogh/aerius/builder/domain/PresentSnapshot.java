@@ -10,16 +10,16 @@ public class PresentSnapshot implements Serializable, IsSerializable {
 
   private long lastUpdate;
 
-  private ArrayList<ProjectInfo> projects;
+  private ArrayList<CompositionInfo> projects;
   private ArrayList<ServiceInfo> services;
 
   public PresentSnapshot() {}
 
-  public ArrayList<ProjectInfo> getProjects() {
+  public ArrayList<CompositionInfo> getProjects() {
     return projects;
   }
 
-  public void setProjects(final ArrayList<ProjectInfo> projects) {
+  public void setProjects(final ArrayList<CompositionInfo> projects) {
     this.projects = projects;
   }
 

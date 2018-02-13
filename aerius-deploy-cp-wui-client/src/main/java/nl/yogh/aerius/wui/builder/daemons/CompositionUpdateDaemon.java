@@ -2,8 +2,8 @@ package nl.yogh.aerius.wui.builder.daemons;
 
 import com.google.inject.ImplementedBy;
 
-@ImplementedBy(ProjectUpdateDaemonImpl.class)
-public interface ProjectUpdateDaemon {
+@ImplementedBy(CompositionUpdateDaemonImpl.class)
+public interface CompositionUpdateDaemon {
   void start();
 
   void stop();

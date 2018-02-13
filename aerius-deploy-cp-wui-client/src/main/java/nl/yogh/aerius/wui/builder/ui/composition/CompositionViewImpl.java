@@ -1,4 +1,4 @@
-package nl.yogh.aerius.wui.builder.ui.project;
+package nl.yogh.aerius.wui.builder.ui.composition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,33 +14,33 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
-import nl.yogh.aerius.wui.builder.component.ProjectViewPanel;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
+import nl.yogh.aerius.wui.builder.commands.CompositionStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.builder.component.CompositionViewPanel;
 import nl.yogh.gwt.wui.widget.EventComposite;
 import nl.yogh.gwt.wui.widget.SwitchPanel;
 
-public class ProjectViewImpl extends EventComposite implements ProjectView {
+public class CompositionViewImpl extends EventComposite implements CompositionView {
   private static final ProjectViewImplUiBinder UI_BINDER = GWT.create(ProjectViewImplUiBinder.class);
 
-  interface ProjectViewImplUiBinder extends UiBinder<Widget, ProjectViewImpl> {}
+  interface ProjectViewImplUiBinder extends UiBinder<Widget, CompositionViewImpl> {}
 
-  interface ProjectViewImplEventBinder extends EventBinder<ProjectViewImpl> {}
+  interface ProjectViewImplEventBinder extends EventBinder<CompositionViewImpl> {}
 
   private final ProjectViewImplEventBinder EVENT_BINDER = GWT.create(ProjectViewImplEventBinder.class);
 
   @UiField SwitchPanel switchPanel;
   @UiField FlowPanel panel;
 
-  private final Map<String, ProjectViewPanel> items = new HashMap<>();
+  private final Map<String, CompositionViewPanel> items = new HashMap<>();
 
   @Inject
-  public ProjectViewImpl() {
+  public CompositionViewImpl() {
     initWidget(UI_BINDER.createAndBindUi(this));
   }
 
   @EventHandler
-  public void onProductStatusInfoChangedEvent(final ProjectStatusInfoChangedEvent e) {
+  public void onProductStatusInfoChangedEvent(final CompositionStatusInfoChangedEvent e) {
     final String hash = e.getValue().hash();
     if (!items.containsKey(hash)) {
       GWT.log("Error: ContainerViewImpl.onProductStatusInfoChangedEvent this item should exist." + e.getValue());
@@ -64,11 +64,11 @@ public class ProjectViewImpl extends EventComposite implements ProjectView {
   }
 
   @Override
-  public void setProducts(final ArrayList<ProjectInfo> projects) {
+  public void setProducts(final ArrayList<CompositionInfo> projects) {
     switchPanel.showWidget(projects.isEmpty() ? 0 : 1);
 
-    for (final ProjectInfo info : projects) {
-      panel.add(new ProjectViewPanel(info));
+    for (final CompositionInfo info : projects) {
+      panel.add(new CompositionViewPanel(info));
     }
   }
 }

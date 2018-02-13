@@ -3,8 +3,8 @@ package nl.yogh.aerius.server.service;
 import java.util.ArrayList;
 
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
-import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
@@ -28,7 +28,7 @@ public class PullRequestServiceImpl extends AbstractServiceImpl implements PullR
   }
 
   @Override
-  public ProjectInfo doAction(final String idx, final ProjectDeploymentAction action, final ProjectInfo info) throws ApplicationException {
+  public CompositionInfo doAction(final String idx, final CompositionDeploymentAction action, final CompositionInfo info) throws ApplicationException {
     final PullRequestDeploymentWorker instance = getDeploymentInstance();
     instance.doAction(idx, action, info);
 
@@ -36,10 +36,10 @@ public class PullRequestServiceImpl extends AbstractServiceImpl implements PullR
   }
 
   @Override
-  public ArrayList<ProjectInfo> getProductUpdates(final long since) throws ApplicationException {
-    final TimestampedMultiMap<ProjectInfo> instance = ProjectUpdateRepositoryFactory.getInstance();
+  public ArrayList<CompositionInfo> getProductUpdates(final long since) throws ApplicationException {
+    final TimestampedMultiMap<CompositionInfo> instance = ProjectUpdateRepositoryFactory.getInstance();
 
-    ArrayList<ProjectInfo> updates;
+    ArrayList<CompositionInfo> updates;
     synchronized (instance) {
       updates = instance.getUpdates(since);
     }

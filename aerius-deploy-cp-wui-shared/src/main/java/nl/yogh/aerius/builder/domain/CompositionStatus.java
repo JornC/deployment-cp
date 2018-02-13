@@ -1,5 +1,5 @@
 package nl.yogh.aerius.builder.domain;
 
-public enum ProjectStatus {
+public enum CompositionStatus {
   DEPLOYED, SUSPENDED, UNBUILT;
 }

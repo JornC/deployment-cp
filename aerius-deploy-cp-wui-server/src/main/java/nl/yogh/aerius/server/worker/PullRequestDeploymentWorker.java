@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectDeploymentAction;
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.HashUtil;
@@ -35,16 +35,16 @@ public class PullRequestDeploymentWorker {
 
   private final ScheduledExecutorService clearCacheExecutor;
 
-  private final Map<Long, List<ProjectInfo>> projectUpdates;
+  private final Map<Long, List<CompositionInfo>> projectUpdates;
   private final Map<Long, List<ServiceInfo>> serviceUpdates;
 
-  private final ConcurrentMap<String, ProjectInfo> projects;
+  private final ConcurrentMap<String, CompositionInfo> projects;
   private final ConcurrentMap<String, ServiceInfo> services;
 
   private final ApplicationConfiguration cfg;
 
-  public PullRequestDeploymentWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
-      final ConcurrentMap<String, ServiceInfo> services, final Map<Long, List<ProjectInfo>> projectUpdates,
+  public PullRequestDeploymentWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, CompositionInfo> projects,
+      final ConcurrentMap<String, ServiceInfo> services, final Map<Long, List<CompositionInfo>> projectUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates) {
     this.cfg = cfg;
     this.projects = projects;
@@ -74,7 +74,7 @@ public class PullRequestDeploymentWorker {
     clearCacheExecutor.shutdownNow();
   }
 
-  public void doAction(final String idx, final ProjectDeploymentAction action, final ProjectInfo info) {
+  public void doAction(final String idx, final CompositionDeploymentAction action, final CompositionInfo info) {
     LOG.info("Doing action {} on {} -- current status: {}", action, HashUtil.shorten(info.hash()), info.status());
 
     switch (action) {
@@ -96,7 +96,7 @@ public class PullRequestDeploymentWorker {
     }
   }
 
-  public ArrayList<ProjectInfo> getProjects() {
+  public ArrayList<CompositionInfo> getProjects() {
     return new ArrayList<>(projects.values());
   }
 

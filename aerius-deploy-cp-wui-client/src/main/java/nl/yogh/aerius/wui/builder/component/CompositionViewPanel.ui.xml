@@ -3,7 +3,7 @@
   xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
   <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
-  <ui:with field='project' type='nl.yogh.aerius.builder.domain.ProjectInfo' />
+  <ui:with field='composition' type='nl.yogh.aerius.builder.domain.CompositionInfo' />
   <ui:style>
     .panel {
     margin: 10px;
@@ -22,7 +22,8 @@
     font-style: italic;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
+    overflow:
+    hidden;
     max-width: 150px;
     }
     .url {
@@ -36,12 +37,12 @@
   </ui:style>
   <g:FlowPanel ui:field="container" styleName="{style.panel}">
     <g:FlowPanel styleName="{res.css.flex} {style.title}">
-      <g:Label text="{project.type.name}" />
-      <g:Label text="{project.hash}" styleName="{style.hash}" title="{project.hash}" />
+      <g:Label text="{composition.type.name}" />
+      <g:Label text="{composition.hash}" styleName="{style.hash}" title="{composition.hash}" />
     </g:FlowPanel>
     <w:SwitchPanel ui:field="switchPanel">
       <g:Label text="Pending..." />
-      <g:Anchor text="{project.url}" href="{project.url}" styleName="{style.url}" target="_blank" />
+      <g:Anchor text="{composition.url}" href="{composition.url}" styleName="{style.url}" target="_blank" />
     </w:SwitchPanel>
   </g:FlowPanel>
 </ui:UiBinder>

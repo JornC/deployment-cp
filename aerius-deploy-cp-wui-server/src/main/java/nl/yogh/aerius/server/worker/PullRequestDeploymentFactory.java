@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 
@@ -17,8 +17,8 @@ public class PullRequestDeploymentFactory {
 
   private static PullRequestDeploymentWorker deploymentWorker;
 
-  public static void init(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
-      final ConcurrentMap<String, ServiceInfo> services, final Map<Long, List<ProjectInfo>> projectUpdates,
+  public static void init(final ApplicationConfiguration cfg, final ConcurrentMap<String, CompositionInfo> projects,
+      final ConcurrentMap<String, ServiceInfo> services, final Map<Long, List<CompositionInfo>> projectUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates) {
     synchronized (PullRequestDeploymentFactory.class) {
       if (deploymentWorker == null) {

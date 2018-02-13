@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import nl.yogh.aerius.builder.domain.DockerContainer;
 import nl.yogh.aerius.builder.domain.DockerImage;
-import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectStatus;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
+import nl.yogh.aerius.builder.domain.CompositionStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.exception.ApplicationException;
@@ -42,8 +42,8 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
 
       try {
         cmd("docker stop $(docker ps -aq --filter status=running --filter label=nl.aerius.docker.service=true)");
-        final TimestampedMultiMap<ProjectInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
-        getDeploymentInstance().getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(ProjectStatus.SUSPENDED)));
+        final TimestampedMultiMap<CompositionInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
+        getDeploymentInstance().getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(CompositionStatus.SUSPENDED)));
       } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
         LOG.error("Error during stopAll()", e);
       } finally {
@@ -59,8 +59,8 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
 
       try {
         cmd("docker rm $(docker ps -aq --filter status=exited --filter label=nl.aerius.docker.service=true)");
-        final TimestampedMultiMap<ProjectInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
-        getDeploymentInstance().getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(ProjectStatus.UNBUILT)));
+        final TimestampedMultiMap<CompositionInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
+        getDeploymentInstance().getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(CompositionStatus.UNBUILT)));
       } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
         LOG.error("Error during stopAll()", e);
       } finally {

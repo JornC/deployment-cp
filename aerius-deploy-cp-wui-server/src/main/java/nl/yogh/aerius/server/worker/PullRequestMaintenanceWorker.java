@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
@@ -53,12 +53,12 @@ public class PullRequestMaintenanceWorker {
 
   private final ApplicationConfiguration cfg;
 
-  private final ConcurrentMap<String, ProjectInfo> projects;
+  private final ConcurrentMap<String, CompositionInfo> projects;
 
   private final ConcurrentMap<String, ServiceInfo> services;
 
-  public PullRequestMaintenanceWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
-      final TimestampedMultiMap<ProjectInfo> projectUpdates, final ConcurrentMap<String, ServiceInfo> services) {
+  public PullRequestMaintenanceWorker(final ApplicationConfiguration cfg, final ConcurrentMap<String, CompositionInfo> projects,
+      final TimestampedMultiMap<CompositionInfo> projectUpdates, final ConcurrentMap<String, ServiceInfo> services) {
     this.cfg = cfg;
     this.projects = projects;
     this.services = services;
@@ -74,8 +74,8 @@ public class PullRequestMaintenanceWorker {
         TimeUnit.SECONDS);
   }
 
-  private void updateProjects(final TimestampedMultiMap<ProjectInfo> projectUpdates) {
-    final ArrayList<ProjectInfo> updates = projectUpdates.getUpdates(lastProjectUpdate);
+  private void updateProjects(final TimestampedMultiMap<CompositionInfo> projectUpdates) {
+    final ArrayList<CompositionInfo> updates = projectUpdates.getUpdates(lastProjectUpdate);
     if (updates.isEmpty()) {
       return;
     }
@@ -85,13 +85,13 @@ public class PullRequestMaintenanceWorker {
     LOG.debug("Started synchronizing {} projects.", updates.size());
 
     try {
-      for (final ProjectInfo project : updates) {
+      for (final CompositionInfo project : updates) {
         for (final PullRequestInfo pull : pulls.values()) {
-          if (pull.projects() == null || pull.projects().isEmpty()) {
+          if (pull.compositions() == null || pull.compositions().isEmpty()) {
             continue;
           }
 
-          pull.projects().values().stream().filter(p -> p.hash().equals(project.hash())).forEach(p -> update(p, project));
+          pull.compositions().values().stream().filter(p -> p.hash().equals(project.hash())).forEach(p -> update(p, project));
         }
       }
     } catch (final Exception e) {
@@ -103,7 +103,7 @@ public class PullRequestMaintenanceWorker {
     LOG.debug("Synchronized {} projects in {}ms.", updates.size(), lastProjectUpdate - startTime);
   }
 
-  private void update(final ProjectInfo target, final ProjectInfo source) {
+  private void update(final CompositionInfo target, final CompositionInfo source) {
     target.status(source.status());
     target.busy(source.busy());
   }
@@ -146,6 +146,8 @@ public class PullRequestMaintenanceWorker {
 
   public void purge() {
     pulls.clear();
+    pullRequestLocalUpdateExecutor.shutdownNow();
+
     updatePullRequestsFromGithub();
   }
 }

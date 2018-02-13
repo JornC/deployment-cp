@@ -13,20 +13,20 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.CmdUtil;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.HashUtil;
 
-public abstract class ProjectJob implements Runnable {
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectJob.class);
+public abstract class CompositionJob implements Runnable {
+  private static final Logger LOG = LoggerFactory.getLogger(CompositionJob.class);
 
-  protected final ProjectInfo info;
+  protected final CompositionInfo info;
 
-  protected final Map<Long, List<ProjectInfo>> projectUpdates;
-  protected final ConcurrentMap<String, ProjectInfo> projects;
+  protected final Map<Long, List<CompositionInfo>> compositionUpdates;
+  protected final ConcurrentMap<String, CompositionInfo> compositions;
 
   protected final Map<Long, List<ServiceInfo>> serviceUpdates;
   protected final ConcurrentMap<String, ServiceInfo> services;
@@ -37,22 +37,22 @@ public abstract class ProjectJob implements Runnable {
 
   protected final Map<String, String> globalReplacements;
 
-  public ProjectJob(final ApplicationConfiguration cfg, final ProjectInfo info, final String prId, final Map<Long, List<ProjectInfo>> projectUpdates,
-      final Map<Long, List<ServiceInfo>> serviceUpdates,
-      final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
+  public CompositionJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
+      final Map<Long, List<CompositionInfo>> compositionUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
+      final ConcurrentMap<String, CompositionInfo> compositions, final ConcurrentMap<String, ServiceInfo> services) {
     this.cfg = cfg;
     this.info = info;
     this.prId = prId;
-    this.projectUpdates = projectUpdates;
+    this.compositionUpdates = compositionUpdates;
     this.serviceUpdates = serviceUpdates;
-    this.projects = projects;
+    this.compositions = compositions;
     this.services = services;
 
     globalReplacements = cfg.getControlPanelProperties().collect(Collectors.toMap(formatKey(), v -> (String) v.getValue()));
     globalReplacements.put("{{cp.pr.id}}", prId);
     globalReplacements.put("{{cp.pr.hash}}", info.hash());
 
-    putProject(info.busy(true));
+    putComposition(info.busy(true));
   }
 
   private Function<Entry<Object, Object>, String> formatKey() {
@@ -65,24 +65,24 @@ public abstract class ProjectJob implements Runnable {
 
       info.services().stream().filter(v -> v.hash().equals(service.hash())).findFirst().ifPresent(v -> {
         v.status(service.status());
-        updateProject(info);
+        updateComposition(info);
       });
     }
 
     updateService(service);
   }
 
-  protected void putProject(final ProjectInfo product) {
-    synchronized (projects) {
-      projects.put(product.hash(), product);
+  protected void putComposition(final CompositionInfo composition) {
+    synchronized (compositions) {
+      compositions.put(composition.hash(), composition);
     }
 
-    updateProject(product);
+    updateComposition(composition);
   }
 
-  private void updateProject(final ProjectInfo info) {
-    synchronized (projectUpdates) {
-      projectUpdates.get(System.currentTimeMillis()).add(info);
+  private void updateComposition(final CompositionInfo info) {
+    synchronized (compositionUpdates) {
+      compositionUpdates.get(System.currentTimeMillis()).add(info);
     }
 
     LOG.debug("Product updated. {} {} -> {}", info.type(), HashUtil.shorten(info.hash()), info.status());

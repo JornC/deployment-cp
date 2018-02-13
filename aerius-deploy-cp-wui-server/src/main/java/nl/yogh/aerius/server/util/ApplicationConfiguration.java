@@ -4,7 +4,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import nl.yogh.aerius.builder.domain.ProjectType;
+import nl.yogh.aerius.builder.domain.CompositionType;
 
 public class ApplicationConfiguration {
   private final Properties properties;
@@ -42,7 +42,7 @@ public class ApplicationConfiguration {
     return properties.entrySet().stream().filter(e -> ((String) e.getKey()).startsWith("cp."));
   }
 
-  public String getDeploymentHost(final ProjectType projectType) {
+  public String getDeploymentHost(final CompositionType projectType) {
     return getPropertyRequired(properties, String.format("cp.deployment.%s.host", projectType.name()));
   }
 }

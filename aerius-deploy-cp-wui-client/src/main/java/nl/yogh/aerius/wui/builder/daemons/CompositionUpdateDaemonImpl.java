@@ -9,12 +9,12 @@ import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.service.PullRequestServiceAsync;
-import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.builder.commands.CompositionStatusInfoChangedEvent;
 
-public class ProjectUpdateDaemonImpl extends ProjectUpdatePollingAgent {
-  interface ProjectUpdateDaemonImplEventBinder extends EventBinder<ProjectUpdateDaemonImpl> {}
+public class CompositionUpdateDaemonImpl extends CompositionUpdatePollingAgent {
+  interface ProjectUpdateDaemonImplEventBinder extends EventBinder<CompositionUpdateDaemonImpl> {}
 
   private final ProjectUpdateDaemonImplEventBinder EVENT_BINDER = GWT.create(ProjectUpdateDaemonImplEventBinder.class);
 
@@ -23,7 +23,7 @@ public class ProjectUpdateDaemonImpl extends ProjectUpdatePollingAgent {
   private long lastUpdate;
 
   @Inject
-  public ProjectUpdateDaemonImpl(final EventBus eventBus, final PullRequestServiceAsync service) {
+  public CompositionUpdateDaemonImpl(final EventBus eventBus, final PullRequestServiceAsync service) {
     super(eventBus);
 
     this.service = service;
@@ -38,19 +38,19 @@ public class ProjectUpdateDaemonImpl extends ProjectUpdatePollingAgent {
   }
 
   @Override
-  protected void fetch(final AsyncCallback<ArrayList<ProjectInfo>> callback) {
+  protected void fetch(final AsyncCallback<ArrayList<CompositionInfo>> callback) {
     service.getProductUpdates(lastUpdate, callback);
     lastUpdate = new Date().getTime();
   }
 
   @Override
-  protected void handleResult(final ArrayList<ProjectInfo> result) {
+  protected void handleResult(final ArrayList<CompositionInfo> result) {
     if (!result.isEmpty()) {
       GWT.log("Got project updates: " + result.size());
     }
 
-    for (final ProjectInfo info : result) {
-      eventBus.fireEvent(new ProjectStatusInfoChangedEvent(info));
+    for (final CompositionInfo info : result) {
+      eventBus.fireEvent(new CompositionStatusInfoChangedEvent(info));
     }
   }
 }

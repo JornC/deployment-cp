@@ -1,6 +1,6 @@
 package nl.yogh.aerius.builder.domain;
 
-public enum ProjectType {
+public enum CompositionType {
   CALCULATOR(ServiceType.CALCULATOR_WUI, ServiceType.CALCULATOR_DATABASE, ServiceType.SCENARIO_BASE_GEOSERVER, ServiceType.TASKMANAGER, ServiceType.WORKER_OPS, ServiceType.WORKER_SRM),
 
   SCENARIO(ServiceType.SCENARIO_WUI, ServiceType.SCENARIO_DATABASE, ServiceType.SCENARIO_BASE_GEOSERVER, ServiceType.TASKMANAGER, ServiceType.WORKER_OPS, ServiceType.WORKER_SRM),
@@ -13,7 +13,7 @@ public enum ProjectType {
 
   private final ServiceType[] serviceTypes;
 
-  private ProjectType(final ServiceType... serviceTypes) {
+  private CompositionType(final ServiceType... serviceTypes) {
     this.serviceTypes = serviceTypes;
   }
 

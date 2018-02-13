@@ -20,7 +20,7 @@ public class PullRequestInfo implements Serializable, IsSerializable {
   private String author;
   private String url;
 
-  private HashMap<ProjectType, ProjectInfo> projects;
+  private HashMap<CompositionType, CompositionInfo> compositions;
 
   public static PullRequestInfo create() {
     return new PullRequestInfo();
@@ -102,12 +102,12 @@ public class PullRequestInfo implements Serializable, IsSerializable {
     return this;
   }
 
-  public HashMap<ProjectType, ProjectInfo> projects() {
-    return projects;
+  public HashMap<CompositionType, CompositionInfo> compositions() {
+    return compositions;
   }
 
-  public PullRequestInfo projects(final HashMap<ProjectType, ProjectInfo> projects) {
-    this.projects = projects;
+  public PullRequestInfo compositions(final HashMap<CompositionType, CompositionInfo> compositions) {
+    this.compositions = compositions;
     return this;
   }
 }

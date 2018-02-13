@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 
 import nl.yogh.aerius.wui.builder.place.DockerPlace;
 import nl.yogh.aerius.wui.builder.place.LogPlace;
-import nl.yogh.aerius.wui.builder.place.ProjectPlace;
+import nl.yogh.aerius.wui.builder.place.CompositionPlace;
 import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
 import nl.yogh.aerius.wui.i18n.M;
 import nl.yogh.aerius.wui.resources.R;
@@ -23,7 +23,7 @@ public class BuilderPlaceNavigation extends PlaceNavigation<String> {
     super(placeController);
 
     places.put(PullRequestPlace.class.getSimpleName(), new PullRequestPlace());
-    places.put(ProjectPlace.class.getSimpleName(), new ProjectPlace());
+    places.put(CompositionPlace.class.getSimpleName(), new CompositionPlace());
     places.put(DockerPlace.class.getSimpleName(), new DockerPlace());
     places.put(LogPlace.class.getSimpleName(), new LogPlace());
 

@@ -5,13 +5,13 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ProjectInfo implements Serializable, IsSerializable, HasHash {
+public class CompositionInfo implements Serializable, IsSerializable, HasHash {
   private static final long serialVersionUID = -4108120027600006619L;
 
   private boolean busy;
 
-  private ProjectType type;
-  private ProjectStatus status;
+  private CompositionType type;
+  private CompositionStatus status;
   private String hash;
 
   private String buildHash;
@@ -20,17 +20,17 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
 
   private ArrayList<ServiceInfo> services;
 
-  public ProjectInfo() {}
+  public CompositionInfo() {}
 
-  public static ProjectInfo create() {
-    return new ProjectInfo();
+  public static CompositionInfo create() {
+    return new CompositionInfo();
   }
 
-  public ProjectStatus status() {
+  public CompositionStatus status() {
     return status;
   }
 
-  public ProjectInfo status(final ProjectStatus status) {
+  public CompositionInfo status(final CompositionStatus status) {
     this.status = status;
     return this;
   }
@@ -40,7 +40,7 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return hash;
   }
 
-  public ProjectInfo hash(final String hash) {
+  public CompositionInfo hash(final String hash) {
     this.hash = hash;
     return this;
   }
@@ -49,7 +49,7 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return buildHash;
   }
 
-  public ProjectInfo buildHash(final String buildHash) {
+  public CompositionInfo buildHash(final String buildHash) {
     this.buildHash = buildHash;
     return this;
   }
@@ -58,16 +58,16 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return busy;
   }
 
-  public ProjectInfo busy(final boolean busy) {
+  public CompositionInfo busy(final boolean busy) {
     this.busy = busy;
     return this;
   }
 
-  public ProjectType type() {
+  public CompositionType type() {
     return type;
   }
 
-  public ProjectInfo type(final ProjectType type) {
+  public CompositionInfo type(final CompositionType type) {
     this.type = type;
     return this;
   }
@@ -76,7 +76,7 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return url;
   }
 
-  public ProjectInfo url(final String url) {
+  public CompositionInfo url(final String url) {
     this.url = url;
     return this;
   }
@@ -85,7 +85,7 @@ public class ProjectInfo implements Serializable, IsSerializable, HasHash {
     return services;
   }
 
-  public ProjectInfo services(final ArrayList<ServiceInfo> services) {
+  public CompositionInfo services(final ArrayList<ServiceInfo> services) {
     this.services = services;
     return this;
   }

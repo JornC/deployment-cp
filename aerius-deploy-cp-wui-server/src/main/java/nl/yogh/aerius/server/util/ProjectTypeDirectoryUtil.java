@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import nl.yogh.aerius.builder.domain.ProjectType;
+import nl.yogh.aerius.builder.domain.CompositionType;
 import nl.yogh.aerius.builder.domain.ServiceType;
 
 public class ProjectTypeDirectoryUtil {
@@ -64,7 +64,7 @@ public class ProjectTypeDirectoryUtil {
     return str;
   }
 
-  public static Set<String> getProjectDirectories(final ProjectType type) {
+  public static Set<String> getProjectDirectories(final CompositionType type) {
     final ServiceType[] serviceTypes = type.getServiceTypes();
     final HashSet<String> directories = new HashSet<>();
 

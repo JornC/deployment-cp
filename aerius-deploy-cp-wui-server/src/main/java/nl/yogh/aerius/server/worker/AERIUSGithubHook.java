@@ -12,7 +12,7 @@ import org.eclipse.egit.github.core.service.RepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 
 public class AERIUSGithubHook {
@@ -25,7 +25,7 @@ public class AERIUSGithubHook {
     client.setOAuth2Token(oAuthToken);
   }
 
-  public void update(final Map<String, ProjectInfo> projects, final Map<Integer, PullRequestInfo> pulls) throws IOException {
+  public void update(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls) throws IOException {
     LOG.debug("Retrieving pull requests from GitHub.");
 
     final RepositoryService repoService = new RepositoryService(client);
@@ -50,7 +50,7 @@ public class AERIUSGithubHook {
     LOG.debug("Retrieved {} pull requests from GitHub.", pullRequests.size());
   }
 
-  public void checkUpdate(final Map<String, ProjectInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
+  public void checkUpdate(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
     if (pulls.containsKey(idx)) {
       final PullRequestInfo original = pulls.get(idx);
       if (original.hash().equals(info.hash())) {
@@ -61,7 +61,7 @@ public class AERIUSGithubHook {
     update(projects, pulls, idx, info);
   }
 
-  private void update(final Map<String, ProjectInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
+  private void update(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
     info.incomplete(true);
     projects.remove(info.hash());
 

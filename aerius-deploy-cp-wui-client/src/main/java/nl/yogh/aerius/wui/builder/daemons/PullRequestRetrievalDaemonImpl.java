@@ -13,12 +13,12 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 
 import nl.yogh.aerius.builder.domain.HasHash;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.service.PullRequestServiceAsync;
-import nl.yogh.aerius.wui.builder.commands.ProjectActionCommand;
-import nl.yogh.aerius.wui.builder.commands.ProjectStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.builder.commands.CompositionActionCommand;
+import nl.yogh.aerius.wui.builder.commands.CompositionStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalEvent;
 
 public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingAgent {
@@ -29,9 +29,9 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
   private final PullRequestServiceAsync service;
 
   @Inject ServiceUpdateDaemon serviceUpdateDaemon;
-  @Inject ProjectUpdateDaemon productUpdateDaemon;
+  @Inject CompositionUpdateDaemon productUpdateDaemon;
 
-  private ArrayList<ProjectInfo> products;
+  private ArrayList<CompositionInfo> products;
   private ArrayList<ServiceInfo> services;
 
   @Inject
@@ -91,13 +91,13 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
     return findObjects(value, services);
   }
 
-  private ProjectInfo findProduct(final String value) {
+  private CompositionInfo findProduct(final String value) {
     return findObject(value, products);
   }
 
   @EventHandler
-  public void onProductActionCommand(final ProjectActionCommand c) {
-    service.doAction(c.getIdx(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new ProjectStatusInfoChangedEvent(r)));
+  public void onProductActionCommand(final CompositionActionCommand c) {
+    service.doAction(c.getIdx(), c.getAction(), c.getValue(), r -> eventBus.fireEvent(new CompositionStatusInfoChangedEvent(r)));
   }
 
   @Override

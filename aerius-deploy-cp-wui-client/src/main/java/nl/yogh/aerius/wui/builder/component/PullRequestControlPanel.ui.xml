@@ -5,7 +5,7 @@
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
   <ui:with field='pull' type='nl.yogh.aerius.builder.domain.PullRequestInfo' />
   <ui:with field='eventBus' type='com.google.web.bindery.event.shared.EventBus' />
-  <ui:import field='nl.yogh.aerius.builder.domain.ProjectType.*' />
+  <ui:import field='nl.yogh.aerius.builder.domain.CompositionType.*' />
   <ui:style type="nl.yogh.aerius.wui.builder.component.PullRequestControlPanel.CustomStyle">
     .panel {
     padding: 10px;
@@ -66,11 +66,11 @@
         <g:Label text="{pull.author}" />
       </g:FlowPanel>
       <g:FlowPanel styleName="{res.css.flex} {res.css.wrap} {res.css.distribute} {style.buttons}">
-        <c:ProjectControlButton type="{CALCULATOR}" pull="{pull}" eventBus="{eventBus}" />
-        <c:ProjectControlButton type="{SCENARIO}" pull="{pull}" eventBus="{eventBus}" />
-        <c:ProjectControlButton type="{REGISTER}" pull="{pull}" eventBus="{eventBus}" />
-        <c:ProjectControlButton type="{CONNECT}" pull="{pull}" eventBus="{eventBus}" />
-        <c:ProjectControlButton type="{MELDING}" pull="{pull}" eventBus="{eventBus}" />
+        <c:CompositionControlButton type="{CALCULATOR}" pull="{pull}" eventBus="{eventBus}" />
+        <c:CompositionControlButton type="{SCENARIO}" pull="{pull}" eventBus="{eventBus}" />
+        <c:CompositionControlButton type="{REGISTER}" pull="{pull}" eventBus="{eventBus}" />
+        <c:CompositionControlButton type="{CONNECT}" pull="{pull}" eventBus="{eventBus}" />
+        <c:CompositionControlButton type="{MELDING}" pull="{pull}" eventBus="{eventBus}" />
       </g:FlowPanel>
     </g:FlowPanel>
   </g:FlowPanel>

@@ -1,18 +1,19 @@
-package nl.yogh.aerius.wui.builder.ui.project;
+package nl.yogh.aerius.wui.builder.ui.composition;
 
 import javax.inject.Inject;
 
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
 import nl.yogh.aerius.builder.service.PullRequestServiceAsync;
-import nl.yogh.aerius.wui.builder.commands.ProjectRetrievalDeactivationCommand;
-import nl.yogh.aerius.wui.builder.ui.project.ProjectView.Presenter;
+import nl.yogh.aerius.wui.builder.commands.CompositionRetrievalDeactivationCommand;
+import nl.yogh.aerius.wui.builder.ui.composition.CompositionView.Presenter;
+import nl.yogh.aerius.wui.builder.commands.CompositionRetrievalActivationCommand;
 import nl.yogh.gwt.wui.activity.EventActivity;
 
-public class ProjectActivity extends EventActivity<Presenter, ProjectView> implements Presenter {
+public class CompositionActivity extends EventActivity<Presenter, CompositionView> implements Presenter {
   private final PullRequestServiceAsync service;
 
   @Inject
-  public ProjectActivity(final ProjectView view, final PullRequestServiceAsync service) {
+  public CompositionActivity(final CompositionView view, final PullRequestServiceAsync service) {
     super(view);
     this.service = service;
   }
@@ -25,12 +26,12 @@ public class ProjectActivity extends EventActivity<Presenter, ProjectView> imple
 
   private void handlePresent(final PresentSnapshot result) {
     view.setProducts(result.getProjects());
-    // eventBus.fireEvent(new ProjectRetrievalActivationCommand());
+    eventBus.fireEvent(new CompositionRetrievalActivationCommand());
   }
 
   @Override
   public void onStop() {
-    eventBus.fireEvent(new ProjectRetrievalDeactivationCommand());
+    eventBus.fireEvent(new CompositionRetrievalDeactivationCommand());
   }
 
   @Override

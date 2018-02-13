@@ -33,6 +33,6 @@ public class LogPlace extends ApplicationPlace {
 
   @Override
   public String toString() {
-    return "ContainerPlace []";
+    return "LogPlace []";
   }
 }

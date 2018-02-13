@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
@@ -16,8 +16,8 @@ public class PullRequestMaintenanceFactory {
 
   private static PullRequestMaintenanceWorker maintenanceWorker;
 
-  public static void init(final ApplicationConfiguration cfg, final ConcurrentMap<String, ProjectInfo> projects,
-      final ConcurrentMap<String, ServiceInfo> services, final TimestampedMultiMap<ProjectInfo> projectUpdates) {
+  public static void init(final ApplicationConfiguration cfg, final ConcurrentMap<String, CompositionInfo> projects,
+      final ConcurrentMap<String, ServiceInfo> services, final TimestampedMultiMap<CompositionInfo> projectUpdates) {
     synchronized (PullRequestMaintenanceFactory.class) {
       if (maintenanceWorker == null) {
         maintenanceWorker = new PullRequestMaintenanceWorker(cfg, projects, projectUpdates, services);

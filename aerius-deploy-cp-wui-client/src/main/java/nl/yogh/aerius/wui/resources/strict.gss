@@ -55,7 +55,7 @@ html, body {
     padding: 20px;
     margin: 20px 0px 0pxm;
     text-align: center;
-    transition: all 0.2s ease-out;
+    transition: all 0.35s ease-out;
 }
 
 .elementMargin {

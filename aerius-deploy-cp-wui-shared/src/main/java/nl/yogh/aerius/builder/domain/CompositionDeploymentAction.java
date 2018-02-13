@@ -1,5 +1,5 @@
 package nl.yogh.aerius.builder.domain;
 
-public enum ProjectDeploymentAction {
+public enum CompositionDeploymentAction {
   SUSPEND, DEPLOY, BUILD, DESTROY;
 }

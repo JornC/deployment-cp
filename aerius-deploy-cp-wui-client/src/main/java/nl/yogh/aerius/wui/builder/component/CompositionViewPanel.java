@@ -6,20 +6,20 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.gwt.wui.widget.SwitchPanel;
 
-public class ProjectViewPanel extends Composite {
+public class CompositionViewPanel extends Composite {
   private static final ProjectViewPanelUiBinder UI_BINDER = GWT.create(ProjectViewPanelUiBinder.class);
 
-  interface ProjectViewPanelUiBinder extends UiBinder<Widget, ProjectViewPanel> {}
+  interface ProjectViewPanelUiBinder extends UiBinder<Widget, CompositionViewPanel> {}
 
-  @UiField(provided = true) ProjectInfo project;
+  @UiField(provided = true) CompositionInfo composition;
 
   @UiField SwitchPanel switchPanel;
 
-  public ProjectViewPanel(final ProjectInfo info) {
-    this.project = info;
+  public CompositionViewPanel(final CompositionInfo info) {
+    this.composition = info;
 
     if (info.url() == null) {
       info.url("Pending...");
@@ -30,7 +30,7 @@ public class ProjectViewPanel extends Composite {
     switchPanel.showWidget(info.busy() ? 0 : 1);
   }
 
-  public void update(final ProjectInfo value) {
+  public void update(final CompositionInfo value) {
     throw new RuntimeException("Not supporting updates.");
   }
 }

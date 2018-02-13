@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.worker.ProjectUpdateRepositoryFactory;
@@ -26,11 +26,11 @@ public class ApplicationFactory {
   private static final String CONFIG_PROPERTIES_NAME = "deploycp.properties";
 
   public static void init(final Properties properties) {
-    final ConcurrentMap<String, ProjectInfo> projects = new ConcurrentHashMap<>();
+    final ConcurrentMap<String, CompositionInfo> projects = new ConcurrentHashMap<>();
     final ConcurrentMap<String, ServiceInfo> services = new ConcurrentHashMap<>();
 
     final TimestampedMultiMap<ServiceInfo> serviceUpdates = ServiceUpdateRepositoryFactory.getInstance();
-    final TimestampedMultiMap<ProjectInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
+    final TimestampedMultiMap<CompositionInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
 
     final Properties props = new Properties(System.getProperties());
 

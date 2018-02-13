@@ -3,7 +3,7 @@ package nl.yogh.aerius.wui.builder;
 import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 
-import nl.yogh.aerius.wui.builder.place.ProjectPlace;
+import nl.yogh.aerius.wui.builder.place.CompositionPlace;
 import nl.yogh.aerius.wui.builder.place.DockerPlace;
 import nl.yogh.aerius.wui.builder.place.LogPlace;
 import nl.yogh.aerius.wui.builder.place.PullRequestPlace;
@@ -38,8 +38,8 @@ public class BuilderActivityMapper implements ActivityMapper {
   private Activity<?> tryGetActivity(final Place place) {
     Activity<?> presenter = null;
 
-    if (place instanceof ProjectPlace) {
-      presenter = factory.createContainerPresenter((ProjectPlace) place);
+    if (place instanceof CompositionPlace) {
+      presenter = factory.createCompositionPresenter((CompositionPlace) place);
     } else if (place instanceof DockerPlace) {
       presenter = factory.createDockerPresenter((DockerPlace) place);
     } else if (place instanceof PullRequestPlace) {

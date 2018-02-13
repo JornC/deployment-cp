@@ -10,21 +10,21 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectStatus;
-import nl.yogh.aerius.builder.domain.ProjectType;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
+import nl.yogh.aerius.builder.domain.CompositionStatus;
+import nl.yogh.aerius.builder.domain.CompositionType;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.Files;
 import nl.yogh.aerius.server.util.HashUtil;
 
-public class ProjectDeploymentJob extends ProjectJob {
+public class ProjectDeploymentJob extends CompositionJob {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDeploymentJob.class);
 
-  public ProjectDeploymentJob(final ApplicationConfiguration cfg, final ProjectInfo info, final String prId,
-      final Map<Long, List<ProjectInfo>> productUpdates,
-      final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, ProjectInfo> products,
+  public ProjectDeploymentJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
+      final Map<Long, List<CompositionInfo>> productUpdates,
+      final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, CompositionInfo> products,
       final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, productUpdates, serviceUpdates, products, services);
   }
@@ -33,11 +33,11 @@ public class ProjectDeploymentJob extends ProjectJob {
   public void run() {
     LOG.info("Deployment job started:  {}", info.hash());
 
-    putProject(deployProject(prId, info));
+    putComposition(deployProject(prId, info));
     LOG.info("Deployment job complete:  {}", info.hash());
   }
 
-  private ProjectInfo deployProject(final String prId, final ProjectInfo info) {
+  private CompositionInfo deployProject(final String prId, final CompositionInfo info) {
     final File tmpDir = Files.createTempDir();
 
     final Map<String, String> localReplacements = new HashMap<>();
@@ -62,10 +62,10 @@ public class ProjectDeploymentJob extends ProjectJob {
       info.url(url);
     }
 
-    return info.status(success ? ProjectStatus.DEPLOYED : ProjectStatus.UNBUILT).busy(false);
+    return info.status(success ? CompositionStatus.DEPLOYED : CompositionStatus.UNBUILT).busy(false);
   }
 
-  private void moveStagingDirectory(final File dir, final ProjectType type) {
+  private void moveStagingDirectory(final File dir, final CompositionType type) {
     moveStagingDirectory(dir, String.format("%s/projects/%s/", cfg.getStagingDir(), type.name()));
   }
 

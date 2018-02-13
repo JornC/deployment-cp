@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectStatus;
-import nl.yogh.aerius.builder.domain.ProjectType;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
+import nl.yogh.aerius.builder.domain.CompositionStatus;
+import nl.yogh.aerius.builder.domain.CompositionType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
@@ -30,15 +30,15 @@ public class PullRequestUpdateJob implements Runnable {
 
   private final ApplicationConfiguration cfg;
 
-  private final ConcurrentMap<String, ProjectInfo> projects;
+  private final ConcurrentMap<String, CompositionInfo> compositions;
   private final ConcurrentMap<String, ServiceInfo> services;
 
   public PullRequestUpdateJob(final ApplicationConfiguration cfg, final PullRequestInfo info, final Object grip,
-      final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
+      final ConcurrentMap<String, CompositionInfo> compositions, final ConcurrentMap<String, ServiceInfo> services) {
     this.cfg = cfg;
     this.pullInfo = info;
     this.grip = grip;
-    this.projects = projects;
+    this.compositions = compositions;
     this.services = services;
 
     info.busy(true);
@@ -50,24 +50,24 @@ public class PullRequestUpdateJob implements Runnable {
   public void run() {
     LOG.info("Update job started:  {} -> {}", pullInfo.idx(), pullInfo.hash());
 
-    final HashMap<ProjectType, ProjectInfo> projects = fetchProjectInformation();
+    final HashMap<CompositionType, CompositionInfo> compositions = fetchCompositionInformation();
 
     synchronized (grip) {
       pullInfo.lastUpdated(System.currentTimeMillis());
       pullInfo.busy(false);
       pullInfo.incomplete(false);
 
-      pullInfo.projects(projects);
+      pullInfo.compositions(compositions);
     }
 
     LOG.info("Update job complete: {} -> {}", pullInfo.idx(), pullInfo.hash());
   }
 
-  private HashMap<ProjectType, ProjectInfo> fetchProjectInformation() {
+  private HashMap<CompositionType, CompositionInfo> fetchCompositionInformation() {
     final String idx = pullInfo.idx();
 
     try {
-      final HashMap<ProjectType, ProjectInfo> products = new HashMap<>();
+      final HashMap<CompositionType, CompositionInfo> products = new HashMap<>();
 
       // Ensure you are on the correct branch.
       try {
@@ -89,28 +89,28 @@ public class PullRequestUpdateJob implements Runnable {
       cmd("git fetch origin pull/%s/head:PR-%s", idx, idx);
       cmd("git checkout PR-%s", idx);
 
-      for (final ProjectType type : ProjectType.values()) {
+      for (final CompositionType type : CompositionType.values()) {
         final Set<String> dirs = ProjectTypeDirectoryUtil.getProjectDirectories(type);
         if (dirs == null) {
           continue;
         }
 
-        final ProjectInfo projectInfo = ProjectInfo.create()
+        final CompositionInfo projectInfo = CompositionInfo.create()
             .type(type)
             .hash(findShaSum(dirs))
             .buildHash(pullInfo.hash());
 
-        ProjectStatus status = ProjectStatus.UNBUILT;
+        CompositionStatus status = CompositionStatus.UNBUILT;
 
         try {
           if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
               projectInfo.hash().toLowerCase())
                   .isEmpty()) {
-            status = ProjectStatus.DEPLOYED;
+            status = CompositionStatus.DEPLOYED;
           } else if (!cmd("docker ps --filter status=exited --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
               projectInfo.hash().toLowerCase())
                   .isEmpty()) {
-            status = ProjectStatus.SUSPENDED;
+            status = CompositionStatus.SUSPENDED;
           } else {}
         } catch (final ProcessExitException e) {
           // eat
@@ -118,11 +118,11 @@ public class PullRequestUpdateJob implements Runnable {
 
         projectInfo.status(status);
 
-        if (projects.containsKey(projectInfo.hash())) {
-          projects.get(projectInfo.hash()).status(status);
-        } else if (status == ProjectStatus.DEPLOYED) {
+        if (compositions.containsKey(projectInfo.hash())) {
+          compositions.get(projectInfo.hash()).status(status);
+        } else if (status == CompositionStatus.DEPLOYED) {
           projectInfo.url(String.format(cfg.getDeploymentHost(projectInfo.type()), idx));
-          projects.put(projectInfo.hash(), projectInfo);
+          compositions.put(projectInfo.hash(), projectInfo);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -139,7 +139,7 @@ public class PullRequestUpdateJob implements Runnable {
     }
   }
 
-  private ArrayList<ServiceInfo> findServiceHash(final ProjectType type) throws IOException, InterruptedException, ProcessExitException {
+  private ArrayList<ServiceInfo> findServiceHash(final CompositionType type) throws IOException, InterruptedException, ProcessExitException {
     final ArrayList<ServiceInfo> lst = new ArrayList<>();
 
     for (final ServiceType serviceType : type.getServiceTypes()) {

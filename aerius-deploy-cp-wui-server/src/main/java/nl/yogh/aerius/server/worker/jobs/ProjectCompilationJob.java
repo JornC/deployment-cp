@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.ProjectInfo;
-import nl.yogh.aerius.builder.domain.ProjectStatus;
+import nl.yogh.aerius.builder.domain.CompositionInfo;
+import nl.yogh.aerius.builder.domain.CompositionStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.domain.ServiceType;
@@ -24,14 +24,14 @@ import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.Files;
 import nl.yogh.aerius.server.util.HashUtil;
 
-public class ProjectCompilationJob extends ProjectJob {
+public class ProjectCompilationJob extends CompositionJob {
   private static final Logger LOG = LoggerFactory.getLogger(ProjectCompilationJob.class);
 
-  private final ExecutorService executor = Executors.newFixedThreadPool(1);
+  private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
-  public ProjectCompilationJob(final ApplicationConfiguration cfg, final ProjectInfo info, final String prId,
-      final Map<Long, List<ProjectInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
-      final ConcurrentMap<String, ProjectInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
+  public ProjectCompilationJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
+      final Map<Long, List<CompositionInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
+      final ConcurrentMap<String, CompositionInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, projectUpdates, serviceUpdates, projects, services);
   }
 
@@ -70,11 +70,11 @@ public class ProjectCompilationJob extends ProjectJob {
       return;
     }
 
-    info.status(ProjectStatus.SUSPENDED);
+    info.status(CompositionStatus.SUSPENDED);
 
-    putProject(info);
+    putComposition(info);
 
-    final ProjectDeploymentJob chainJob = new ProjectDeploymentJob(cfg, info, prId, projectUpdates, serviceUpdates, projects, services);
+    final ProjectDeploymentJob chainJob = new ProjectDeploymentJob(cfg, info, prId, compositionUpdates, serviceUpdates, compositions, services);
     chainJob.run();
   }
 
