@@ -50,6 +50,13 @@ public class DockerActivity extends EventActivity<Presenter, DockerView> impleme
     }
   }
 
+  @Override
+  public void purgeTracker() {
+    if (Window.confirm("Are you sure you want to delete all images?")) {
+      service.purgeTracker(AppAsyncCallback.create());
+    }
+  }
+
   private void retrieveContainers() {
     service.retrieveContainers(AppAsyncCallback.create(view::setContainers));
   }

@@ -2,9 +2,12 @@ package nl.yogh.aerius.server.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -17,6 +20,7 @@ import nl.yogh.aerius.builder.domain.ProjectStatus;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.exception.ApplicationException;
+import nl.yogh.aerius.builder.exception.ApplicationException.Reason;
 import nl.yogh.aerius.builder.service.DockerManagementService;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.util.CmdUtil;
@@ -113,8 +117,9 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
   }
 
   @Override
-  public boolean stopContainer(final DockerContainer container) {
+  public boolean stopContainer(final DockerContainer container) throws ApplicationException {
     final CountDownLatch latch = new CountDownLatch(1);
+    final CompletableFuture<Exception> fut = new CompletableFuture<>();
 
     executor.submit(() -> {
       LOG.info("[COMMAND] Stopping container {}", container.hash());
@@ -124,17 +129,19 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
         latch.countDown();
       } catch (IOException | InterruptedException | ProcessExitException e) {
         LOG.error("Error during stopContainer {}", container.hash(), e);
+        fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done stopping container {}", container.hash());
       }
     });
 
-    return await(latch);
+    return await(latch, fut);
   }
 
   @Override
-  public boolean removeContainer(final DockerContainer container) {
+  public boolean removeContainer(final DockerContainer container) throws ApplicationException {
     final CountDownLatch latch = new CountDownLatch(1);
+    final CompletableFuture<Exception> fut = new CompletableFuture<>();
 
     executor.submit(() -> {
       LOG.info("[COMMAND] Removing container {}", container.hash());
@@ -144,17 +151,29 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
         latch.countDown();
       } catch (IOException | InterruptedException | ProcessExitException e) {
         LOG.error("Error during removeContainer {}", container.hash(), e);
+        fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done removing container {}", container.hash());
       }
     });
 
-    return await(latch);
+    return await(latch, fut);
   }
 
-  private boolean await(final CountDownLatch latch) {
+  private boolean await(final CountDownLatch latch, final Future<Exception> fut) throws ApplicationException {
     try {
-      return latch.await(5, TimeUnit.SECONDS);
+      final boolean complete = latch.await(5, TimeUnit.SECONDS);
+      if (complete) {
+        if (fut.isDone()) {
+          try {
+            throw new ApplicationException(Reason.INTERNAL_ERROR, fut.get().getMessage());
+          } catch (final ExecutionException e) {
+            LOG.error("Error during await {}", e);
+          }
+        }
+      }
+
+      return complete;
     } catch (final InterruptedException e) {}
 
     return false;
@@ -163,6 +182,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
   @Override
   public boolean removeImage(final DockerImage image) throws ApplicationException {
     final CountDownLatch latch = new CountDownLatch(1);
+    final CompletableFuture<Exception> fut = new CompletableFuture<>();
 
     executor.submit(() -> {
       LOG.info("[COMMAND] Removing image {}", image.hash());
@@ -172,12 +192,13 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
         latch.countDown();
       } catch (IOException | InterruptedException | ProcessExitException e) {
         LOG.error("Error during removeImage {}", image.hash(), e);
+        fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done removing image {}", image.hash());
       }
     });
 
-    return await(latch);
+    return await(latch, fut);
   }
 
   private ArrayList<String> cmd(final String format, final Object... args) throws IOException, InterruptedException, ProcessExitException {
@@ -187,5 +208,11 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
   private ArrayList<String> cmd(final String cmd) throws IOException, InterruptedException, ProcessExitException {
     // return CmdUtil.cmdDebug("/", cmd);
     return CmdUtil.cmd("/", cmd);
+  }
+
+  @Override
+  public void purgeTracker() throws ApplicationException {
+    getDeploymentInstance().purge();
+    getMaintenanceInstance().purge();
   }
 }

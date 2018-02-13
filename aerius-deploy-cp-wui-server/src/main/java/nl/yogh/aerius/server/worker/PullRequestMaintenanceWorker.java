@@ -143,4 +143,9 @@ public class PullRequestMaintenanceWorker {
   public long getLastUpdate() {
     return lastProjectUpdate;
   }
+
+  public void purge() {
+    pulls.clear();
+    updatePullRequestsFromGithub();
+  }
 }

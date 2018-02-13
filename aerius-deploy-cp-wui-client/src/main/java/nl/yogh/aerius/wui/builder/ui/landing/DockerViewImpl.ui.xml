@@ -47,6 +47,7 @@
         <g:Button ui:field="stopAllContainers" text="Stop all containers" styleName="{style.button}" />
         <g:Button ui:field="removeAllContainers" text="Remove all containers" styleName="{style.button}" />
         <g:Button ui:field="removeAllImages" text="Remove all images" styleName="{style.button} {style.bigbad}" />
+        <g:Button ui:field="purgeTracker" text="Purge tracker" styleName="{style.button} {style.bigbad}" />
       </g:FlowPanel>
       <w:HeadingWidget n="2" text="Containers" styleName="{style.center}" />
       <w:SwitchPanel ui:field="containerSwitchPanel">

@@ -103,4 +103,9 @@ public class PullRequestDeploymentWorker {
   public ArrayList<ServiceInfo> getServices() {
     return new ArrayList<>(services.values());
   }
+
+  public void purge() {
+    projects.clear();
+    services.clear();
+  }
 }

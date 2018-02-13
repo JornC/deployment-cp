@@ -17,13 +17,15 @@ public interface DockerManagementService extends RemoteService {
 
   void removeAllImages() throws ApplicationException;
 
+  void purgeTracker() throws ApplicationException;
+
   ArrayList<DockerImage> retrieveImages() throws ApplicationException;
 
   boolean removeImage(DockerImage image) throws ApplicationException;
 
   ArrayList<DockerContainer> retrieveContainers() throws ApplicationException;
 
-  boolean stopContainer(DockerContainer container);
+  boolean stopContainer(DockerContainer container) throws ApplicationException;
 
-  boolean removeContainer(DockerContainer container);
+  boolean removeContainer(DockerContainer container) throws ApplicationException;
 }

@@ -24,6 +24,8 @@ public interface DockerView extends View<Presenter> {
     void stopContainer(DockerContainer info, Consumer<Boolean> callback);
 
     void removeContainer(DockerContainer info, Consumer<Boolean> callback);
+
+    void purgeTracker();
   }
 
   void setImages(ArrayList<DockerImage> images);

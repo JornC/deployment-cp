@@ -59,6 +59,11 @@ public class DockerViewImpl extends EventComposite implements DockerView {
     presenter.removeAllImages();
   }
 
+  @UiHandler("purgeTracker")
+  public void onPurgeTracker(final ClickEvent e) {
+    presenter.purgeTracker();
+  }
+
   @Override
   protected void onLoad() {}
 

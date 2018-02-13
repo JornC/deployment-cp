@@ -28,6 +28,11 @@ public class ApplicationException extends Exception implements Serializable {
     this.reason = errorCode;
   }
 
+  public ApplicationException(final Reason errorCode, final String message) {
+    super(message);
+    this.reason = errorCode;
+  }
+
   public Reason getReason() {
     return reason;
   }
