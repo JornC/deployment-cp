@@ -19,10 +19,10 @@ import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.Files;
 import nl.yogh.aerius.server.util.HashUtil;
 
-public class ProjectDeploymentJob extends CompositionJob {
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectDeploymentJob.class);
+public class CompositionDeploymentJob extends CompositionJob {
+  private static final Logger LOG = LoggerFactory.getLogger(CompositionDeploymentJob.class);
 
-  public ProjectDeploymentJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
+  public CompositionDeploymentJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
       final Map<Long, List<CompositionInfo>> productUpdates,
       final Map<Long, List<ServiceInfo>> serviceUpdates, final ConcurrentMap<String, CompositionInfo> products,
       final ConcurrentMap<String, ServiceInfo> services) {
@@ -66,7 +66,7 @@ public class ProjectDeploymentJob extends CompositionJob {
   }
 
   private void moveStagingDirectory(final File dir, final CompositionType type) {
-    moveStagingDirectory(dir, String.format("%s/projects/%s/", cfg.getStagingDir(), type.name()));
+    moveStagingDirectory(dir, String.format("%s/compositions/%s/", cfg.getStagingDir(), type.name()));
   }
 
   private boolean deploy(final File dir) {

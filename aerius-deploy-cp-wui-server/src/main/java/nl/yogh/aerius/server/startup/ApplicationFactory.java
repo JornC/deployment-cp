@@ -1,7 +1,5 @@
 package nl.yogh.aerius.server.startup;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -23,8 +21,6 @@ import nl.yogh.aerius.server.worker.ServiceUpdateRepositoryFactory;
 public class ApplicationFactory {
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationFactory.class);
 
-  private static final String CONFIG_PROPERTIES_NAME = "deploycp.properties";
-
   public static void init(final Properties properties) {
     final ConcurrentMap<String, CompositionInfo> projects = new ConcurrentHashMap<>();
     final ConcurrentMap<String, ServiceInfo> services = new ConcurrentHashMap<>();
@@ -32,35 +28,12 @@ public class ApplicationFactory {
     final TimestampedMultiMap<ServiceInfo> serviceUpdates = ServiceUpdateRepositoryFactory.getInstance();
     final TimestampedMultiMap<CompositionInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
 
-    final Properties props = new Properties(System.getProperties());
-
-    boolean success = false;
-    while (!success) {
-      try {
-        final int propNum = props.size();
-
-        final InputStream stream = ApplicationFactory.class.getClassLoader().getResourceAsStream(CONFIG_PROPERTIES_NAME);
-        props.load(stream);
-
-        success = true;
-        LOG.info("Loaded configuration ({} variables) from file: {}", props.size() - propNum,
-            ApplicationFactory.class.getClassLoader().getResource(CONFIG_PROPERTIES_NAME).getPath().toString());
-      } catch (final IOException | NullPointerException e) {
-        LOG.error("Could not load properties file from classpath: {} ({})", CONFIG_PROPERTIES_NAME, System.getProperty("java.class.path"), e);
-
-        try {
-          // Sleep and retry
-          Thread.sleep(15000);
-        } catch (final InterruptedException e1) {
-          throw new RuntimeException("Crapped out foh real.");
-        }
-      }
-    }
-
-    final ApplicationConfiguration cfg = new ApplicationConfiguration(props);
+    final ApplicationConfiguration cfg = ConfigurationLoader.generate();
 
     PullRequestMaintenanceFactory.init(cfg, projects, services, projectUpdates);
     PullRequestDeploymentFactory.init(cfg, projects, services, projectUpdates, serviceUpdates);
+
+    LOG.info("Application initialized.");
   }
 
   public static void shutdown() {

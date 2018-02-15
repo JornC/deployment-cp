@@ -32,8 +32,10 @@ public class ApplicationRoot {
 
     WebUtil.setAbsoluteRoot(GWT.getHostPageBaseURL());
 
-    daemonBootstrapper.init();
+    daemonBootstrapper.init(() -> finishStartup());
+  }
 
+  private void finishStartup() {
     Document.get().getDocumentElement().setClassName(R.css().bodyDark());
 
     activityManager.setPanel(appDisplay);

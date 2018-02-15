@@ -19,9 +19,9 @@ import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.HashUtil;
 import nl.yogh.aerius.server.worker.jobs.CatchAllRunnable;
-import nl.yogh.aerius.server.worker.jobs.ProjectCompilationJob;
-import nl.yogh.aerius.server.worker.jobs.ProjectDeploymentJob;
-import nl.yogh.aerius.server.worker.jobs.ProjectSuspensionJob;
+import nl.yogh.aerius.server.worker.jobs.CompositionCompilationJob;
+import nl.yogh.aerius.server.worker.jobs.CompositionDeploymentJob;
+import nl.yogh.aerius.server.worker.jobs.CompositionSuspensionJob;
 
 public class PullRequestDeploymentWorker {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestDeploymentWorker.class);
@@ -80,15 +80,15 @@ public class PullRequestDeploymentWorker {
     switch (action) {
     case BUILD:
       projectCompilationExecutor
-          .submit(CatchAllRunnable.wrap(new ProjectCompilationJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
+          .submit(CatchAllRunnable.wrap(new CompositionCompilationJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
       break;
     case SUSPEND:
       projectSuspensionExecutor
-          .submit(CatchAllRunnable.wrap(new ProjectSuspensionJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
+          .submit(CatchAllRunnable.wrap(new CompositionSuspensionJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
       break;
     case DEPLOY:
       projectDeploymentExecutor
-          .submit(CatchAllRunnable.wrap(new ProjectDeploymentJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
+          .submit(CatchAllRunnable.wrap(new CompositionDeploymentJob(cfg, info, idx, projectUpdates, serviceUpdates, projects, services)));
       break;
     case DESTROY:
     default:

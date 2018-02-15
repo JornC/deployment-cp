@@ -14,10 +14,10 @@ import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 
-public class ProjectSuspensionJob extends CompositionJob {
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectSuspensionJob.class);
+public class CompositionSuspensionJob extends CompositionJob {
+  private static final Logger LOG = LoggerFactory.getLogger(CompositionSuspensionJob.class);
 
-  public ProjectSuspensionJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
+  public CompositionSuspensionJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
       final Map<Long, List<CompositionInfo>> productUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
       final ConcurrentMap<String, CompositionInfo> products, final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, productUpdates, serviceUpdates, products, services);

@@ -112,7 +112,7 @@ public abstract class CompositionJob implements Runnable {
   }
 
   protected void moveStagingDirectory(final File dir, final String source) {
-    LOG.debug("Copying: {} to {}", cfg.getStagingDir(), dir.getAbsolutePath());
+    LOG.debug("Copying: {} to {}", source, dir.getAbsolutePath());
     try {
       cmd(source, "cp -a * %s", dir.getAbsolutePath());
     } catch (IOException | InterruptedException | ProcessExitException e) {

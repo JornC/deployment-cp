@@ -34,6 +34,7 @@ public class AERIUSGithubHook {
     final PullRequestService pullService = new PullRequestService(client);
     final List<PullRequest> pullRequests = pullService.getPullRequests(repository, "open");
 
+    int updated = 0;
     for (final PullRequest pull : pullRequests) {
       final int idx = pull.getNumber();
 
@@ -44,24 +45,31 @@ public class AERIUSGithubHook {
       info.url(pull.getHtmlUrl());
       info.hash(pull.getHead().getSha());
 
-      checkUpdate(projects, pulls, idx, info);
+      if (checkUpdate(projects, pulls, idx, info)) {
+        updated++;
+      }
     }
 
-    LOG.debug("Retrieved {} pull requests from GitHub.", pullRequests.size());
+    if (updated > 0) {
+      LOG.info("Updated {} pull requests.", updated);
+    }
   }
 
-  public void checkUpdate(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
+  public boolean checkUpdate(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx,
+      final PullRequestInfo info) {
     if (pulls.containsKey(idx)) {
       final PullRequestInfo original = pulls.get(idx);
       if (original.hash().equals(info.hash())) {
-        return;
+        return false;
       }
     }
 
     update(projects, pulls, idx, info);
+    return true;
   }
 
-  private void update(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx, final PullRequestInfo info) {
+  private void update(final Map<String, CompositionInfo> projects, final Map<Integer, PullRequestInfo> pulls, final int idx,
+      final PullRequestInfo info) {
     info.incomplete(true);
     projects.remove(info.hash());
 

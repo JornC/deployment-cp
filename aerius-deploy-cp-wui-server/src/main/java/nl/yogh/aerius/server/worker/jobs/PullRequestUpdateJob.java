@@ -20,7 +20,7 @@ import nl.yogh.aerius.builder.domain.ServiceType;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
 import nl.yogh.aerius.server.util.CmdUtil;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
-import nl.yogh.aerius.server.util.ProjectTypeDirectoryUtil;
+import nl.yogh.aerius.server.util.HashUtil;
 
 public class PullRequestUpdateJob implements Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
@@ -89,8 +89,8 @@ public class PullRequestUpdateJob implements Runnable {
       cmd("git fetch origin pull/%s/head:PR-%s", idx, idx);
       cmd("git checkout PR-%s", idx);
 
-      for (final CompositionType type : CompositionType.values()) {
-        final Set<String> dirs = ProjectTypeDirectoryUtil.getProjectDirectories(type);
+      for (final CompositionType type : cfg.getCompositionTypes()) {
+        final Set<String> dirs = cfg.getProjectDirectories(type);
         if (dirs == null) {
           continue;
         }
@@ -126,7 +126,7 @@ public class PullRequestUpdateJob implements Runnable {
         }
 
         if (LOG.isDebugEnabled()) {
-          LOG.trace("Calculating sum for ProductType {} > {}", projectInfo.hash().substring(0, 8), type.name());
+          LOG.trace("Calculating sum for ProductType {} > {}", HashUtil.shorten(projectInfo.hash()), type.name());
         }
 
         projectInfo.services(findServiceHash(type));
@@ -142,8 +142,8 @@ public class PullRequestUpdateJob implements Runnable {
   private ArrayList<ServiceInfo> findServiceHash(final CompositionType type) throws IOException, InterruptedException, ProcessExitException {
     final ArrayList<ServiceInfo> lst = new ArrayList<>();
 
-    for (final ServiceType serviceType : type.getServiceTypes()) {
-      final String sha = findShaSum(ProjectTypeDirectoryUtil.getServiceDirectories(serviceType));
+    for (final ServiceType serviceType : type.serviceTypes()) {
+      final String sha = findShaSum(cfg.getServiceDirectories(serviceType));
 
       final ServiceInfo serviceInfo = ServiceInfo.create().hash(sha).type(serviceType).status(ServiceStatus.UNBUILT);
 
@@ -163,7 +163,7 @@ public class PullRequestUpdateJob implements Runnable {
       lst.add(serviceInfo);
 
       if (LOG.isDebugEnabled()) {
-        LOG.trace("Calculating sum for ServiceType {} > {}", sha.substring(0, 8), serviceType.name());
+        LOG.trace("Calculating sum for ServiceType {} > {}", HashUtil.shorten(sha), serviceType.name());
       }
     }
 
@@ -174,12 +174,12 @@ public class PullRequestUpdateJob implements Runnable {
     return findShaSum(String.join(" ", dirs));
   }
 
-  private String findShaSum(final String[] dirs) throws IOException, InterruptedException, ProcessExitException {
-    return findShaSum(String.join(" ", dirs));
-  }
-
   private String findShaSum(final String dirs) throws IOException, InterruptedException, ProcessExitException {
     // return cmd("find %s -type f -exec sha256sum {} \\; | sha256sum", dirs).get(0);
+    if (dirs.isEmpty()) {
+      return "N/A (fix config)";
+    }
+
     return cmd("find %s -type f -print0 | xargs -0 sha256sum | sha256sum | cut -d \" \" -f1", dirs).get(0);
   }
 

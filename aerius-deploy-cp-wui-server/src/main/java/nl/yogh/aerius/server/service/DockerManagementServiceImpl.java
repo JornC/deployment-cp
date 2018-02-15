@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nl.yogh.aerius.builder.domain.DockerContainer;
-import nl.yogh.aerius.builder.domain.DockerImage;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.CompositionStatus;
+import nl.yogh.aerius.builder.domain.DockerContainer;
+import nl.yogh.aerius.builder.domain.DockerImage;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.exception.ApplicationException;
@@ -28,12 +28,22 @@ import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.util.CmdUtil;
 import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.worker.ProjectUpdateRepositoryFactory;
+import nl.yogh.aerius.server.worker.PullRequestDeploymentWorker;
+import nl.yogh.aerius.server.worker.PullRequestMaintenanceWorker;
 import nl.yogh.aerius.server.worker.ServiceUpdateRepositoryFactory;
 
-public class DockerManagementServiceImpl extends AbstractServiceImpl implements DockerManagementService {
+public class DockerManagementServiceImpl implements DockerManagementService {
   private static final Logger LOG = LoggerFactory.getLogger(DockerManagementServiceImpl.class);
 
   private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+  private final PullRequestMaintenanceWorker maintenanceInstance;
+  private final PullRequestDeploymentWorker deploymentInstance;
+
+  public DockerManagementServiceImpl(final PullRequestMaintenanceWorker maintenanceInstance, final PullRequestDeploymentWorker deploymentInstance) {
+    this.deploymentInstance = deploymentInstance;
+    this.maintenanceInstance = maintenanceInstance;
+  }
 
   @Override
   public void stopAllContainers() throws ApplicationException {
@@ -43,11 +53,11 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
       try {
         cmd("docker stop $(docker ps -aq --filter status=running --filter label=nl.aerius.docker.service=true)");
         final TimestampedMultiMap<CompositionInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
-        getDeploymentInstance().getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(CompositionStatus.SUSPENDED)));
-      } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
-        LOG.error("Error during stopAll()", e);
+        deploymentInstance.getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(CompositionStatus.SUSPENDED)));
+      } catch (IOException | InterruptedException | ProcessExitException e) {
+        LOG.error("[COMMAND] Error during stopAllContainers()", e);
       } finally {
-        LOG.info("Done stopping all containers.");
+        LOG.info("[COMMAND] Done stopping all containers.");
       }
     });
   }
@@ -60,9 +70,9 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
       try {
         cmd("docker rm $(docker ps -aq --filter status=exited --filter label=nl.aerius.docker.service=true)");
         final TimestampedMultiMap<CompositionInfo> projectUpdates = ProjectUpdateRepositoryFactory.getInstance();
-        getDeploymentInstance().getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(CompositionStatus.UNBUILT)));
-      } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
-        LOG.error("Error during stopAll()", e);
+        deploymentInstance.getProjects().stream().forEach(v -> projectUpdates.timestamp(v.status(CompositionStatus.UNBUILT)));
+      } catch (IOException | InterruptedException | ProcessExitException e) {
+        LOG.error("Error during removeAllContainers()", e);
       } finally {
         LOG.info("[COMMAND] Done removing all containers.");
       }
@@ -77,9 +87,9 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
       try {
         cmd("docker rmi $(docker images -q --filter label=nl.aerius.docker.service=true)");
         final TimestampedMultiMap<ServiceInfo> serviceUpdates = ServiceUpdateRepositoryFactory.getInstance();
-        getDeploymentInstance().getServices().stream().forEach(v -> serviceUpdates.timestamp(v.status(ServiceStatus.UNBUILT)));
-      } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
-        LOG.error("Error during stopAll()", e);
+        deploymentInstance.getServices().stream().forEach(v -> serviceUpdates.timestamp(v.status(ServiceStatus.UNBUILT)));
+      } catch (IOException | InterruptedException | ProcessExitException e) {
+        LOG.error("Error during removeAllImages()", e);
       } finally {
         LOG.info("[COMMAND] Done pruning images.");
       }
@@ -96,7 +106,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
           .map(v -> DockerContainer.create().hash(v[0]).image(v[1]).name(v[2]))
           .forEach(v -> containers.add(v));
     } catch (IOException | InterruptedException | ProcessExitException e) {
-      LOG.error("Error during stopAll()", e);
+      LOG.error("Error during retrieveContainers()", e);
     }
 
     return containers;
@@ -112,7 +122,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
           .map(v -> DockerImage.create().hash(v[0]).name(v[1]).tag(v[2]))
           .forEach(v -> images.add(v));
     } catch (IOException | InterruptedException | ProcessExitException e) {
-      LOG.error("Error during stopAll()", e);
+      LOG.error("Error during retrieveImages()", e);
     }
 
     return images;
@@ -130,7 +140,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
         cmd("docker stop %s", container.hash());
         latch.countDown();
       } catch (IOException | InterruptedException | ProcessExitException e) {
-        LOG.error("Error during stopContainer {}", container.hash(), e);
+        LOG.error("[COMMAND] Error during stopContainer {}", container.hash(), e);
         fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done stopping container {}", container.hash());
@@ -152,7 +162,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
         cmd("docker rm %s", container.hash());
         latch.countDown();
       } catch (IOException | InterruptedException | ProcessExitException e) {
-        LOG.error("Error during removeContainer {}", container.hash(), e);
+        LOG.error("[COMMAND] Error during removeContainer {}", container.hash(), e);
         fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done removing container {}", container.hash());
@@ -193,7 +203,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
         cmd("docker rmi %s", image.hash());
         latch.countDown();
       } catch (IOException | InterruptedException | ProcessExitException e) {
-        LOG.error("Error during removeImage {}", image.hash(), e);
+        LOG.error("[COMMAND] Error during removeImage {}", image.hash(), e);
         fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done removing image {}", image.hash());
@@ -210,10 +220,10 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
     // Should probably be shot for this [general approach], but hey when it works..
     try {
       stats.put("Disk Usage", cmd("df -h --output=target,pcent | grep ^/[[:space:]] | rev | cut -d ' ' -f 1 | rev").get(0));
-      stats.put("Pull requests", String.valueOf(getMaintenanceInstance().getPullRequests().size()));
-      stats.put("Projects", String.valueOf(getDeploymentInstance().getProjects().size()));
-      stats.put("Services", String.valueOf(getDeploymentInstance().getServices().size()));
-    } catch (IOException | InterruptedException | ProcessExitException | ApplicationException e) {
+      stats.put("Pull requests", String.valueOf(maintenanceInstance.getPullRequests().size()));
+      stats.put("Projects", String.valueOf(deploymentInstance.getProjects().size()));
+      stats.put("Services", String.valueOf(deploymentInstance.getServices().size()));
+    } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Internal error.", e);
       throw new ApplicationException(Reason.INTERNAL_ERROR, e.getMessage());
     }
@@ -232,7 +242,7 @@ public class DockerManagementServiceImpl extends AbstractServiceImpl implements 
 
   @Override
   public void purgeTracker() throws ApplicationException {
-    getDeploymentInstance().purge();
-    getMaintenanceInstance().purge();
+    deploymentInstance.purge();
+    maintenanceInstance.purge();
   }
 }

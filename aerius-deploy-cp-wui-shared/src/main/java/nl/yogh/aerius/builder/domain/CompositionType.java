@@ -1,23 +1,73 @@
 package nl.yogh.aerius.builder.domain;
 
-public enum CompositionType {
-  CALCULATOR(ServiceType.CALCULATOR_WUI, ServiceType.CALCULATOR_DATABASE, ServiceType.SCENARIO_BASE_GEOSERVER, ServiceType.TASKMANAGER, ServiceType.WORKER_OPS, ServiceType.WORKER_SRM),
+import java.io.Serializable;
+import java.util.HashSet;
 
-  SCENARIO(ServiceType.SCENARIO_WUI, ServiceType.SCENARIO_DATABASE, ServiceType.SCENARIO_BASE_GEOSERVER, ServiceType.TASKMANAGER, ServiceType.WORKER_OPS, ServiceType.WORKER_SRM),
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-  REGISTER(ServiceType.REGISTER_WUI, ServiceType.REGISTER_DATABASE, ServiceType.REGISTER_GEOSERVER),
+public class CompositionType implements Serializable, IsSerializable {
+  private static final long serialVersionUID = -3825451067350764904L;
 
-  CONNECT(ServiceType.CONNECT),
+  private HashSet<ServiceType> serviceTypes;
+  private String name;
 
-  MELDING(ServiceType.MELDING);
+  public CompositionType() {}
 
-  private final ServiceType[] serviceTypes;
-
-  private CompositionType(final ServiceType... serviceTypes) {
+  public CompositionType(final String name, final HashSet<ServiceType> serviceTypes) {
+    this.name = name;
     this.serviceTypes = serviceTypes;
   }
 
-  public ServiceType[] getServiceTypes() {
+  public String name() {
+    return name;
+  }
+
+  public CompositionType name(final String name) {
+    this.name = name;
+    return this;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final CompositionType other = (CompositionType) obj;
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    } else if (!name.equals(other.name)) {
+      return false;
+    }
+    return true;
+  }
+
+  public HashSet<ServiceType> serviceTypes() {
     return serviceTypes;
+  }
+
+  public CompositionType serviceTypes(final HashSet<ServiceType> serviceTypes) {
+    this.serviceTypes = serviceTypes;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return name();
   }
 }

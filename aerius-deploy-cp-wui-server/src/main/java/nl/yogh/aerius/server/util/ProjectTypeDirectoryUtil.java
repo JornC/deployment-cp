@@ -1,16 +1,12 @@
 package nl.yogh.aerius.server.util;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import nl.yogh.aerius.builder.domain.CompositionType;
 import nl.yogh.aerius.builder.domain.ServiceType;
 
 public class ProjectTypeDirectoryUtil {
   public static String[] getServiceDirectories(final ServiceType type) {
-    final String[] str;
+    final String[] str = new String[0];
 
+/*
     switch (type) {
     case CALCULATOR_DATABASE:
       str = new String[] { "./aerius-database-common", "./aerius-database-calculator" };
@@ -60,23 +56,8 @@ public class ProjectTypeDirectoryUtil {
     default:
       str = null;
     }
+    */
 
     return str;
-  }
-
-  public static Set<String> getProjectDirectories(final CompositionType type) {
-    final ServiceType[] serviceTypes = type.getServiceTypes();
-    final HashSet<String> directories = new HashSet<>();
-
-    for (final ServiceType serviceType : serviceTypes) {
-      final String[] serviceDirectories = getServiceDirectories(serviceType);
-      if (serviceDirectories == null) {
-        return null;
-      }
-
-      Collections.addAll(directories, serviceDirectories);
-    }
-
-    return directories;
   }
 }

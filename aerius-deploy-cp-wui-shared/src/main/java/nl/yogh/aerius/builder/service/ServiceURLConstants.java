@@ -44,6 +44,21 @@ public final class ServiceURLConstants {
   public static final String DOCKER_JSON_PATH = BASE_JSON_PATH + DOCKER_RELATIVE_PATH;
 
   /**
+   * Application config service path, relative to the base service path.
+   */
+  public static final String APPLICATION_REQUEST_RELATIVE_PATH = "/application";
+
+  /**
+   * Application config request service path.
+   */
+  public static final String APPLICATION_REQUEST_GWT_PATH = BASE_GWT_PATH + APPLICATION_REQUEST_RELATIVE_PATH;
+
+  /**
+   * Application config request service path.
+   */
+  public static final String APPLICATION_REQUEST_JSON_PATH = BASE_JSON_PATH + APPLICATION_REQUEST_RELATIVE_PATH;
+
+  /**
    * Pull request service path, relative to the base service path.
    */
   public static final String PULL_REQUEST_RELATIVE_PATH = "/pull";

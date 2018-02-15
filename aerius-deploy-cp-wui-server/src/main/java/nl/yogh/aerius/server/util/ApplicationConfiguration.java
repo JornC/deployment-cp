@@ -2,12 +2,18 @@ package nl.yogh.aerius.server.util;
 
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import nl.yogh.aerius.builder.domain.CompositionType;
+import nl.yogh.aerius.builder.domain.ServiceType;
+import nl.yogh.aerius.server.collections.MultiSet;
 
 public class ApplicationConfiguration {
   private final Properties properties;
+  private Set<CompositionType> compositionTypes;
+  private MultiSet<ServiceType, String> serviceTypes;
 
   public ApplicationConfiguration(final Properties properties) {
     this.properties = properties;
@@ -44,5 +50,32 @@ public class ApplicationConfiguration {
 
   public String getDeploymentHost(final CompositionType projectType) {
     return getPropertyRequired(properties, String.format("cp.deployment.%s.host", projectType.name()));
+  }
+
+  public Set<CompositionType> getCompositionTypes() {
+    return compositionTypes;
+  }
+
+  public Set<String> getProjectDirectories(final CompositionType type) {
+    return type.serviceTypes().stream()
+        .map(v -> this.getServiceDirectories(v))
+        .flatMap(v -> v.stream())
+        .collect(Collectors.toSet());
+  }
+
+  public Set<String> getServiceDirectories(final ServiceType serviceType) {
+    if (!serviceTypes.containsKey(serviceType)) {
+      throw new RuntimeException("Unknown service requested; " + serviceType.name() + " staging hierarchy corrupted.");
+    }
+
+    return serviceTypes.get(serviceType);
+  }
+
+  public void setCompositionTypes(final Set<CompositionType> compositionTypes) {
+    this.compositionTypes = compositionTypes;
+  }
+
+  public void setServiceTypes(final MultiSet<ServiceType, String> serviceTypes) {
+    this.serviceTypes = serviceTypes;
   }
 }

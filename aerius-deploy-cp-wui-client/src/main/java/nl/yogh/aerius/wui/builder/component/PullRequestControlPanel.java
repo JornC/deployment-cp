@@ -11,8 +11,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
+import nl.yogh.aerius.builder.domain.CompositionType;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.wui.builder.commands.PullRequestStatusInfoChangedEvent;
+import nl.yogh.aerius.wui.util.UglyDuckling;
 import nl.yogh.gwt.wui.widget.FieldedEventSimplePanel;
 
 public class PullRequestControlPanel extends FieldedEventSimplePanel {
@@ -31,6 +33,7 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
   @UiField(provided = true) PullRequestInfo pull;
 
   @UiField FlowPanel panel;
+  @UiField FlowPanel compositionPanel;
   @UiField CustomStyle style;
 
   private HandlerRegistration eventRegistration;
@@ -64,6 +67,12 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
     this.pull = pull;
 
     setWidget(UI_BINDER.createAndBindUi(this));
+
+    for (final CompositionType type : UglyDuckling.compositions()) {
+      final CompositionControlButton btn = new CompositionControlButton(type, pull);
+      btn.setEventBus(eventBus);
+      compositionPanel.add(btn);
+    }
 
     setBusy(pull.isBusy());
   }

@@ -2,9 +2,9 @@ package nl.yogh.aerius.server.service;
 
 import java.util.ArrayList;
 
-import nl.yogh.aerius.builder.domain.PresentSnapshot;
 import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
+import nl.yogh.aerius.builder.domain.PresentSnapshot;
 import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
@@ -15,22 +15,28 @@ import nl.yogh.aerius.server.worker.PullRequestDeploymentWorker;
 import nl.yogh.aerius.server.worker.PullRequestMaintenanceWorker;
 import nl.yogh.aerius.server.worker.ServiceUpdateRepositoryFactory;
 
-public class PullRequestServiceImpl extends AbstractServiceImpl implements PullRequestService {
+public class PullRequestServiceImpl implements PullRequestService {
+  private final PullRequestMaintenanceWorker maintenanceInstance;
+  private final PullRequestDeploymentWorker deploymentInstance;
+
+  public PullRequestServiceImpl(final PullRequestMaintenanceWorker maintenanceInstance, final PullRequestDeploymentWorker deploymentInstance) {
+    this.deploymentInstance = deploymentInstance;
+    this.maintenanceInstance = maintenanceInstance;
+  }
+
   @Override
   public ArrayList<PullRequestInfo> getPullRequests() throws ApplicationException {
-    final PullRequestMaintenanceWorker instance = getMaintenanceInstance();
-
     ArrayList<PullRequestInfo> pulls;
-    synchronized (instance) {
-      pulls = instance.getPullRequests();
+    synchronized (maintenanceInstance) {
+      pulls = maintenanceInstance.getPullRequests();
     }
     return pulls;
   }
 
   @Override
-  public CompositionInfo doAction(final String idx, final CompositionDeploymentAction action, final CompositionInfo info) throws ApplicationException {
-    final PullRequestDeploymentWorker instance = getDeploymentInstance();
-    instance.doAction(idx, action, info);
+  public CompositionInfo doAction(final String idx, final CompositionDeploymentAction action, final CompositionInfo info)
+      throws ApplicationException {
+    deploymentInstance.doAction(idx, action, info);
 
     return info;
   }
@@ -59,14 +65,11 @@ public class PullRequestServiceImpl extends AbstractServiceImpl implements PullR
 
   @Override
   public PresentSnapshot getPresentSituation() throws ApplicationException {
-    final PullRequestDeploymentWorker instance = getDeploymentInstance();
-    final PullRequestMaintenanceWorker maintainer = getMaintenanceInstance();
-
     final PresentSnapshot snapshot = new PresentSnapshot();
-    synchronized (instance) {
-      snapshot.setProjects(instance.getProjects());
-      snapshot.setServices(instance.getServices());
-      snapshot.setLastUpdate(maintainer.getLastUpdate());
+    synchronized (deploymentInstance) {
+      snapshot.setProjects(deploymentInstance.getProjects());
+      snapshot.setServices(deploymentInstance.getServices());
+      snapshot.setLastUpdate(maintenanceInstance.getLastUpdate());
     }
 
     return snapshot;

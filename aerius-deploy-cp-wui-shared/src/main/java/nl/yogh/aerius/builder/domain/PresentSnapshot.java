@@ -35,7 +35,7 @@ public class PresentSnapshot implements Serializable, IsSerializable {
     return lastUpdate;
   }
 
-  public void setLastUpdate(long lastUpdate) {
+  public void setLastUpdate(final long lastUpdate) {
     this.lastUpdate = lastUpdate;
   }
 }

@@ -24,12 +24,12 @@ import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.Files;
 import nl.yogh.aerius.server.util.HashUtil;
 
-public class ProjectCompilationJob extends CompositionJob {
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectCompilationJob.class);
+public class CompositionCompilationJob extends CompositionJob {
+  private static final Logger LOG = LoggerFactory.getLogger(CompositionCompilationJob.class);
 
-  private final ExecutorService executor = Executors.newFixedThreadPool(4);
+  private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
-  public ProjectCompilationJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
+  public CompositionCompilationJob(final ApplicationConfiguration cfg, final CompositionInfo info, final String prId,
       final Map<Long, List<CompositionInfo>> projectUpdates, final Map<Long, List<ServiceInfo>> serviceUpdates,
       final ConcurrentMap<String, CompositionInfo> projects, final ConcurrentMap<String, ServiceInfo> services) {
     super(cfg, info, prId, projectUpdates, serviceUpdates, projects, services);
@@ -74,7 +74,7 @@ public class ProjectCompilationJob extends CompositionJob {
 
     putComposition(info);
 
-    final ProjectDeploymentJob chainJob = new ProjectDeploymentJob(cfg, info, prId, compositionUpdates, serviceUpdates, compositions, services);
+    final CompositionDeploymentJob chainJob = new CompositionDeploymentJob(cfg, info, prId, compositionUpdates, serviceUpdates, compositions, services);
     chainJob.run();
   }
 
