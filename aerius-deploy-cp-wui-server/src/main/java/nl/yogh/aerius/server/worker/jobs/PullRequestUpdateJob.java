@@ -184,7 +184,7 @@ public class PullRequestUpdateJob implements Runnable {
   private String findShaSum(final String dirs) throws IOException, InterruptedException, ProcessExitException {
     // return cmd("find %s -type f -exec sha256sum {} \\; | sha256sum", dirs).get(0);
     if (dirs.isEmpty()) {
-      return "N/A (fix config)";
+      return "matchall";
     }
 
     return cmd("find %s -type f -print0 | xargs -0 sha256sum | sha256sum | cut -d \" \" -f1", dirs).get(0);
