@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -49,12 +50,16 @@ public class CompositionCompilationJob extends CompositionJob {
 
     final CountDownLatch latch = new CountDownLatch(targets.size());
 
+    final AtomicInteger counter = new AtomicInteger(exclusions.size());
     for (final ServiceInfo service : targets) {
       executor.submit(() -> {
         LOG.info("Compiling service: {} {}", service.type(), HashUtil.shorten(service.hash()));
         try {
           final ServiceInfo resultInfo = compileService(service);
           putService(resultInfo);
+          if (resultInfo.status() == ServiceStatus.BUILT) {
+            counter.incrementAndGet();
+          }
         } catch (final Exception e) {
           LOG.error("Exception while compiling service..");
         }
@@ -70,12 +75,8 @@ public class CompositionCompilationJob extends CompositionJob {
       return;
     }
 
-    final List<ServiceType> builds = services.entrySet().stream()
-        .filter(v -> info.services().stream().map(vv -> vv.hash()).anyMatch(r -> r.equals(v.getKey()))).map(v -> v.getValue())
-        .filter(v -> v.status() != ServiceStatus.UNBUILT).map(v -> v.type()).collect(Collectors.toList());
-
-    if (builds.size() != targets.size()) {
-      LOG.info("Services not built successfully. Aborting.");
+    if (counter.get() != info.services().size()) {
+      LOG.info("Services not built successfully. Aborting. {} vs {}", counter.get(), info.services().size());
       putComposition(info.status(CompositionStatus.UNBUILT).busy(false));
       return;
     }
@@ -84,7 +85,8 @@ public class CompositionCompilationJob extends CompositionJob {
 
     putComposition(info);
 
-    final CompositionDeploymentJob chainJob = new CompositionDeploymentJob(cfg, info, prId, compositionUpdates, serviceUpdates, compositions, services);
+    final CompositionDeploymentJob chainJob = new CompositionDeploymentJob(cfg, info, prId, compositionUpdates, serviceUpdates, compositions,
+        services);
     chainJob.run();
   }
 

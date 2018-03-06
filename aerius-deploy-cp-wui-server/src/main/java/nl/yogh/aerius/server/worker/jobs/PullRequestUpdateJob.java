@@ -159,8 +159,8 @@ public class PullRequestUpdateJob implements Runnable {
             serviceType.name(), serviceInfo.hash()).isEmpty()) {
           serviceInfo.status(ServiceStatus.BUILT);
 
-          if (services.containsKey(serviceInfo.hash())) {
-            services.get(serviceInfo.hash()).status(ServiceStatus.BUILT);
+          if (!services.containsKey(serviceInfo.hash())) {
+            services.put(serviceInfo.hash(), serviceInfo);
           }
         }
       } catch (final ProcessExitException e) {

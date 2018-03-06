@@ -38,7 +38,7 @@ public class PullRequestMaintenanceWorker {
 
   private final ConcurrentMap<String, CommitInfo> builds = new ConcurrentHashMap<>();
 
-  private final ExecutorService pullRequestLocalUpdateExecutor;
+  private ExecutorService pullRequestLocalUpdateExecutor;
 
   /**
    * TODO This can be phased away when we've got a notification hook.
@@ -151,11 +151,13 @@ public class PullRequestMaintenanceWorker {
   }
 
   public void purge() {
-    builds.clear();
     pullRequestLocalUpdateExecutor.shutdownNow();
+
+    builds.clear();
     projects.clear();
     services.clear();
 
+    pullRequestLocalUpdateExecutor = Executors.newSingleThreadExecutor();
     updatePullRequestsFromGithub();
   }
 }
