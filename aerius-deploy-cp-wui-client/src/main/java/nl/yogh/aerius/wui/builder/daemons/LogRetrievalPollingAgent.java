@@ -19,12 +19,12 @@ public abstract class LogRetrievalPollingAgent extends PollingAgent<ArrayList<Lo
   }
 
   @EventHandler
-  public void onPullRequestRetrievalActivationCommand(final LogRetrievalActivationCommand c) {
+  public void onLogRetrievalActivationCommand(final LogRetrievalActivationCommand c) {
     start();
   }
 
   @EventHandler
-  public void onPullRequestRetrievalDeactivationCommand(final LogRetrievalDeactivationCommand c) {
+  public void onLogRetrievalDeactivationCommand(final LogRetrievalDeactivationCommand c) {
     stop();
   }
 

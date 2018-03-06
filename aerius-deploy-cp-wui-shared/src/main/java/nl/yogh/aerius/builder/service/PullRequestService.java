@@ -8,13 +8,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
 import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
 
 @RemoteServiceRelativePath(ServiceURLConstants.PULL_REQUEST_GWT_PATH)
 public interface PullRequestService extends RemoteService {
-  ArrayList<PullRequestInfo> getPullRequests() throws ApplicationException;
+  ArrayList<CommitInfo> getPullRequests() throws ApplicationException;
 
   PresentSnapshot getPresentSituation() throws ApplicationException;
 

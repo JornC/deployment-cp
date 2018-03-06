@@ -11,8 +11,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.CompositionType;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.wui.builder.commands.PullRequestStatusInfoChangedEvent;
 import nl.yogh.aerius.wui.util.UglyDuckling;
 import nl.yogh.gwt.wui.widget.FieldedEventSimplePanel;
@@ -30,15 +30,17 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
     String busy();
   }
 
-  @UiField(provided = true) PullRequestInfo pull;
+  @UiField(provided = true) CommitInfo pull;
 
   @UiField FlowPanel panel;
   @UiField FlowPanel compositionPanel;
   @UiField CustomStyle style;
 
+  @UiField FlowPanel metadataPanel;
+
   private HandlerRegistration eventRegistration;
 
-  public PullRequestControlPanel(final EventBus eventBus, final PullRequestInfo pull) {
+  public PullRequestControlPanel(final EventBus eventBus, final CommitInfo pull) {
     super(eventBus);
 
     initPull(pull);
@@ -52,7 +54,6 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
 
     // If the pull idx matches, but the root hash differs (PR was updated) then reset
     if (!pull.hash().equals(e.getValue().hash())) {
-      GWT.log("Root hash changed. Updating.");
       initPull(e.getValue());
       return; // Readability
     }
@@ -63,7 +64,7 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
     }
   }
 
-  private void initPull(final PullRequestInfo pull) {
+  private void initPull(final CommitInfo pull) {
     this.pull = pull;
 
     setWidget(UI_BINDER.createAndBindUi(this));
@@ -75,6 +76,7 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
     }
 
     setBusy(pull.isBusy());
+    metadataPanel.setVisible(pull.isPull());
   }
 
   @Override
@@ -93,7 +95,7 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
     panel.setStyleName(style.busy(), busy);
   }
 
-  public PullRequestInfo getPull() {
+  public CommitInfo getPull() {
     return pull;
   }
 }

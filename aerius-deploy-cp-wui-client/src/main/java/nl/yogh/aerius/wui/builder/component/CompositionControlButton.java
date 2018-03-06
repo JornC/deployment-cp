@@ -26,7 +26,7 @@ import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.CompositionStatus;
 import nl.yogh.aerius.builder.domain.CompositionType;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.wui.builder.commands.CompositionActionCommand;
@@ -82,7 +82,7 @@ public class CompositionControlButton extends EventComposite {
   private HandlerRegistration eventRegistration;
 
   @UiConstructor
-  public CompositionControlButton(final CompositionType type, final PullRequestInfo pull) {
+  public CompositionControlButton(final CompositionType type, final CommitInfo pull) {
     this.info = pull.compositions() == null ? null : pull.compositions().get(type);
     this.type = type;
 
@@ -104,7 +104,7 @@ public class CompositionControlButton extends EventComposite {
     eventBus.fireEvent(new CompositionStatusHighlightEvent(info, highlight));
   }
 
-  private void handlePull(final PullRequestInfo pull) {
+  private void handlePull(final CommitInfo pull) {
     this.disabled = pull.isBusy();
 
     this.hash = info == null || disabled ? "N/A" : info.hash();

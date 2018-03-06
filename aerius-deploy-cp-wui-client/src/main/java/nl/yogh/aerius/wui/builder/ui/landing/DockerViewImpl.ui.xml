@@ -14,8 +14,7 @@
     padding: 0px 20px;
     }
     .center {
-    text-align:
-    center;
+    text-align: center;
     }
     .button {
     margin: 5px;

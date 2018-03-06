@@ -11,7 +11,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalActivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalDeactivationCommand;
 import nl.yogh.aerius.wui.builder.commands.PullRequestRetrievalEvent;
@@ -24,7 +24,7 @@ public class PullRequestActivity extends EventActivity<Presenter, PullRequestVie
 
   private final PullRequestActivityEventBinder EVENT_BINDER = GWT.create(PullRequestActivityEventBinder.class);
 
-  private final HashMap<String, PullRequestInfo> pullRequestContentIndex = new HashMap<>();
+  private final HashMap<String, CommitInfo> pullRequestContentIndex = new HashMap<>();
 
   @Inject
   public PullRequestActivity(final PullRequestView view) {
@@ -43,7 +43,7 @@ public class PullRequestActivity extends EventActivity<Presenter, PullRequestVie
 
   @EventHandler
   public void onPullRequestRetrievalEvent(final PullRequestRetrievalEvent e) {
-    for (final PullRequestInfo info : e.getValue()) {
+    for (final CommitInfo info : e.getValue()) {
       eventBus.fireEvent(new PullRequestStatusInfoChangedEvent(info));
       handlePullRequestInfo(info);
     }
@@ -56,11 +56,11 @@ public class PullRequestActivity extends EventActivity<Presenter, PullRequestVie
     }
   }
 
-  private void handlePullRequestInfo(final PullRequestInfo info) {
+  private void handlePullRequestInfo(final CommitInfo info) {
     final String idx = info.idx();
 
     if (!pullRequestContentIndex.containsKey(idx)) {
-      view.insertPullRequest(info);
+      view.insertRepositoryCommit(info);
       pullRequestContentIndex.put(idx, info);
     }
   }

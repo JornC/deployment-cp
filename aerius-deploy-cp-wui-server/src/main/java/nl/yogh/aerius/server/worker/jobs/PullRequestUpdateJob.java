@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.CompositionStatus;
 import nl.yogh.aerius.builder.domain.CompositionType;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.builder.domain.ServiceType;
@@ -25,7 +25,7 @@ import nl.yogh.aerius.server.util.HashUtil;
 public class PullRequestUpdateJob implements Runnable {
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
 
-  private final PullRequestInfo pullInfo;
+  private final CommitInfo pullInfo;
   private final Object grip;
 
   private final ApplicationConfiguration cfg;
@@ -33,7 +33,7 @@ public class PullRequestUpdateJob implements Runnable {
   private final ConcurrentMap<String, CompositionInfo> compositions;
   private final ConcurrentMap<String, ServiceInfo> services;
 
-  public PullRequestUpdateJob(final ApplicationConfiguration cfg, final PullRequestInfo info, final Object grip,
+  public PullRequestUpdateJob(final ApplicationConfiguration cfg, final CommitInfo info, final Object grip,
       final ConcurrentMap<String, CompositionInfo> compositions, final ConcurrentMap<String, ServiceInfo> services) {
     this.cfg = cfg;
     this.pullInfo = info;
@@ -72,6 +72,7 @@ public class PullRequestUpdateJob implements Runnable {
       // Ensure you are on the correct branch.
       try {
         cmd("git checkout master");
+        cmd("git fetch");
       } catch (final ProcessExitException e) {
         // Eat.
       }
@@ -81,13 +82,18 @@ public class PullRequestUpdateJob implements Runnable {
         // Eat.
       }
       try {
-        cmd("git branch -D PR-%s", idx);
+        cmd("git branch -D commit-%s", idx);
       } catch (final ProcessExitException e) {
         // Eat.
       }
 
-      cmd("git fetch origin pull/%s/head:PR-%s", idx, idx);
-      cmd("git checkout PR-%s", idx);
+      if (pullInfo.isPull()) {
+        cmd("git fetch origin pull/%s/head:commit-%s", idx, idx);
+        cmd("git checkout commit-%s", idx);
+      } else {
+        cmd("git checkout -b commit-%s", idx);
+        cmd("git reset --hard %s", pullInfo.hash());
+      }
 
       for (final CompositionType type : cfg.getCompositionTypes()) {
         final Set<String> dirs = cfg.getProjectDirectories(type);

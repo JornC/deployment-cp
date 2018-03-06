@@ -3,17 +3,13 @@
   xmlns:p="urn:import:nl.yogh.aerius.wui.widget" xmlns:c="urn:import:nl.yogh.aerius.wui.builder.component">
   <ui:with field='i18n' type='nl.yogh.aerius.wui.i18n.ApplicationMessages' />
   <ui:with field='res' type='nl.yogh.aerius.wui.resources.R.ApplicationResource' />
-  <ui:with field='pull' type='nl.yogh.aerius.builder.domain.PullRequestInfo' />
+  <ui:with field='pull' type='nl.yogh.aerius.builder.domain.CommitInfo' />
   <ui:with field='eventBus' type='com.google.web.bindery.event.shared.EventBus' />
-  <ui:import field='nl.yogh.aerius.builder.domain.CompositionType.*' />
   <ui:style type="nl.yogh.aerius.wui.builder.component.PullRequestControlPanel.CustomStyle">
     .panel {
     padding: 10px;
     margin: 10px;
     background-color: rgba(125,125,125,0.2);
-    }
-    .metaText {
-    margin-left: 15px;
     }
     .by {
     margin: 0px
@@ -27,21 +23,21 @@
     .label {
     color: #888;
     font-weight: bold;
-    font-size: 1.5em;
+    padding: 0px 15px 0px 15px;
     }
     .label:hover {
-    color:
-    #a00;
+    color: #a00;
     }
     .hash {
-    font-size: 0.7em;
+    font-size: 0.6em;
     font-style: italic;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     }
     .busy {
-    box-shadow: 0px 0px 0px 8px
+    box-shadow: 0px
+    0px 0px 8px
     rgba(125,125,125,1);
     animation: slow-blink 1.0s ease-in-out infinite;
     cursor: wait;
@@ -49,27 +45,32 @@
     .busy .buttons {
     pointer-events: none;
     }
-    @keyframes slow-blink {
+    @keyframes
+    slow-blink {
     0%
     { box-shadow: 0px 0px 0px 3px rgba(125,125,125,1); }
     50% { box-shadow:
     0px 0px 0px 1px rgba(125,125,125,1); }
-    100% { box-shadow: 0px 0px 0px 3px
+    100% {
+    box-shadow: 0px 0px
+    0px 3px
     rgba(125,125,125,1); }
     }
   </ui:style>
-  <g:FlowPanel ui:field="panel" styleName="{res.css.flex} {style.panel} {res.css.alignCenter}">
-    <g:FlowPanel styleName="{style.labelContainer}">
-      <g:Anchor styleName="{style.label} {res.css.noShrink}" text="#{pull.idx}" href="{pull.url}" target="_blank" />
-      <g:Label styleName="{style.hash}" text="{pull.hash}" title="{pull.hash}" />
-    </g:FlowPanel>
-    <g:FlowPanel>
-      <g:FlowPanel styleName="{res.css.flex} {style.metaText}">
-        <g:Label text="{pull.title}" />
-        <g:Label text="by" styleName="{style.by}" />
-        <g:Label text="{pull.author}" />
+  <g:FlowPanel ui:field="panel" styleName="{res.css.flex} {res.css.columns} {style.panel}">
+    <g:FlowPanel styleName="{res.css.flex} {res.css.columns} {res.css.grow}">
+      <g:FlowPanel styleName="{res.css.flex} {res.css.distribute}">
+        <g:FlowPanel styleName="{res.css.flex} {res.css.alignCenter}">
+          <g:Anchor styleName="{style.label} {res.css.noShrink}" text="#{pull.idx}" href="{pull.url}" target="_blank" />
+          <g:Label styleName="{style.hash}" text="{pull.hash}" title="{pull.hash}" />
+        </g:FlowPanel>
+        <g:FlowPanel styleName="{res.css.flex} {res.css.alignCenter}" ui:field="metadataPanel">
+          <g:Label text="{pull.title}" />
+          <g:Label text="by" styleName="{style.by}" />
+          <g:Label text="{pull.author}" />
+        </g:FlowPanel>
       </g:FlowPanel>
-      <g:FlowPanel styleName="{res.css.flex} {res.css.wrap} {style.buttons}" ui:field="compositionPanel" />
+      <g:FlowPanel styleName="{res.css.flex} {res.css.grow} {res.css.wrap} {style.buttons} {res.css.justify}" ui:field="compositionPanel" />
     </g:FlowPanel>
   </g:FlowPanel>
 </ui:UiBinder>

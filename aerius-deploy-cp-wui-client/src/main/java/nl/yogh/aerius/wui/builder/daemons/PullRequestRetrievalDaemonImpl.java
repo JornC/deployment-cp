@@ -11,10 +11,10 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
+import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.HasHash;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
-import nl.yogh.aerius.builder.domain.CompositionInfo;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.service.PullRequestServiceAsync;
 import nl.yogh.aerius.wui.builder.commands.CompositionActionCommand;
@@ -87,7 +87,6 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
   }
 
   private List<ServiceInfo> findServices(final List<String> value) {
-    GWT.log("Finding services: " + value);
     return findObjects(value, services);
   }
 
@@ -101,12 +100,12 @@ public class PullRequestRetrievalDaemonImpl extends PullRequestRetrievalPollingA
   }
 
   @Override
-  protected void handleResult(final ArrayList<PullRequestInfo> c) {
+  protected void handleResult(final ArrayList<CommitInfo> c) {
     eventBus.fireEvent(new PullRequestRetrievalEvent(c));
   }
 
   @Override
-  protected void fetch(final AsyncCallback<ArrayList<PullRequestInfo>> callback) {
+  protected void fetch(final AsyncCallback<ArrayList<CommitInfo>> callback) {
     service.getPullRequests(callback);
   }
 

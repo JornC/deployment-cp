@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.PresentSnapshot;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.exception.ApplicationException;
 import nl.yogh.aerius.builder.service.PullRequestService;
@@ -25,8 +25,8 @@ public class PullRequestServiceImpl implements PullRequestService {
   }
 
   @Override
-  public ArrayList<PullRequestInfo> getPullRequests() throws ApplicationException {
-    ArrayList<PullRequestInfo> pulls;
+  public ArrayList<CommitInfo> getPullRequests() throws ApplicationException {
+    ArrayList<CommitInfo> pulls;
     synchronized (maintenanceInstance) {
       pulls = maintenanceInstance.getPullRequests();
     }

@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
-import nl.yogh.aerius.builder.domain.PullRequestInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.server.startup.TimestampedMultiMap;
 import nl.yogh.aerius.server.util.ApplicationConfiguration;
@@ -34,9 +34,9 @@ public class PullRequestMaintenanceWorker {
    */
   private static final int PROJECT_UPDATE_INTERVAL = 15;
 
-  private final AERIUSGithubHook githubHook;
+  private final GithubHook githubHook;
 
-  private final ConcurrentMap<Integer, PullRequestInfo> pulls = new ConcurrentHashMap<>();
+  private final ConcurrentMap<String, CommitInfo> builds = new ConcurrentHashMap<>();
 
   private final ExecutorService pullRequestLocalUpdateExecutor;
 
@@ -47,7 +47,13 @@ public class PullRequestMaintenanceWorker {
 
   private final ScheduledExecutorService projectUpdateExecutor;
 
-  private static Comparator<PullRequestInfo> byReverseIdx = (a, b) -> -Integer.compare(Integer.parseInt(a.idx()), Integer.parseInt(b.idx()));
+  private static Comparator<CommitInfo> byReverseIdx = (a, b) -> {
+    try {
+      return -Integer.compare(Integer.parseInt(a.idx()), Integer.parseInt(b.idx()));
+    } catch (final NumberFormatException e) {
+      return String.valueOf(a).compareTo(String.valueOf(b));
+    }
+  };
 
   private long lastProjectUpdate;
 
@@ -64,7 +70,7 @@ public class PullRequestMaintenanceWorker {
     this.services = services;
     pullRequestLocalUpdateExecutor = Executors.newSingleThreadExecutor();
 
-    githubHook = new AERIUSGithubHook(cfg.getGithubOpenAuthToken());
+    githubHook = new GithubHook(cfg);
 
     pullRequestUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
     pullRequestUpdateExecutor.scheduleWithFixedDelay(() -> updatePullRequestsFromGithub(), 0, UPDATE_INTERVAL, TimeUnit.MINUTES);
@@ -86,7 +92,7 @@ public class PullRequestMaintenanceWorker {
 
     try {
       for (final CompositionInfo project : updates) {
-        for (final PullRequestInfo pull : pulls.values()) {
+        for (final CommitInfo pull : builds.values()) {
           if (pull.compositions() == null || pull.compositions().isEmpty()) {
             continue;
           }
@@ -110,20 +116,20 @@ public class PullRequestMaintenanceWorker {
 
   private void updatePullRequestsFromGithub() {
     try {
-      githubHook.update(projects, pulls);
-      schedulePullRequestUpdate(pulls.values());
+      githubHook.update(projects, builds);
+      schedulePullRequestUpdate(builds.values());
     } catch (final IOException e) {
       LOG.error("Failed to initialize pull requests.", e);
       throw new RuntimeException("Could not initialize PullRequests", e);
     }
   }
 
-  private void schedulePullRequestUpdate(final Collection<PullRequestInfo> pulls) {
-    pulls.stream().sorted(byReverseIdx).filter(PullRequestInfo::isIncomplete).forEach(v -> schedulePullRequestUpdate(v));
+  private void schedulePullRequestUpdate(final Collection<CommitInfo> pulls) {
+    pulls.stream().sorted(byReverseIdx).filter(CommitInfo::isIncomplete).forEach(v -> schedulePullRequestUpdate(v));
   }
 
-  private void schedulePullRequestUpdate(final PullRequestInfo info) {
-    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(cfg, info, pulls, projects, services)));
+  private void schedulePullRequestUpdate(final CommitInfo info) {
+    pullRequestLocalUpdateExecutor.submit(CatchAllRunnable.wrap(new PullRequestUpdateJob(cfg, info, builds, projects, services)));
   }
 
   public void shutdown() {
@@ -132,9 +138,9 @@ public class PullRequestMaintenanceWorker {
     projectUpdateExecutor.shutdownNow();
   }
 
-  public ArrayList<PullRequestInfo> getPullRequests() {
-    ArrayList<PullRequestInfo> lst;
-    lst = new ArrayList<PullRequestInfo>(pulls.values());
+  public ArrayList<CommitInfo> getPullRequests() {
+    ArrayList<CommitInfo> lst;
+    lst = new ArrayList<CommitInfo>(builds.values());
 
     lst.sort(byReverseIdx);
     return lst;
@@ -145,7 +151,7 @@ public class PullRequestMaintenanceWorker {
   }
 
   public void purge() {
-    pulls.clear();
+    builds.clear();
     pullRequestLocalUpdateExecutor.shutdownNow();
 
     updatePullRequestsFromGithub();

@@ -1,6 +1,5 @@
 package nl.yogh.aerius.wui.builder.daemons;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 
 import nl.yogh.aerius.builder.service.ApplicationServiceAsync;
@@ -30,14 +29,10 @@ public class BuilderDaemonBootstrapper extends DaemonBootstrapperImpl {
   public void init(final Runnable complete) {
     super.init(complete);
 
-    GWT.log("Getting application config");
     service.getApplicationConfig(AppAsyncCallback.create(v -> {
-      GWT.log("Gots it");
       UglyDuckling.compositions(v);
       complete.run();
     }));
-
-    // complete.run();
   }
 
   @Override

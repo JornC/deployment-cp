@@ -35,6 +35,14 @@ public class ApplicationConfiguration {
     return getPropertyRequired(properties, "cp.data.dbdata");
   }
 
+  public String getGithubUserName() {
+    return getPropertyRequired(properties, "cp.github.user");
+  }
+
+  public String getGithubRepositoryName() {
+    return getPropertyRequired(properties, "cp.github.repository");
+  }
+
   private static String getPropertyRequired(final Properties properties, final String key) {
     final String prop = properties.getProperty(key);
     if (prop == null) {

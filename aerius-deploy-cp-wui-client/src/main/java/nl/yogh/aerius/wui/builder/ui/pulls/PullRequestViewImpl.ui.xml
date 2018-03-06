@@ -13,8 +13,16 @@
     margin: 0 auto;
     padding: 20px;
     }
+    .center {
+    text-align: center;
+    }
   </ui:style>
   <g:FlowPanel styleName="{style.container} {res.css.grow} {style.explain}">
-    <g:FlowPanel ui:field="pullRequestPanel" styleName="{res.css.flex} {res.css.columns}" />
+    <w:HeadingWidget n="2" text="Master" styleName="{style.center}" />
+    <g:SimplePanel ui:field="masterPanel" styleName="{res.css.flex} {res.css.columns}" />
+    <w:HeadingWidget n="2" text="Pull requests" styleName="{style.center}" />
+    <g:FlowPanel ui:field="pullPanel" styleName="{res.css.flex} {res.css.columns}" />
+    <w:HeadingWidget n="2" text="Branches" styleName="{style.center}" />
+    <g:FlowPanel ui:field="branchPanel" styleName="{res.css.flex} {res.css.columns}" />
   </g:FlowPanel>
 </ui:UiBinder>
