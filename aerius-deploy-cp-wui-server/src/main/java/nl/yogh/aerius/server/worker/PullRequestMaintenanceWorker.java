@@ -153,6 +153,8 @@ public class PullRequestMaintenanceWorker {
   public void purge() {
     builds.clear();
     pullRequestLocalUpdateExecutor.shutdownNow();
+    projects.clear();
+    services.clear();
 
     updatePullRequestsFromGithub();
   }
