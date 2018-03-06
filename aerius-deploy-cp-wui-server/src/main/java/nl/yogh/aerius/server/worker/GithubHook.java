@@ -7,7 +7,9 @@ import java.util.Map;
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryBranch;
+import org.eclipse.egit.github.core.RepositoryCommit;
 import org.eclipse.egit.github.core.client.GitHubClient;
+import org.eclipse.egit.github.core.service.CommitService;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ public class GithubHook {
     LOG.debug("Retrieving pull requests from GitHub.");
 
     final RepositoryService repoService = new RepositoryService(client);
+    final CommitService commitService = new CommitService(client);
     final Repository repository = repoService.getRepository(cfg.getGithubUserName(), cfg.getGithubRepositoryName());
 
     final PullRequestService pullService = new PullRequestService(client);
@@ -67,7 +70,14 @@ public class GithubHook {
       } else {
         info.branch(true);
       }
-      info.title(branch.getName());
+
+      final RepositoryCommit commit = commitService.getCommit(repository, branch.getCommit().getSha());
+
+      info.author(commit.getCommit().getAuthor().getName());
+      info.title(commit.getCommit().getMessage());
+
+      LOG.info("Got specific commit.. {} -> {}", commit.getAuthor().getName(), commit.getCommit().getMessage());
+
       info.url(branch.getCommit().getSha());
       info.hash(branch.getCommit().getSha());
 

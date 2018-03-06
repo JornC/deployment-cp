@@ -11,6 +11,18 @@
     margin: 10px;
     background-color: rgba(125,125,125,0.2);
     }
+    .title {
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    }
+    .author {
+    max-width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    }
     .by {
     margin: 0px
     5px;
@@ -21,6 +33,10 @@
     width: 80px;
     }
     .label {
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     color: #888;
     font-weight: bold;
     padding: 0px 15px 0px 15px;
@@ -65,9 +81,9 @@
           <g:Label styleName="{style.hash}" text="{pull.hash}" title="{pull.hash}" />
         </g:FlowPanel>
         <g:FlowPanel styleName="{res.css.flex} {res.css.alignCenter}" ui:field="metadataPanel">
-          <g:Label text="{pull.title}" />
+          <g:Label text="{pull.title}" styleName="{style.title}" title="{pull.title}" />
           <g:Label text="by" styleName="{style.by}" />
-          <g:Label text="{pull.author}" />
+          <g:Label text="{pull.author}" styleName="{style.author}" title="{pull.author}" />
         </g:FlowPanel>
       </g:FlowPanel>
       <g:FlowPanel styleName="{res.css.flex} {res.css.grow} {res.css.wrap} {style.buttons} {res.css.justify}" ui:field="compositionPanel" />

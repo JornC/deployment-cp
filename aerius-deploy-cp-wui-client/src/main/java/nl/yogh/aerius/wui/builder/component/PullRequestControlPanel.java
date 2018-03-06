@@ -76,7 +76,7 @@ public class PullRequestControlPanel extends FieldedEventSimplePanel {
     }
 
     setBusy(pull.isBusy());
-    metadataPanel.setVisible(pull.isPull());
+    // metadataPanel.setVisible(pull.isPull());
   }
 
   @Override

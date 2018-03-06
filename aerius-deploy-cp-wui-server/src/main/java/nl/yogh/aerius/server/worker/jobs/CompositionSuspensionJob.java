@@ -28,8 +28,8 @@ public class CompositionSuspensionJob extends CompositionJob {
     LOG.info("Suspension job started:  {}", info.hash());
 
     try {
-      cmd("/", "docker ps --filter status=running --format {{.Names}} | grep %s%s%s | cut -d' ' -f1 | xargs docker stop",
-          info.type().name().toLowerCase(), prId, info.hash().toLowerCase());
+      cmdDebug("/", "docker ps --filter status=running --format {{.Names}} | grep %s%s%s | cut -d' ' -f1 | xargs docker stop",
+          info.type().name().toLowerCase(), prId, info.commit().hash().toLowerCase());
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Failure while suspending..", e);
     }
