@@ -70,6 +70,16 @@ public class CompositionCompilationJob extends CompositionJob {
       return;
     }
 
+    final List<ServiceType> builds = services.entrySet().stream()
+        .filter(v -> info.services().stream().map(vv -> vv.hash()).anyMatch(r -> r.equals(v.getKey()))).map(v -> v.getValue())
+        .filter(v -> v.status() != ServiceStatus.UNBUILT).map(v -> v.type()).collect(Collectors.toList());
+
+    if (builds.size() != targets.size()) {
+      LOG.info("Services not built successfully. Aborting.");
+      putComposition(info.status(CompositionStatus.UNBUILT).busy(false));
+      return;
+    }
+
     info.status(CompositionStatus.SUSPENDED);
 
     putComposition(info);
@@ -105,7 +115,7 @@ public class CompositionCompilationJob extends CompositionJob {
 
   private boolean install(final File dir) {
     try {
-      cmd(dir, "./install.sh");
+      cmdDebug(dir, "./install.sh");
       return true;
     } catch (final ProcessExitException e) {
       LOG.debug("Error during install: " + e.getOutput().get(0), e);

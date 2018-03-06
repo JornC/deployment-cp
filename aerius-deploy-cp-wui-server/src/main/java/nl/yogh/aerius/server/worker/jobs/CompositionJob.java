@@ -50,7 +50,7 @@ public abstract class CompositionJob implements Runnable {
 
     globalReplacements = cfg.getControlPanelProperties().collect(Collectors.toMap(formatKey(), v -> (String) v.getValue()));
     globalReplacements.put("{{cp.pr.id}}", prId);
-    globalReplacements.put("{{cp.pr.hash}}", info.hash());
+    globalReplacements.put("{{cp.pr.hash}}", info.commit().hash());
 
     putComposition(info.busy(true));
   }

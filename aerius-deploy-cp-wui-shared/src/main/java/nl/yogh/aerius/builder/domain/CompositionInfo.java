@@ -20,6 +20,8 @@ public class CompositionInfo implements Serializable, IsSerializable, HasHash {
 
   private ArrayList<ServiceInfo> services;
 
+  private CommitInfo commit;
+
   public CompositionInfo() {}
 
   public static CompositionInfo create() {
@@ -78,6 +80,15 @@ public class CompositionInfo implements Serializable, IsSerializable, HasHash {
 
   public CompositionInfo url(final String url) {
     this.url = url;
+    return this;
+  }
+
+  public CommitInfo commit() {
+    return commit;
+  }
+
+  public CompositionInfo commit(final CommitInfo commit) {
+    this.commit = commit;
     return this;
   }
 

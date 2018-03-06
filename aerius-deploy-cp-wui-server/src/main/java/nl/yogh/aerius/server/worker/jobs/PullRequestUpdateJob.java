@@ -104,7 +104,8 @@ public class PullRequestUpdateJob implements Runnable {
         final CompositionInfo projectInfo = CompositionInfo.create()
             .type(type)
             .hash(findShaSum(dirs))
-            .buildHash(pullInfo.hash());
+            .buildHash(pullInfo.hash())
+            .commit(pullInfo);
 
         CompositionStatus status = CompositionStatus.UNBUILT;
 
