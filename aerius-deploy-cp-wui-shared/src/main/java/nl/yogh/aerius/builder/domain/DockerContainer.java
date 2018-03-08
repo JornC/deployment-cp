@@ -11,6 +11,8 @@ public class DockerContainer implements Serializable, IsSerializable, HasHash {
   private String name;
   private String image;
 
+  private String status;
+
   public DockerContainer() {}
 
   public static DockerContainer create() {
@@ -33,6 +35,15 @@ public class DockerContainer implements Serializable, IsSerializable, HasHash {
 
   public DockerContainer image(final String image) {
     this.image = image;
+    return this;
+  }
+
+  public String status() {
+    return status;
+  }
+
+  public DockerContainer status(final String status) {
+    this.status = status;
     return this;
   }
 

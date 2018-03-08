@@ -36,27 +36,18 @@ public class DockerActivity extends EventActivity<Presenter, DockerView> impleme
 
   @Override
   public void stopAllContainers() {
-    service.stopAllContainers(AppAsyncCallback.create(v -> {
-      retrieveStats();
-      retrieveContainers();
-    }));
+    service.stopAllContainers(AppAsyncCallback.create(this::refresh));
   }
 
   @Override
   public void removeAllContainers() {
-    service.removeAllContainers(AppAsyncCallback.create(v -> {
-      retrieveStats();
-      retrieveContainers();
-    }));
+    service.removeAllContainers(AppAsyncCallback.create(this::refresh));
   }
 
   @Override
   public void removeAllImages() {
     if (Window.confirm("Are you sure you want to delete all images?")) {
-      service.removeAllImages(AppAsyncCallback.create(v -> {
-        retrieveStats();
-        retrieveImages();
-      }));
+      service.removeAllImages(AppAsyncCallback.create(v -> retrieveImages()));
     }
   }
 
@@ -81,16 +72,21 @@ public class DockerActivity extends EventActivity<Presenter, DockerView> impleme
 
   @Override
   public void stopContainer(final DockerContainer info, final Consumer<Boolean> callback) {
-    service.stopContainer(info, AppAsyncCallback.create(callback));
+    service.stopContainer(info, AppAsyncCallback.create(this::refresh));
   }
 
   @Override
   public void removeContainer(final DockerContainer info, final Consumer<Boolean> callback) {
-    service.removeContainer(info, AppAsyncCallback.create(callback));
+    service.removeContainer(info, AppAsyncCallback.create(this::refresh));
   }
 
   @Override
   public void removeImage(final DockerImage info, final Consumer<Boolean> callback) {
     service.removeImage(info, AppAsyncCallback.create(callback));
+  }
+
+  private void refresh(final Object irrelevant) {
+    retrieveStats();
+    retrieveContainers();
   }
 }

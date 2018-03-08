@@ -41,10 +41,19 @@
     border-color: red;
     background-color: #b99;
     }
+    .status {
+    margin-left: 20px;
+    padding: 3px;
+    font-size: 0.7em;
+    font-weight: bold;
+    }
   </ui:style>
   <g:FlowPanel ui:field="container" styleName="{style.panel} {res.css.flex} {res.css.distribute}">
     <g:FlowPanel>
-      <g:Label text="{info.hash}" />
+      <g:FlowPanel styleName="{res.css.flex}">
+        <g:Label text="{info.hash}" />
+        <g:Label text="STATUS: {info.status}" styleName="{style.status}" />
+      </g:FlowPanel>
       <g:Label text="{info.image}" styleName="{style.hash}" />
       <g:Label text="{info.name}" styleName="{style.hash}" />
     </g:FlowPanel>

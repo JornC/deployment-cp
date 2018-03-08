@@ -47,6 +47,7 @@ public class DockerManagementServiceImpl implements DockerManagementService {
 
   @Override
   public void stopAllContainers() throws ApplicationException {
+    final CountDownLatch latch = new CountDownLatch(1);
     executor.submit(() -> {
       LOG.info("[COMMAND] Stopping all containers.");
 
@@ -58,12 +59,16 @@ public class DockerManagementServiceImpl implements DockerManagementService {
         LOG.error("[COMMAND] Error during stopAllContainers()", e);
       } finally {
         LOG.info("[COMMAND] Done stopping all containers.");
+        latch.countDown();
       }
     });
+
+    await(latch);
   }
 
   @Override
   public void removeAllContainers() throws ApplicationException {
+    final CountDownLatch latch = new CountDownLatch(1);
     executor.submit(() -> {
       LOG.info("[COMMAND] Removing all containers.");
 
@@ -75,12 +80,16 @@ public class DockerManagementServiceImpl implements DockerManagementService {
         LOG.error("Error during removeAllContainers()", e);
       } finally {
         LOG.info("[COMMAND] Done removing all containers.");
+        latch.countDown();
       }
     });
+
+    await(latch);
   }
 
   @Override
   public void removeAllImages() throws ApplicationException {
+    final CountDownLatch latch = new CountDownLatch(1);
     executor.submit(() -> {
       LOG.info("[COMMAND] Pruning images.");
 
@@ -92,8 +101,11 @@ public class DockerManagementServiceImpl implements DockerManagementService {
         LOG.error("Error during removeAllImages()", e);
       } finally {
         LOG.info("[COMMAND] Done pruning images.");
+        latch.countDown();
       }
     });
+
+    await(latch);
   }
 
   @Override
@@ -101,9 +113,9 @@ public class DockerManagementServiceImpl implements DockerManagementService {
     final ArrayList<DockerContainer> containers = new ArrayList<>();
 
     try {
-      cmd("docker ps -a --format {{.ID}},{{.Image}},{{.Names}} --filter label=nl.aerius.docker.service=true").stream()
+      cmd("docker ps -a --format {{.ID}},{{.Image}},{{.Names}},{{.Status}} --filter label=nl.aerius.docker.service=true").stream()
           .map(v -> v.split(","))
-          .map(v -> DockerContainer.create().hash(v[0]).image(v[1]).name(v[2]))
+          .map(v -> DockerContainer.create().hash(v[0]).image(v[1]).name(v[2]).status(v[3]))
           .forEach(v -> containers.add(v));
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Error during retrieveContainers()", e);
@@ -144,6 +156,7 @@ public class DockerManagementServiceImpl implements DockerManagementService {
         fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done stopping container {}", container.hash());
+        latch.countDown();
       }
     });
 
@@ -166,29 +179,11 @@ public class DockerManagementServiceImpl implements DockerManagementService {
         fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done removing container {}", container.hash());
+        latch.countDown();
       }
     });
 
     return await(latch, fut);
-  }
-
-  private boolean await(final CountDownLatch latch, final Future<Exception> fut) throws ApplicationException {
-    try {
-      final boolean complete = latch.await(5, TimeUnit.SECONDS);
-      if (complete) {
-        if (fut.isDone()) {
-          try {
-            throw new ApplicationException(Reason.INTERNAL_ERROR, fut.get().getMessage());
-          } catch (final ExecutionException e) {
-            LOG.error("Error during await {}", e);
-          }
-        }
-      }
-
-      return complete;
-    } catch (final InterruptedException e) {}
-
-    return false;
   }
 
   @Override
@@ -207,6 +202,7 @@ public class DockerManagementServiceImpl implements DockerManagementService {
         fut.complete(e);
       } finally {
         LOG.info("[COMMAND] Done removing image {}", image.hash());
+        latch.countDown();
       }
     });
 
@@ -244,5 +240,32 @@ public class DockerManagementServiceImpl implements DockerManagementService {
   public void purgeTracker() throws ApplicationException {
     deploymentInstance.purge();
     maintenanceInstance.purge();
+  }
+
+  private void await(final CountDownLatch latch) throws ApplicationException {
+    try {
+      latch.await(5, TimeUnit.SECONDS);
+    } catch (final InterruptedException e) {
+      LOG.error("Error during await", e);
+    }
+  }
+
+  private boolean await(final CountDownLatch latch, final Future<Exception> fut) throws ApplicationException {
+    try {
+      final boolean complete = latch.await(5, TimeUnit.SECONDS);
+      if (complete) {
+        if (fut.isDone()) {
+          try {
+            throw new ApplicationException(Reason.INTERNAL_ERROR, fut.get().getMessage());
+          } catch (final ExecutionException e) {
+            LOG.error("Error during await", e);
+          }
+        }
+      }
+
+      return complete;
+    } catch (final InterruptedException e) {}
+
+    return false;
   }
 }
