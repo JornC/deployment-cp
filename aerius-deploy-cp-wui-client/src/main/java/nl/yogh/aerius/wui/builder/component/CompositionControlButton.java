@@ -236,7 +236,8 @@ public class CompositionControlButton extends EventComposite {
 
   @EventHandler
   public void onServiceStatusInfoChangedEvent(final ServiceStatusInfoChangedEvent e) {
-    if (info == null || !info.services().stream().map(v -> v.hash()).collect(Collectors.toList()).contains(e.getValue().hash())) {
+    if (info == null || info.services() == null
+        || !info.services().stream().map(v -> v.hash()).collect(Collectors.toList()).contains(e.getValue().hash())) {
       return;
     }
 
