@@ -57,6 +57,15 @@
     content: "DEPLOY";
     }
 
+    .corrupted {
+    content: "INCOMPATIBLE";
+    border-color: rgba(179, 19, 19 ,0.5);
+    background: rgba(179, 19, 19,0.3);
+    }
+    .corrupted:hover .statusLabel:after {
+    content: "INCOMPATIBLE";
+    }
+    
     .unbuilt {
     border-color: rgba(255,255,59,0.5);
     background: rgba(234,228,12,0.3);

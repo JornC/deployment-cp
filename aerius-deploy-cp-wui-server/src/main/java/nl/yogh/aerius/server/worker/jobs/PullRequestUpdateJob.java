@@ -23,6 +23,8 @@ import nl.yogh.aerius.server.util.CmdUtil.ProcessExitException;
 import nl.yogh.aerius.server.util.HashUtil;
 
 public class PullRequestUpdateJob implements Runnable {
+  private static final String MATCHALL = "matchall";
+
   private static final Logger LOG = LoggerFactory.getLogger(PullRequestUpdateJob.class);
 
   private final CommitInfo pullInfo;
@@ -103,41 +105,47 @@ public class PullRequestUpdateJob implements Runnable {
 
         final CompositionInfo projectInfo = CompositionInfo.create()
             .type(type)
-            .hash(findShaSum(dirs))
             .buildHash(pullInfo.hash())
             .commit(pullInfo);
 
-        CompositionStatus status = CompositionStatus.UNBUILT;
-
         try {
-          if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
-              projectInfo.hash().toLowerCase())
-                  .isEmpty()) {
-            status = CompositionStatus.DEPLOYED;
-          } else if (!cmd("docker ps --filter status=exited --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
-              projectInfo.hash().toLowerCase())
-                  .isEmpty()) {
-            status = CompositionStatus.SUSPENDED;
-          } else {}
-        } catch (final ProcessExitException e) {
-          // eat
+          projectInfo.hash(findShaSum(dirs));
+          projectInfo.services(findServiceHash(type));
+          if (LOG.isDebugEnabled()) {
+            LOG.trace("Calculating sum for ProductType {} > {}", HashUtil.shorten(projectInfo.hash()), type.name());
+          }
+
+          CompositionStatus status = CompositionStatus.UNBUILT;
+
+          try {
+            if (!cmd("docker ps --filter status=running --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
+                projectInfo.hash().toLowerCase())
+                    .isEmpty()) {
+              status = CompositionStatus.DEPLOYED;
+            } else if (!cmd("docker ps --filter status=exited --format {{.Names}} | grep %s%s%s", type.name().toLowerCase(), idx,
+                projectInfo.hash().toLowerCase())
+                    .isEmpty()) {
+              status = CompositionStatus.SUSPENDED;
+            } else {}
+          } catch (final ProcessExitException e) {
+            // eat
+          }
+
+          projectInfo.status(status);
+
+          if (compositions.containsKey(projectInfo.hash())) {
+            compositions.get(projectInfo.hash()).status(status);
+          } else if (status == CompositionStatus.DEPLOYED) {
+            projectInfo.url(String.format(cfg.getDeploymentHost(projectInfo.type()), idx));
+            compositions.put(projectInfo.hash(), projectInfo);
+          }
+
+        } catch (final IllegalStateException e) {
+          projectInfo.status(CompositionStatus.CORRUPTED);
+          projectInfo.hash("N/A");
+        } finally {
+          products.put(type, projectInfo);
         }
-
-        projectInfo.status(status);
-
-        if (compositions.containsKey(projectInfo.hash())) {
-          compositions.get(projectInfo.hash()).status(status);
-        } else if (status == CompositionStatus.DEPLOYED) {
-          projectInfo.url(String.format(cfg.getDeploymentHost(projectInfo.type()), idx));
-          compositions.put(projectInfo.hash(), projectInfo);
-        }
-
-        if (LOG.isDebugEnabled()) {
-          LOG.trace("Calculating sum for ProductType {} > {}", HashUtil.shorten(projectInfo.hash()), type.name());
-        }
-
-        projectInfo.services(findServiceHash(type));
-        products.put(type, projectInfo);
       }
 
       return products;
@@ -146,7 +154,8 @@ public class PullRequestUpdateJob implements Runnable {
     }
   }
 
-  private ArrayList<ServiceInfo> findServiceHash(final CompositionType type) throws IOException, InterruptedException, ProcessExitException {
+  private ArrayList<ServiceInfo> findServiceHash(final CompositionType type)
+      throws IOException, InterruptedException, ProcessExitException, IllegalStateException {
     final ArrayList<ServiceInfo> lst = new ArrayList<>();
 
     for (final ServiceType serviceType : type.serviceTypes()) {
@@ -177,17 +186,21 @@ public class PullRequestUpdateJob implements Runnable {
     return lst;
   }
 
-  private String findShaSum(final Collection<String> dirs) throws IOException, InterruptedException, ProcessExitException {
+  private String findShaSum(final Collection<String> dirs) throws IOException, InterruptedException, ProcessExitException, IllegalStateException {
     return findShaSum(String.join(" ", dirs));
   }
 
-  private String findShaSum(final String dirs) throws IOException, InterruptedException, ProcessExitException {
+  private String findShaSum(final String dirs) throws IOException, InterruptedException, ProcessExitException, IllegalStateException {
     // return cmd("find %s -type f -exec sha256sum {} \\; | sha256sum", dirs).get(0);
     if (dirs.isEmpty()) {
-      return "matchall";
+      return MATCHALL;
     }
 
-    return cmd("find %s -type f -print0 | xargs -0 sha256sum | sha256sum | cut -d \" \" -f1", dirs).get(0);
+    final String ret = cmd("find %s -type f -print0 | xargs -0 sha256sum | sha256sum | cut -d \" \" -f1", dirs).get(0);
+    if (ret.contains("No such file or directory")) {
+      throw new IllegalStateException("Directory structure unexpected; build configuration incompatible with repository.");
+    }
+    return ret;
   }
 
   private ArrayList<String> cmd(final String format, final String... args) throws IOException, InterruptedException, ProcessExitException {

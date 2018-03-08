@@ -22,11 +22,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 
+import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.CompositionDeploymentAction;
 import nl.yogh.aerius.builder.domain.CompositionInfo;
 import nl.yogh.aerius.builder.domain.CompositionStatus;
 import nl.yogh.aerius.builder.domain.CompositionType;
-import nl.yogh.aerius.builder.domain.CommitInfo;
 import nl.yogh.aerius.builder.domain.ServiceInfo;
 import nl.yogh.aerius.builder.domain.ServiceStatus;
 import nl.yogh.aerius.wui.builder.commands.CompositionActionCommand;
@@ -57,6 +57,8 @@ public class CompositionControlButton extends EventComposite {
     String highlight();
 
     String busy();
+
+    String corrupted();
   }
 
   @UiField CustomStyle style;
@@ -146,20 +148,30 @@ public class CompositionControlButton extends EventComposite {
   }
 
   private void setStatusCount(final List<ServiceInfo> r) {
-    for (final ServiceInfo info : r) {
-      serviceMap.put(info.hash(), info);
+    if (r != null) {
+      for (final ServiceInfo info : r) {
+        serviceMap.put(info.hash(), info);
+      }
     }
 
     setStatusCount();
   }
 
   private void setStatusCount() {
-    statusField.setText("compiled: " + getCompileCount());
+    if (info != null && info.status() == CompositionStatus.CORRUPTED) {
+      statusField.setText("Composition is incompatible.");
+    } else {
+      statusField.setText("compiled: " + getCompileCount());
+    }
   }
 
   @EventHandler
   public void onProductStatusHighlightEvent(final CompositionStatusHighlightEvent e) {
     if (busy) {
+      return;
+    }
+
+    if (e.getValue().status() == CompositionStatus.CORRUPTED) {
       return;
     }
 
@@ -178,7 +190,11 @@ public class CompositionControlButton extends EventComposite {
   }
 
   private void setServiceCount() {
-    serviceField.setText("services: " + getServiceCount());
+    if (info.status() == CompositionStatus.CORRUPTED) {
+      serviceField.setText("");
+    } else {
+      serviceField.setText("services: " + getServiceCount());
+    }
   }
 
   private void setMatchCount(final CompositionInfo value) {
@@ -273,6 +289,9 @@ public class CompositionControlButton extends EventComposite {
     case UNBUILT:
       setActiveStatus(style.unbuilt());
       break;
+    case CORRUPTED:
+      setActiveStatus(style.corrupted());
+      break;
     default:
       setDisabled();
       break;
@@ -285,6 +304,8 @@ public class CompositionControlButton extends EventComposite {
       return CompositionDeploymentAction.SUSPEND;
     case SUSPENDED:
       return CompositionDeploymentAction.DEPLOY;
+    case CORRUPTED:
+      return null;
     default:
     case UNBUILT:
       return CompositionDeploymentAction.BUILD;
