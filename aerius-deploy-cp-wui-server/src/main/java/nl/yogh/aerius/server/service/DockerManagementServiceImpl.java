@@ -67,6 +67,25 @@ public class DockerManagementServiceImpl implements DockerManagementService {
   }
 
   @Override
+  public void removeAllNetworks() throws ApplicationException {
+    final CountDownLatch latch = new CountDownLatch(1);
+    executor.submit(() -> {
+      LOG.info("[COMMAND] Removing all networks.");
+
+      try {
+        cmd("docker network list -q | xargs docker network rm)");
+      } catch (IOException | InterruptedException | ProcessExitException e) {
+        LOG.error("Error during removeAllNetworks()", e);
+      } finally {
+        LOG.info("[COMMAND] Done removing all networks.");
+        latch.countDown();
+      }
+    });
+
+    await(latch);
+  }
+
+  @Override
   public void removeAllContainers() throws ApplicationException {
     final CountDownLatch latch = new CountDownLatch(1);
     executor.submit(() -> {
@@ -114,9 +133,9 @@ public class DockerManagementServiceImpl implements DockerManagementService {
 
     try {
       cmd("docker ps -a --format {{.ID}},{{.Image}},{{.Names}},{{.Status}} --filter label=nl.aerius.docker.service=true").stream()
-          .map(v -> v.split(","))
-          .map(v -> DockerContainer.create().hash(v[0]).image(v[1]).name(v[2]).status(v[3]))
-          .forEach(v -> containers.add(v));
+      .map(v -> v.split(","))
+      .map(v -> DockerContainer.create().hash(v[0]).image(v[1]).name(v[2]).status(v[3]))
+      .forEach(v -> containers.add(v));
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Error during retrieveContainers()", e);
     }
@@ -130,9 +149,9 @@ public class DockerManagementServiceImpl implements DockerManagementService {
 
     try {
       cmd("docker images --format {{.ID}},{{.Repository}},{{.Tag}} --filter label=nl.aerius.docker.service=true").stream()
-          .map(v -> v.split(","))
-          .map(v -> DockerImage.create().hash(v[0]).name(v[1]).tag(v[2]))
-          .forEach(v -> images.add(v));
+      .map(v -> v.split(","))
+      .map(v -> DockerImage.create().hash(v[0]).name(v[1]).tag(v[2]))
+      .forEach(v -> images.add(v));
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Error during retrieveImages()", e);
     }
@@ -219,6 +238,9 @@ public class DockerManagementServiceImpl implements DockerManagementService {
       stats.put("Pull requests", String.valueOf(maintenanceInstance.getPullRequests().size()));
       stats.put("Projects", String.valueOf(deploymentInstance.getProjects().size()));
       stats.put("Services", String.valueOf(deploymentInstance.getServices().size()));
+      stats.put("Containers", String.valueOf(Integer.parseInt(cmd("docker ps -q | wc -l").get(0))));
+      stats.put("Images", String.valueOf(Integer.parseInt(cmd("docker images -q | wc -l").get(0))));
+      stats.put("Networks", String.valueOf(Integer.parseInt(cmd("docker network ls -q | wc -l").get(0)) - 2));
     } catch (IOException | InterruptedException | ProcessExitException e) {
       LOG.error("Internal error.", e);
       throw new ApplicationException(Reason.INTERNAL_ERROR, e.getMessage());

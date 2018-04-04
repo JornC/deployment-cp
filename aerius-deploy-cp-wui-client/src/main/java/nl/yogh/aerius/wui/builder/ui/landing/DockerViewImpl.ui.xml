@@ -62,6 +62,7 @@
       <g:FlowPanel styleName="{res.css.flex} {res.css.justify} {res.css.alignCenter}">
         <g:Button ui:field="stopAllContainers" text="Stop all containers" styleName="{style.button}" />
         <g:Button ui:field="removeAllContainers" text="Remove all containers" styleName="{style.button}" />
+        <g:Button ui:field="removeAllNetworks" text="Remove all networks" styleName="{style.button} {style.bigbad}" />
         <g:Button ui:field="removeAllImages" text="Remove all images" styleName="{style.button} {style.bigbad}" />
         <g:Button ui:field="purgeTracker" text="Purge tracker" styleName="{style.button} {style.bigbad}" />
       </g:FlowPanel>

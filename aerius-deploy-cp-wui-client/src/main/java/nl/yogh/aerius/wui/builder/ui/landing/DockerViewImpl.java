@@ -59,6 +59,11 @@ public class DockerViewImpl extends EventComposite implements DockerView {
     presenter.removeAllContainers();
   }
 
+  @UiHandler("removeAllNetworks")
+  public void onRemoveAllNetworks(final ClickEvent e) {
+    presenter.removeAllNetworks();
+  }
+
   @UiHandler("removeAllImages")
   public void onRemoveAllImages(final ClickEvent e) {
     presenter.removeAllImages();

@@ -45,6 +45,13 @@ public class DockerActivity extends EventActivity<Presenter, DockerView> impleme
   }
 
   @Override
+  public void removeAllNetworks() {
+    if (Window.confirm("Are you sure you want to delete all networks?")) {
+      service.removeAllNetworks(AppAsyncCallback.create(v -> retrieveStats()));
+    }
+  }
+
+  @Override
   public void removeAllImages() {
     if (Window.confirm("Are you sure you want to delete all images?")) {
       service.removeAllImages(AppAsyncCallback.create(v -> retrieveImages()));

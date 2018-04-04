@@ -16,6 +16,8 @@ public interface DockerManagementService extends RemoteService {
 
   void removeAllContainers() throws ApplicationException;
 
+  void removeAllNetworks() throws ApplicationException;
+
   void removeAllImages() throws ApplicationException;
 
   void purgeTracker() throws ApplicationException;

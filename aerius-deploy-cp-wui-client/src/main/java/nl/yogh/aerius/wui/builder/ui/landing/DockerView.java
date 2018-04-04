@@ -18,6 +18,8 @@ public interface DockerView extends View<Presenter> {
 
     void removeAllContainers();
 
+    void removeAllNetworks();
+
     void removeAllImages();
 
     void removeImage(DockerImage info, Consumer<Boolean> callback);
